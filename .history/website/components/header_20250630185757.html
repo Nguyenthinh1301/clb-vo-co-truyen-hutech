@@ -1,0 +1,332 @@
+<header class="main-header">
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <div class="logo-image">
+                    <img src="assets/images/z6220991542184_5df707998ebb7fe3c2c8b7135d923fd1.jpg" alt="CLB Võ Cổ Truyền HUTECH" class="header-logo-img">
+                </div>
+                <div class="logo-text">
+                    <h1>CLB VÕ CỔ TRUYỀN</h1>
+                    <span class="subtitle">HUTECH</span>
+                </div>
+            </div>
+            
+            <div class="nav-toggle" id="nav-toggle">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+            
+            <ul class="nav-menu" id="nav-menu">
+                <li class="nav-item">
+                    <a href="#home" class="nav-link">
+                        <span>Trang chủ</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#about" class="nav-link">
+                        <span>Giới thiệu</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#services" class="nav-link">
+                        <span>Dịch vụ</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#contact" class="nav-link">
+                        <span>Liên hệ</span>
+                    </a>
+                </li>
+                <!-- Auth items for non-logged in users -->
+                <li class="nav-item auth-item guest-only">
+                    <a href="views/account/dang-nhap.html" class="nav-link login-btn">
+                        <span>Đăng nhập</span>
+                    </a>
+                </li>
+                <li class="nav-item auth-item guest-only">
+                    <a href="views/account/dang-ky.html" class="nav-link signup-btn">
+                        <span>Đăng ký</span>
+                    </a>
+                </li>
+                
+                <!-- User profile dropdown for logged in users -->
+                <li class="nav-item user-menu logged-in-only" style="display: none;">
+                    <a href="#" class="nav-link user-profile-btn">
+                        <img src="assets/images/default-avatar.svg" alt="Profile" class="user-avatar" id="headerUserAvatar">
+                        <span id="headerUserName">Người dùng</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="javascript:void(0)" onclick="navigateToProfile()"><i class="fas fa-user"></i> Thông tin cá nhân</a></li>
+                        <li><a href="javascript:void(0)" onclick="navigateToDashboard()"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                        <li><a href="javascript:void(0)" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</header>
+
+<script>
+// Mobile menu toggle
+document.addEventListener('DOMContentLoaded', function() {
+    const navToggle = document.getElementById('nav-toggle');
+    const navMenu = document.getElementById('nav-menu');
+    
+    if (navToggle && navMenu) {
+        navToggle.addEventListener('click', function() {
+            navMenu.classList.toggle('active');
+            navToggle.classList.toggle('active');
+        });
+        
+        // Close menu when clicking on a link
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                navMenu.classList.remove('active');
+                navToggle.classList.remove('active');
+            });
+        });
+    }
+    
+    // Header scroll effect
+    window.addEventListener('scroll', function() {
+        const header = document.querySelector('.main-header');
+        if (header) {
+            if (window.scrollY > 100) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        }
+    });
+    
+    // Check authentication status
+    checkAuthStatus();
+    
+    // User dropdown toggle
+    const userProfileBtn = document.querySelector('.user-profile-btn');
+    if (userProfileBtn) {
+        userProfileBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const dropdown = this.nextElementSibling;
+            dropdown.classList.toggle('show');
+        });
+    }
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        const userMenu = document.querySelector('.user-menu');
+        const dropdown = document.querySelector('.dropdown-menu');
+        if (userMenu && dropdown && !userMenu.contains(e.target)) {
+            dropdown.classList.remove('show');
+        }
+    });
+});
+
+// Check if user is logged in and update header accordingly
+function checkAuthStatus() {
+    const currentUser = localStorage.getItem('currentUser');
+    const guestItems = document.querySelectorAll('.guest-only');
+    const loggedInItems = document.querySelectorAll('.logged-in-only');
+    
+    if (currentUser) {
+        const user = JSON.parse(currentUser);
+        
+        // Hide guest items (login/register buttons)
+        guestItems.forEach(item => item.style.display = 'none');
+        
+        // Show logged in items (profile menu)
+        loggedInItems.forEach(item => item.style.display = 'block');
+        
+        // Update user name and avatar
+        const userNameElement = document.getElementById('headerUserName');
+        const userAvatarElement = document.getElementById('headerUserAvatar');
+        
+        if (userNameElement) {
+            userNameElement.textContent = user.fullName || user.username || 'Người dùng';
+        }
+        
+        if (userAvatarElement && user.profileImage) {
+            userAvatarElement.src = user.profileImage;
+        }
+    } else {
+        // Show guest items
+        guestItems.forEach(item => item.style.display = 'block');
+        
+        // Hide logged in items
+        loggedInItems.forEach(item => item.style.display = 'none');
+    }
+}
+
+// Logout function
+function logout() {
+    if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
+        localStorage.removeItem('currentUser');
+        localStorage.removeItem('authToken');
+        
+        // Update header
+        checkAuthStatus();
+        
+        // Redirect to home page with correct path
+        const currentPath = window.location.pathname;
+        if (currentPath.includes('/views/')) {
+            window.location.href = '../../index.html';
+        } else {
+            window.location.href = 'index.html';
+        }
+    }
+}
+
+// Navigate to profile function
+function navigateToProfile() {
+    const currentPath = window.location.pathname;
+    
+    // Close dropdown
+    const dropdown = document.querySelector('.dropdown-menu');
+    if (dropdown) {
+        dropdown.classList.remove('show');
+    }
+    
+    // Navigate with correct path
+    if (currentPath.includes('/views/')) {
+        // Already in views folder, navigate relative
+        if (currentPath.includes('/account/')) {
+            // In account folder
+            window.location.href = 'profile.html';
+        } else {
+            // In other views folder
+            window.location.href = '../account/profile.html';
+        }
+    } else {
+        // From root, navigate to views
+        window.location.href = 'views/account/profile.html';
+    }
+}
+
+// Navigate to dashboard function
+function navigateToDashboard() {
+    const currentPath = window.location.pathname;
+    
+    // Close dropdown
+    const dropdown = document.querySelector('.dropdown-menu');
+    if (dropdown) {
+        dropdown.classList.remove('show');
+    }
+    
+    // Navigate with correct path
+    if (currentPath.includes('/views/')) {
+        // Already in views folder, navigate relative
+        if (currentPath.includes('/account/')) {
+            // In account folder
+            window.location.href = 'dashboard.html';
+        } else {
+            // In other views folder
+            window.location.href = '../account/dashboard.html';
+        }
+    } else {
+        // From root, navigate to views
+        window.location.href = 'views/account/dashboard.html';
+    }
+}
+
+// AuthManager for compatibility with existing code
+window.AuthManager = {
+    updateHeaderForLoggedInUser: function() {
+        checkAuthStatus();
+    }
+};
+</script>
+
+<style>
+/* User profile dropdown styles */
+.user-menu {
+    position: relative;
+}
+
+.user-profile-btn {
+    display: flex !important;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 15px !important;
+    border-radius: 25px;
+    background: rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.user-profile-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.user-avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    min-width: 200px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    margin-top: 10px;
+}
+
+.dropdown-menu.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdown-menu li {
+    list-style: none;
+}
+
+.dropdown-menu li a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    color: #333;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    margin: 5px;
+}
+
+.dropdown-menu li a:hover {
+    background: #f8f9fa;
+    color: #d32f2f;
+}
+
+.dropdown-menu li a i {
+    width: 16px;
+    color: #666;
+}
+
+.dropdown-menu li a:hover i {
+    color: #d32f2f;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .user-profile-btn span {
+        display: none;
+    }
+    
+    .dropdown-menu {
+        right: -10px;
+        min-width: 180px;
+    }
+}
+</style>

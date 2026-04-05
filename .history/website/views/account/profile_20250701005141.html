@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông tin cá nhân - CLB Võ Cổ Truyền HUTECH</title>
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="../../assets/css/profile.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <div id="header-placeholder"></div>
+
+    <main class="profile-page">
+        <div class="profile-container">
+            <!-- Profile Header -->
+            <div class="profile-header">
+                <div class="profile-avatar-section">
+                    <div class="profile-avatar" id="profileAvatar">
+                        <img src="../../assets/images/default-avatar.svg" alt="Avatar" id="avatarImage">
+                        <div class="avatar-overlay" id="avatarOverlay">
+                            <i class="fas fa-camera"></i>
+                            <span>Thay đổi ảnh</span>
+                        </div>
+                        <input type="file" id="avatarInput" accept="image/*" style="display: none;">
+                    </div>
+                </div>
+                <div class="profile-info">
+                    <h1 id="profileName">Tên người dùng</h1>
+                    <p class="profile-role" id="profileRole">Thành viên</p>
+                    <p class="profile-status" id="profileStatus">Hoạt động</p>
+                </div>
+                <div class="profile-actions">
+                    <button class="btn btn-primary" id="editProfileBtn">
+                        <i class="fas fa-edit"></i>
+                        Chỉnh sửa hồ sơ
+                    </button>
+                </div>
+            </div>
+
+            <!-- Profile Navigation -->
+            <div class="profile-nav">
+                <button class="nav-tab active" data-tab="general">
+                    <i class="fas fa-user"></i>
+                    Thông tin chung
+                </button>
+                <button class="nav-tab" data-tab="training">
+                    <i class="fas fa-dumbbell"></i>
+                    Lịch tập luyện
+                </button>
+                <button class="nav-tab" data-tab="achievements">
+                    <i class="fas fa-trophy"></i>
+                    Thành tích
+                </button>
+                <button class="nav-tab" data-tab="settings">
+                    <i class="fas fa-cog"></i>
+                    Cài đặt
+                </button>
+            </div>
+
+            <!-- Profile Content -->
+            <div class="profile-content">
+                <!-- General Information Tab -->
+                <div class="tab-content active" id="general-tab">
+                    <div class="profile-section">
+                        <h2><i class="fas fa-info-circle"></i> Thông tin cá nhân</h2>
+                        <div class="info-grid">
+                            <div class="info-group">
+                                <label>Họ và tên</label>
+                                <input type="text" id="fullName" readonly>
+                            </div>
+                            <div class="info-group">
+                                <label>Email</label>
+                                <input type="email" id="email" readonly>
+                            </div>
+                            <div class="info-group">
+                                <label>Số điện thoại</label>
+                                <input type="tel" id="phone" readonly>
+                            </div>
+                            <div class="info-group">
+                                <label>Ngày sinh</label>
+                                <input type="date" id="birthDate" readonly>
+                            </div>
+                            <div class="info-group">
+                                <label>Giới tính</label>
+                                <select id="gender" disabled>
+                                    <option value="">Chọn giới tính</option>
+                                    <option value="male">Nam</option>
+                                    <option value="female">Nữ</option>
+                                    <option value="other">Khác</option>
+                                </select>
+                            </div>
+                            <div class="info-group">
+                                <label>Địa chỉ</label>
+                                <textarea id="address" readonly rows="3"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="profile-section">
+                        <h2><i class="fas fa-graduation-cap"></i> Thông tin học tập</h2>
+                        <div class="info-grid">
+                            <div class="info-group">
+                                <label>Trường học</label>
+                                <input type="text" id="school" readonly>
+                            </div>
+                            <div class="info-group">
+                                <label>Khoa</label>
+                                <input type="text" id="faculty" readonly>
+                            </div>
+                            <div class="info-group">
+                                <label>Lớp</label>
+                                <input type="text" id="className" readonly>
+                            </div>
+                            <div class="info-group">
+                                <label>Năm học</label>
+                                <input type="text" id="academicYear" readonly>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Training Schedule Tab -->
+                <div class="tab-content" id="training-tab">
+                    <div class="profile-section">
+                        <h2><i class="fas fa-calendar-alt"></i> Lịch tập luyện tuần này</h2>
+                        <div class="training-schedule">
+                            <div class="schedule-item">
+                                <div class="schedule-day">Thứ 2</div>
+                                <div class="schedule-time">19:00 - 21:00</div>
+                                <div class="schedule-activity">Võ cổ truyền cơ bản</div>
+                                <div class="schedule-location">Phòng tập A1</div>
+                            </div>
+                            <div class="schedule-item">
+                                <div class="schedule-day">Thứ 4</div>
+                                <div class="schedule-time">19:00 - 21:00</div>
+                                <div class="schedule-activity">Võ cổ truyền nâng cao</div>
+                                <div class="schedule-location">Phòng tập A2</div>
+                            </div>
+                            <div class="schedule-item">
+                                <div class="schedule-day">Thứ 6</div>
+                                <div class="schedule-time">18:00 - 20:00</div>
+                                <div class="schedule-activity">Luyện tập tự do</div>
+                                <div class="schedule-location">Sân tập ngoài trời</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="profile-section">
+                        <h2><i class="fas fa-chart-line"></i> Thống kê tập luyện</h2>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-number" id="totalSessions">0</div>
+                                <div class="stat-label">Buổi tập</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number" id="totalHours">0</div>
+                                <div class="stat-label">Giờ tập</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number" id="attendanceRate">0%</div>
+                                <div class="stat-label">Tỷ lệ tham gia</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Achievements Tab -->
+                <div class="tab-content" id="achievements-tab">
+                    <div class="profile-section">
+                        <h2><i class="fas fa-medal"></i> Thành tích và giải thưởng</h2>
+                        <div class="achievements-list">
+                            <div class="achievement-item">
+                                <div class="achievement-icon">🥇</div>
+                                <div class="achievement-info">
+                                    <h3>Giải nhất thi đấu nội bộ</h3>
+                                    <p>Tháng 12/2024</p>
+                                </div>
+                            </div>
+                            <div class="achievement-item">
+                                <div class="achievement-icon">🎖️</div>
+                                <div class="achievement-info">
+                                    <h3>Thành viên xuất sắc</h3>
+                                    <p>Học kỳ 1 năm 2024-2025</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="profile-section">
+                        <h2><i class="fas fa-certificate"></i> Chứng chỉ và bằng cấp</h2>
+                        <div class="certificates-list">
+                            <div class="certificate-item">
+                                <div class="certificate-icon">📜</div>
+                                <div class="certificate-info">
+                                    <h3>Chứng chỉ Võ cổ truyền cấp độ 1</h3>
+                                    <p>Cấp bởi: CLB Võ Cổ Truyền HUTECH</p>
+                                    <p>Ngày cấp: 15/10/2024</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Tab -->
+                <div class="tab-content" id="settings-tab">
+                    <div class="profile-section">
+                        <h2><i class="fas fa-shield-alt"></i> Bảo mật</h2>
+                        <div class="settings-group">
+                            <div class="setting-item">
+                                <label>Đổi mật khẩu</label>
+                                <button class="btn btn-secondary" id="changePasswordBtn">
+                                    <i class="fas fa-key"></i>
+                                    Đổi mật khẩu
+                                </button>
+                            </div>
+                            <div class="setting-item">
+                                <label>Xác thực hai bước</label>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="twoFactorAuth">
+                                    <span class="toggle-slider"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="profile-section">
+                        <h2><i class="fas fa-bell"></i> Thông báo</h2>
+                        <div class="settings-group">
+                            <div class="setting-item">
+                                <label>Thông báo email</label>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="emailNotifications" checked>
+                                    <span class="toggle-slider"></span>
+                                </div>
+                            </div>
+                            <div class="setting-item">
+                                <label>Thông báo lịch tập</label>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="scheduleNotifications" checked>
+                                    <span class="toggle-slider"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="profile-section">
+                        <h2><i class="fas fa-paint-brush"></i> Giao diện</h2>
+                        <div class="settings-group">
+                            <div class="setting-item">
+                                <label>Chế độ tối</label>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="darkMode">
+                                    <span class="toggle-slider"></span>
+                                </div>
+                            </div>
+                            <div class="setting-item">
+                                <label>Ngôn ngữ</label>
+                                <select id="language">
+                                    <option value="vi">Tiếng Việt</option>
+                                    <option value="en">English</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Edit Mode Actions -->
+            <div class="edit-actions" id="editActions" style="display: none;">
+                <button class="btn btn-success" id="saveProfileBtn">
+                    <i class="fas fa-save"></i>
+                    Lưu thay đổi
+                </button>
+                <button class="btn btn-secondary" id="cancelEditBtn">
+                    <i class="fas fa-times"></i>
+                    Hủy
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Change Password Modal -->
+    <div class="modal" id="changePasswordModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Đổi mật khẩu</h2>
+                <button class="modal-close" id="closePasswordModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="changePasswordForm">
+                <div class="form-group">
+                    <label for="currentPassword">Mật khẩu hiện tại</label>
+                    <input type="password" id="currentPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="newPassword">Mật khẩu mới</label>
+                    <input type="password" id="newPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Xác nhận mật khẩu mới</label>
+                    <input type="password" id="confirmPassword" required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Đổi mật khẩu</button>
+                    <button type="button" class="btn btn-secondary" id="cancelPasswordChange">Hủy</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div id="footer-placeholder"></div>
+
+    <!-- Scripts -->
+    <script src="../../config/config.js"></script>
+    <script src="../../config/auth.js"></script>
+    <script src="../../database/database_manager.js"></script>
+    <script>
+        // Profile management
+        class ProfileManager {
+            constructor() {
+                this.isEditMode = false;
+                this.currentUser = null;
+                this.init();
+            }
+
+            async init() {
+                await this.loadComponents();
+                await this.checkAuth();
+                this.setupEventListeners();
+                this.loadUserProfile();
+            }
+
+            async loadComponents() {
+                try {
+                    await this.loadComponent('header-placeholder', '../../components/header.html');
+                    await this.loadComponent('footer-placeholder', '../../components/footer.html');
+                } catch (error) {
+                    console.error('Error loading components:', error);
+                }
+            }
+
+            async loadComponent(elementId, componentPath) {
+                try {
+                    const response = await fetch(componentPath);
+                    const html = await response.text();
+                    document.getElementById(elementId).innerHTML = html;
+                } catch (error) {
+                    console.error(`Error loading component ${componentPath}:`, error);
+                }
+            }
+
+            async checkAuth() {
+                // Initialize AuthManager
+                if (typeof AuthManager !== 'undefined') {
+                    const authManager = new AuthManager();
+                    await authManager.init();
+                    this.currentUser = authManager.currentUser;
+
+                    if (!this.currentUser) {
+                        // Redirect to login if not authenticated
+                        window.location.href = 'dang-nhap.html';
+                        return;
+                    }
+
+                    // Update header for logged-in user
+                    setTimeout(() => {
+                        authManager.updateHeaderForLoggedInUser();
+                    }, 100);
+                }
+            }
+
+            setupEventListeners() {
+                // Tab navigation
+                document.querySelectorAll('.nav-tab').forEach(tab => {
+                    tab.addEventListener('click', (e) => {
+                        this.switchTab(e.target.dataset.tab);
+                    });
+                });
+
+                // Edit profile button
+                document.getElementById('editProfileBtn').addEventListener('click', () => {
+                    this.toggleEditMode();
+                });
+
+                // Save profile button
+                document.getElementById('saveProfileBtn').addEventListener('click', () => {
+                    this.saveProfile();
+                });
+
+                // Cancel edit button
+                document.getElementById('cancelEditBtn').addEventListener('click', () => {
+                    this.cancelEdit();
+                });
+
+                // Avatar upload
+                document.getElementById('avatarOverlay').addEventListener('click', () => {
+                    document.getElementById('avatarInput').click();
+                });
+
+                document.getElementById('avatarInput').addEventListener('change', (e) => {
+                    this.handleAvatarUpload(e);
+                });
+
+                // Change password
+                document.getElementById('changePasswordBtn').addEventListener('click', () => {
+                    this.showChangePasswordModal();
+                });
+
+                // Close password modal
+                document.getElementById('closePasswordModal').addEventListener('click', () => {
+                    this.hideChangePasswordModal();
+                });
+
+                document.getElementById('cancelPasswordChange').addEventListener('click', () => {
+                    this.hideChangePasswordModal();
+                });
+
+                // Password form
+                document.getElementById('changePasswordForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.changePassword();
+                });
+
+                // Toggle switches
+                document.querySelectorAll('.toggle-switch input').forEach(toggle => {
+                    toggle.addEventListener('change', (e) => {
+                        this.handleSettingChange(e.target.id, e.target.checked);
+                    });
+                });
+            }
+
+            switchTab(tabName) {
+                // Update tab buttons
+                document.querySelectorAll('.nav-tab').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+
+                // Update tab content
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                document.getElementById(`${tabName}-tab`).classList.add('active');
+            }
+
+            loadUserProfile() {
+                if (!this.currentUser) return;
+
+                // Update profile header
+                document.getElementById('profileName').textContent = this.currentUser.fullName || this.currentUser.username;
+                document.getElementById('profileRole').textContent = this.getRoleText(this.currentUser.role);
+                document.getElementById('profileStatus').textContent = this.getStatusText(this.currentUser.membershipStatus);
+
+                // Update avatar
+                if (this.currentUser.profileImage) {
+                    document.getElementById('avatarImage').src = this.currentUser.profileImage;
+                }
+
+                // Load form fields
+                this.populateForm();
+            }
+
+            populateForm() {
+                if (!this.currentUser) return;
+
+                const fields = {
+                    'fullName': this.currentUser.fullName || '',
+                    'email': this.currentUser.email || '',
+                    'phone': this.currentUser.phone || '',
+                    'birthDate': this.currentUser.birthDate || '',
+                    'gender': this.currentUser.gender || '',
+                    'address': this.currentUser.address || '',
+                    'school': this.currentUser.school || 'HUTECH',
+                    'faculty': this.currentUser.faculty || '',
+                    'className': this.currentUser.className || '',
+                    'academicYear': this.currentUser.academicYear || ''
+                };
+
+                Object.keys(fields).forEach(fieldId => {
+                    const element = document.getElementById(fieldId);
+                    if (element) {
+                        element.value = fields[fieldId];
+                    }
+                });
+            }
+
+            toggleEditMode() {
+                this.isEditMode = !this.isEditMode;
+                const editBtn = document.getElementById('editProfileBtn');
+                const editActions = document.getElementById('editActions');
+
+                if (this.isEditMode) {
+                    // Enable edit mode
+                    this.enableFormEditing();
+                    editBtn.style.display = 'none';
+                    editActions.style.display = 'flex';
+                } else {
+                    // Disable edit mode
+                    this.disableFormEditing();
+                    editBtn.style.display = 'block';
+                    editActions.style.display = 'none';
+                }
+            }
+
+            enableFormEditing() {
+                const editableFields = ['fullName', 'phone', 'birthDate', 'gender', 'address', 'faculty', 'className', 'academicYear'];
+                editableFields.forEach(fieldId => {
+                    const element = document.getElementById(fieldId);
+                    if (element) {
+                        element.removeAttribute('readonly');
+                        element.removeAttribute('disabled');
+                        element.classList.add('editable');
+                    }
+                });
+            }
+
+            disableFormEditing() {
+                const editableFields = ['fullName', 'phone', 'birthDate', 'gender', 'address', 'faculty', 'className', 'academicYear'];
+                editableFields.forEach(fieldId => {
+                    const element = document.getElementById(fieldId);
+                    if (element) {
+                        element.setAttribute('readonly', 'true');
+                        if (element.tagName === 'SELECT') {
+                            element.setAttribute('disabled', 'true');
+                        }
+                        element.classList.remove('editable');
+                    }
+                });
+            }
+
+            async saveProfile() {
+                try {
+                    const formData = {
+                        fullName: document.getElementById('fullName').value,
+                        phone: document.getElementById('phone').value,
+                        birthDate: document.getElementById('birthDate').value,
+                        gender: document.getElementById('gender').value,
+                        address: document.getElementById('address').value,
+                        faculty: document.getElementById('faculty').value,
+                        className: document.getElementById('className').value,
+                        academicYear: document.getElementById('academicYear').value
+                    };
+
+                    // Update user data
+                    const updatedUser = { ...this.currentUser, ...formData };
+                    
+                    // Update in database
+                    await DB.updateUser(this.currentUser.id, formData);
+                    
+                    // Update localStorage
+                    localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+                    this.currentUser = updatedUser;
+
+                    // Show success message
+                    this.showNotification('Thông tin đã được cập nhật thành công!', 'success');
+                    
+                    // Exit edit mode
+                    this.toggleEditMode();
+
+                } catch (error) {
+                    console.error('Error saving profile:', error);
+                    this.showNotification('Có lỗi xảy ra khi lưu thông tin!', 'error');
+                }
+            }
+
+            cancelEdit() {
+                this.populateForm(); // Reset form to original values
+                this.toggleEditMode();
+            }
+
+            handleAvatarUpload(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        document.getElementById('avatarImage').src = e.target.result;
+                        // In production, upload to server
+                        this.currentUser.profileImage = e.target.result;
+                        localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+
+            showChangePasswordModal() {
+                document.getElementById('changePasswordModal').style.display = 'flex';
+            }
+
+            hideChangePasswordModal() {
+                document.getElementById('changePasswordModal').style.display = 'none';
+                document.getElementById('changePasswordForm').reset();
+            }
+
+            async changePassword() {
+                const currentPassword = document.getElementById('currentPassword').value;
+                const newPassword = document.getElementById('newPassword').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+
+                if (newPassword !== confirmPassword) {
+                    this.showNotification('Mật khẩu mới không khớp!', 'error');
+                    return;
+                }
+
+                try {
+                    // Verify current password and update
+                    const authManager = new AuthManager();
+                    const result = await authManager.changePassword(currentPassword, newPassword);
+                    
+                    if (result.success) {
+                        this.showNotification('Đổi mật khẩu thành công!', 'success');
+                        this.hideChangePasswordModal();
+                    } else {
+                        this.showNotification(result.message, 'error');
+                    }
+                } catch (error) {
+                    console.error('Error changing password:', error);
+                    this.showNotification('Có lỗi xảy ra khi đổi mật khẩu!', 'error');
+                }
+            }
+
+            handleSettingChange(settingId, value) {
+                // Save setting to localStorage
+                const settings = JSON.parse(localStorage.getItem('userSettings') || '{}');
+                settings[settingId] = value;
+                localStorage.setItem('userSettings', JSON.stringify(settings));
+
+                // Apply setting if needed
+                if (settingId === 'darkMode') {
+                    document.body.classList.toggle('dark-mode', value);
+                }
+
+                this.showNotification('Cài đặt đã được lưu!', 'success');
+            }
+
+            getRoleText(role) {
+                const roleMap = {
+                    'admin': 'Quản trị viên',
+                    'instructor': 'Huấn luyện viên',
+                    'student': 'Thành viên',
+                    'guest': 'Khách'
+                };
+                return roleMap[role] || 'Thành viên';
+            }
+
+            getStatusText(status) {
+                const statusMap = {
+                    'active': 'Hoạt động',
+                    'pending': 'Chờ duyệt',
+                    'suspended': 'Tạm dừng',
+                    'inactive': 'Không hoạt động'
+                };
+                return statusMap[status] || 'Không xác định';
+            }
+
+            showNotification(message, type = 'info') {
+                // Create notification element
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                notification.innerHTML = `
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
+                    <span>${message}</span>
+                `;
+
+                // Add to page
+                document.body.appendChild(notification);
+
+                // Remove after 3 seconds
+                setTimeout(() => {
+                    notification.remove();
+                }, 3000);
+            }
+        }
+
+        // Initialize profile manager
+        const profileManager = new ProfileManager();
+    </script>
+</body>
+</html>

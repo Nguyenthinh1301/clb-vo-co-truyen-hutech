@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông tin cá nhân - CLB Võ Cổ Truyền HUTECH</title>
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="../../assets/css/profile.css">
+</head>
+<body>
+    <!-- Header -->
+    <div id="header-placeholder"></div>
+
+    <main class="profile-main">
+        <div class="container">
+            <div class="profile-container">
+                <!-- Profile Header -->
+                <div class="profile-header">
+                    <div class="profile-avatar-section">
+                        <div class="avatar-container">
+                            <img src="../../assets/images/default-avatar.svg" alt="Avatar" id="profileAvatar" class="profile-avatar">
+                            <div class="avatar-upload-overlay">
+                                <input type="file" id="avatarInput" accept="image/*" style="display: none;">
+                                <button class="avatar-upload-btn" onclick="document.getElementById('avatarInput').click()">
+                                    <i class="icon-camera"></i>
+                                    Đổi ảnh
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="profile-info">
+                        <h1 class="profile-name" id="profileName">Tên người dùng</h1>
+                        <p class="profile-email" id="profileEmail">email@example.com</p>
+                        <span class="profile-status active">Đang hoạt động</span>
+                    </div>
+                </div>
+
+                <!-- Profile Navigation -->
+                <div class="profile-nav">
+                    <button class="nav-tab active" data-tab="personal">Thông tin cá nhân</button>
+                    <button class="nav-tab" data-tab="security">Bảo mật</button>
+                    <button class="nav-tab" data-tab="activity">Hoạt động</button>
+                </div>
+
+                <!-- Profile Content -->
+                <div class="profile-content">
+                    <!-- Personal Information Tab -->
+                    <div class="tab-content active" id="personal-tab">
+                        <div class="profile-section">
+                            <h2>Thông tin cá nhân</h2>
+                            <form id="personalInfoForm" class="profile-form">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="fullName">Họ và tên *</label>
+                                        <input type="text" id="fullName" name="fullName" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="phone">Số điện thoại</label>
+                                        <input type="tel" id="phone" name="phone">
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="email">Email *</label>
+                                        <input type="email" id="email" name="email" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="birthDate">Ngày sinh</label>
+                                        <input type="date" id="birthDate" name="birthDate">
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="gender">Giới tính</label>
+                                        <select id="gender" name="gender">
+                                            <option value="">Chọn giới tính</option>
+                                            <option value="male">Nam</option>
+                                            <option value="female">Nữ</option>
+                                            <option value="other">Khác</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="studentId">Mã số sinh viên</label>
+                                        <input type="text" id="studentId" name="studentId">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="address">Địa chỉ</label>
+                                    <textarea id="address" name="address" rows="3"></textarea>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="bio">Giới thiệu bản thân</label>
+                                    <textarea id="bio" name="bio" rows="4" placeholder="Hãy viết vài dòng về bản thân bạn..."></textarea>
+                                </div>
+
+                                <div class="form-actions">
+                                    <button type="button" class="btn btn-secondary" onclick="resetPersonalForm()">Hủy</button>
+                                    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Security Tab -->
+                    <div class="tab-content" id="security-tab">
+                        <div class="profile-section">
+                            <h2>Đổi mật khẩu</h2>
+                            <form id="passwordForm" class="profile-form">
+                                <div class="form-group">
+                                    <label for="currentPassword">Mật khẩu hiện tại *</label>
+                                    <input type="password" id="currentPassword" name="currentPassword" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="newPassword">Mật khẩu mới *</label>
+                                    <input type="password" id="newPassword" name="newPassword" required>
+                                    <div class="password-strength" id="passwordStrength"></div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="confirmPassword">Xác nhận mật khẩu mới *</label>
+                                    <input type="password" id="confirmPassword" name="confirmPassword" required>
+                                </div>
+
+                                <div class="form-actions">
+                                    <button type="button" class="btn btn-secondary" onclick="resetPasswordForm()">Hủy</button>
+                                    <button type="submit" class="btn btn-primary">Đổi mật khẩu</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="profile-section">
+                            <h2>Bảo mật tài khoản</h2>
+                            <div class="security-options">
+                                <div class="security-item">
+                                    <div class="security-info">
+                                        <h3>Xác thực hai bước</h3>
+                                        <p>Tăng cường bảo mật tài khoản bằng xác thực qua SMS hoặc email</p>
+                                    </div>
+                                    <div class="security-action">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="twoFactorAuth">
+                                            <span class="slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="security-item">
+                                    <div class="security-info">
+                                        <h3>Thông báo đăng nhập</h3>
+                                        <p>Nhận thông báo khi có đăng nhập mới từ thiết bị lạ</p>
+                                    </div>
+                                    <div class="security-action">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="loginNotifications" checked>
+                                            <span class="slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Activity Tab -->
+                    <div class="tab-content" id="activity-tab">
+                        <div class="profile-section">
+                            <h2>Hoạt động gần đây</h2>
+                            <div class="activity-list" id="activityList">
+                                <div class="activity-item">
+                                    <div class="activity-icon">
+                                        <i class="icon-login"></i>
+                                    </div>
+                                    <div class="activity-info">
+                                        <h4>Đăng nhập thành công</h4>
+                                        <p>Từ Windows • Chrome</p>
+                                        <span class="activity-time">2 giờ trước</span>
+                                    </div>
+                                </div>
+
+                                <div class="activity-item">
+                                    <div class="activity-icon">
+                                        <i class="icon-edit"></i>
+                                    </div>
+                                    <div class="activity-info">
+                                        <h4>Cập nhật thông tin cá nhân</h4>
+                                        <p>Thay đổi số điện thoại</p>
+                                        <span class="activity-time">1 ngày trước</span>
+                                    </div>
+                                </div>
+
+                                <div class="activity-item">
+                                    <div class="activity-icon">
+                                        <i class="icon-password"></i>
+                                    </div>
+                                    <div class="activity-info">
+                                        <h4>Đổi mật khẩu</h4>
+                                        <p>Mật khẩu đã được thay đổi thành công</p>
+                                        <span class="activity-time">3 ngày trước</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="profile-section">
+                            <h2>Phiên đăng nhập</h2>
+                            <div class="session-list">
+                                <div class="session-item current">
+                                    <div class="session-info">
+                                        <h4>Phiên hiện tại</h4>
+                                        <p>Windows • Chrome • 192.168.1.100</p>
+                                        <span class="session-time">Đang hoạt động</span>
+                                    </div>
+                                    <div class="session-action">
+                                        <span class="current-badge">Hiện tại</span>
+                                    </div>
+                                </div>
+
+                                <div class="session-item">
+                                    <div class="session-info">
+                                        <h4>Điện thoại di động</h4>
+                                        <p>Android • Chrome Mobile • 192.168.1.101</p>
+                                        <span class="session-time">2 ngày trước</span>
+                                    </div>
+                                    <div class="session-action">
+                                        <button class="btn btn-danger btn-sm">Đăng xuất</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <div id="footer-placeholder"></div>
+
+    <!-- Scripts -->
+    <script src="../../script.js"></script>
+    <script src="../../config/auth.js"></script>
+    <script>
+        // Load components
+        async function loadComponent(elementId, componentPath) {
+            try {
+                const response = await fetch(componentPath);
+                const html = await response.text();
+                document.getElementById(elementId).innerHTML = html;
+            } catch (error) {
+                console.error(`Error loading component ${componentPath}:`, error);
+            }
+        }
+
+        // Load header and footer
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadComponent('header-placeholder', '../../components/header.html');
+            await loadComponent('footer-placeholder', '../../components/footer.html');
+            
+            // Initialize profile page
+            setTimeout(initializeProfile, 100);
+        });
+
+        function initializeProfile() {
+            // Check if user is logged in
+            const currentUser = localStorage.getItem('currentUser');
+            if (!currentUser) {
+                // Redirect to login if not authenticated
+                window.location.href = 'dang-nhap.html';
+                return;
+            }
+
+            // Load user data
+            loadUserData();
+            
+            // Initialize tab switching
+            initializeTabSwitching();
+            
+            // Initialize forms
+            initializeForms();
+            
+            // Initialize avatar upload
+            initializeAvatarUpload();
+        }
+
+        function loadUserData() {
+            const userData = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            
+            // Update profile header
+            document.getElementById('profileName').textContent = userData.fullName || 'Tên người dùng';
+            document.getElementById('profileEmail').textContent = userData.email || 'email@example.com';
+            
+            // Fill form fields
+            document.getElementById('fullName').value = userData.fullName || '';
+            document.getElementById('email').value = userData.email || '';
+            document.getElementById('phone').value = userData.phone || '';
+            document.getElementById('birthDate').value = userData.birthDate || '';
+            document.getElementById('gender').value = userData.gender || '';
+            document.getElementById('studentId').value = userData.studentId || '';
+            document.getElementById('address').value = userData.address || '';
+            document.getElementById('bio').value = userData.bio || '';
+            
+            // Update avatar if exists
+            if (userData.avatar) {
+                document.getElementById('profileAvatar').src = userData.avatar;
+            }
+        }
+
+        function initializeTabSwitching() {
+            const navTabs = document.querySelectorAll('.nav-tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            navTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const targetTab = this.getAttribute('data-tab');
+                    
+                    // Remove active class from all tabs and contents
+                    navTabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    
+                    // Add active class to clicked tab and corresponding content
+                    this.classList.add('active');
+                    document.getElementById(targetTab + '-tab').classList.add('active');
+                });
+            });
+        }
+
+        function initializeForms() {
+            // Personal info form
+            document.getElementById('personalInfoForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                savePersonalInfo();
+            });
+
+            // Password form
+            document.getElementById('passwordForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                changePassword();
+            });
+
+            // Password strength checker
+            document.getElementById('newPassword').addEventListener('input', function() {
+                checkPasswordStrength(this.value);
+            });
+
+            // Confirm password validation
+            document.getElementById('confirmPassword').addEventListener('input', function() {
+                validatePasswordConfirmation();
+            });
+        }
+
+        function initializeAvatarUpload() {
+            document.getElementById('avatarInput').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        document.getElementById('profileAvatar').src = e.target.result;
+                        // Save to localStorage (in real app, upload to server)
+                        const userData = JSON.parse(localStorage.getItem('currentUser') || '{}');
+                        userData.avatar = e.target.result;
+                        localStorage.setItem('currentUser', JSON.stringify(userData));
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        function savePersonalInfo() {
+            const formData = new FormData(document.getElementById('personalInfoForm'));
+            const userData = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            
+            // Update user data
+            for (let [key, value] of formData.entries()) {
+                userData[key] = value;
+            }
+            
+            // Save to localStorage (in real app, send to server)
+            localStorage.setItem('currentUser', JSON.stringify(userData));
+            
+            // Update profile header
+            document.getElementById('profileName').textContent = userData.fullName;
+            document.getElementById('profileEmail').textContent = userData.email;
+            
+            // Show success message
+            showNotification('Thông tin cá nhân đã được cập nhật thành công!', 'success');
+        }
+
+        function changePassword() {
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            // Validate passwords
+            if (newPassword !== confirmPassword) {
+                showNotification('Mật khẩu xác nhận không khớp!', 'error');
+                return;
+            }
+            
+            if (newPassword.length < 6) {
+                showNotification('Mật khẩu mới phải có ít nhất 6 ký tự!', 'error');
+                return;
+            }
+            
+            // In real app, verify current password with server
+            // For demo, just update the password
+            const userData = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            userData.password = newPassword; // In real app, hash the password
+            localStorage.setItem('currentUser', JSON.stringify(userData));
+            
+            // Clear form
+            document.getElementById('passwordForm').reset();
+            
+            // Show success message
+            showNotification('Mật khẩu đã được thay đổi thành công!', 'success');
+        }
+
+        function checkPasswordStrength(password) {
+            const strengthDiv = document.getElementById('passwordStrength');
+            let strength = 0;
+            let strengthText = '';
+            let strengthClass = '';
+            
+            if (password.length >= 6) strength++;
+            if (/[a-z]/.test(password)) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+            
+            switch (strength) {
+                case 0:
+                case 1:
+                    strengthText = 'Yếu';
+                    strengthClass = 'weak';
+                    break;
+                case 2:
+                case 3:
+                    strengthText = 'Trung bình';
+                    strengthClass = 'medium';
+                    break;
+                case 4:
+                case 5:
+                    strengthText = 'Mạnh';
+                    strengthClass = 'strong';
+                    break;
+            }
+            
+            strengthDiv.textContent = `Độ mạnh mật khẩu: ${strengthText}`;
+            strengthDiv.className = `password-strength ${strengthClass}`;
+        }
+
+        function validatePasswordConfirmation() {
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const confirmInput = document.getElementById('confirmPassword');
+            
+            if (confirmPassword && newPassword !== confirmPassword) {
+                confirmInput.style.borderColor = '#ff4444';
+            } else {
+                confirmInput.style.borderColor = '';
+            }
+        }
+
+        function resetPersonalForm() {
+            loadUserData(); // Reload original data
+        }
+
+        function resetPasswordForm() {
+            document.getElementById('passwordForm').reset();
+            document.getElementById('passwordStrength').textContent = '';
+        }
+
+        function showNotification(message, type = 'info') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            
+            // Add styles
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 20px;
+                border-radius: 5px;
+                color: white;
+                font-weight: 500;
+                z-index: 10000;
+                opacity: 0;
+                transform: translateX(100%);
+                transition: all 0.3s ease;
+            `;
+            
+            // Set background color based on type
+            switch (type) {
+                case 'success':
+                    notification.style.backgroundColor = '#4CAF50';
+                    break;
+                case 'error':
+                    notification.style.backgroundColor = '#f44336';
+                    break;
+                default:
+                    notification.style.backgroundColor = '#2196F3';
+            }
+            
+            // Add to page
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.style.opacity = '1';
+                notification.style.transform = 'translateX(0)';
+            }, 10);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

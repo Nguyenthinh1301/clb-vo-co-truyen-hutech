@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông tin cá nhân - CLB Võ Cổ Truyền HUTECH</title>
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="../../assets/css/profile.css">
+</head>
+<body>
+    <!-- Header -->
+    <div id="header-placeholder"></div>
+
+    <main class="profile-main">
+        <div class="container">
+            <div class="profile-container">
+                <!-- Profile Header -->
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        <img id="profileAvatar" src="../../assets/images/default-avatar.svg" alt="Avatar">
+                        <div class="avatar-upload">
+                            <input type="file" id="avatarInput" accept="image/*" style="display: none;">
+                            <button type="button" class="btn-change-avatar" onclick="document.getElementById('avatarInput').click()">
+                                <i class="fas fa-camera"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="profile-info">
+                        <h1 id="profileName" class="profile-name">Đang tải...</h1>
+                        <p id="profileEmail" class="profile-email">email@example.com</p>
+                        <span id="profileRole" class="profile-role">Thành viên</span>
+                        <span id="membershipStatus" class="membership-status">Đang chờ phê duyệt</span>
+                    </div>
+                </div>
+
+                <!-- Profile Navigation -->
+                <div class="profile-nav">
+                    <button class="profile-nav-btn active" data-tab="info">
+                        <i class="fas fa-user"></i>
+                        Thông tin cá nhân
+                    </button>
+                    <button class="profile-nav-btn" data-tab="security">
+                        <i class="fas fa-shield-alt"></i>
+                        Bảo mật
+                    </button>
+                    <button class="profile-nav-btn" data-tab="activity">
+                        <i class="fas fa-history"></i>
+                        Hoạt động
+                    </button>
+                    <button class="profile-nav-btn" data-tab="membership">
+                        <i class="fas fa-id-card"></i>
+                        Thành viên
+                    </button>
+                </div>
+
+                <!-- Profile Content -->
+                <div class="profile-content">
+                    <!-- Personal Info Tab -->
+                    <div class="profile-tab active" id="info-tab">
+                        <div class="tab-header">
+                            <h2>Thông tin cá nhân</h2>
+                            <button class="btn-edit" id="editInfoBtn">
+                                <i class="fas fa-edit"></i>
+                                Chỉnh sửa
+                            </button>
+                        </div>
+                        
+                        <form class="profile-form" id="profileForm">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="fullName">Họ và tên</label>
+                                    <input type="text" id="fullName" name="fullName" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label for="username">Tên đăng nhập</label>
+                                    <input type="text" id="username" name="username" readonly>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="email">Email</label>
+                                    <input type="email" id="email" name="email" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label for="phone">Số điện thoại</label>
+                                    <input type="tel" id="phone" name="phone" readonly>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="dateOfBirth">Ngày sinh</label>
+                                    <input type="date" id="dateOfBirth" name="dateOfBirth" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label for="gender">Giới tính</label>
+                                    <select id="gender" name="gender" disabled>
+                                        <option value="">Chọn giới tính</option>
+                                        <option value="male">Nam</option>
+                                        <option value="female">Nữ</option>
+                                        <option value="other">Khác</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="address">Địa chỉ</label>
+                                <textarea id="address" name="address" rows="3" readonly></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="bio">Giới thiệu bản thân</label>
+                                <textarea id="bio" name="bio" rows="4" readonly placeholder="Viết vài dòng về bản thân..."></textarea>
+                            </div>
+                            
+                            <div class="form-actions" id="formActions" style="display: none;">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i>
+                                    Lưu thay đổi
+                                </button>
+                                <button type="button" class="btn btn-secondary" id="cancelEditBtn">
+                                    <i class="fas fa-times"></i>
+                                    Hủy
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Security Tab -->
+                    <div class="profile-tab" id="security-tab">
+                        <div class="tab-header">
+                            <h2>Bảo mật tài khoản</h2>
+                        </div>
+                        
+                        <div class="security-section">
+                            <h3>Đổi mật khẩu</h3>
+                            <form class="password-form" id="passwordForm">
+                                <div class="form-group">
+                                    <label for="currentPassword">Mật khẩu hiện tại</label>
+                                    <input type="password" id="currentPassword" name="currentPassword" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="newPassword">Mật khẩu mới</label>
+                                    <input type="password" id="newPassword" name="newPassword" required>
+                                    <div class="password-strength" id="passwordStrength"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="confirmPassword">Xác nhận mật khẩu mới</label>
+                                    <input type="password" id="confirmPassword" name="confirmPassword" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-key"></i>
+                                    Đổi mật khẩu
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="security-section">
+                            <h3>Bảo mật nâng cao</h3>
+                            <div class="security-item">
+                                <div class="security-info">
+                                    <h4>Xác thực hai bước</h4>
+                                    <p>Tăng cường bảo mật tài khoản bằng xác thực hai bước</p>
+                                </div>
+                                <div class="security-action">
+                                    <button class="btn btn-outline" disabled>
+                                        Sắp ra mắt
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Activity Tab -->
+                    <div class="profile-tab" id="activity-tab">
+                        <div class="tab-header">
+                            <h2>Lịch sử hoạt động</h2>
+                        </div>
+                        
+                        <div class="activity-list" id="activityList">
+                            <div class="activity-item">
+                                <div class="activity-icon">
+                                    <i class="fas fa-sign-in-alt"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <h4>Đăng nhập thành công</h4>
+                                    <p>Đăng nhập từ Chrome trên Windows</p>
+                                    <span class="activity-time">2 giờ trước</span>
+                                </div>
+                            </div>
+                            
+                            <div class="activity-item">
+                                <div class="activity-icon">
+                                    <i class="fas fa-user-edit"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <h4>Cập nhật thông tin cá nhân</h4>
+                                    <p>Thay đổi số điện thoại</p>
+                                    <span class="activity-time">1 ngày trước</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Membership Tab -->
+                    <div class="profile-tab" id="membership-tab">
+                        <div class="tab-header">
+                            <h2>Thông tin thành viên</h2>
+                        </div>
+                        
+                        <div class="membership-info">
+                            <div class="membership-card">
+                                <div class="card-header">
+                                    <h3>Thẻ thành viên</h3>
+                                    <span class="membership-id" id="membershipId">VCT2024001</span>
+                                </div>
+                                <div class="card-content">
+                                    <div class="membership-detail">
+                                        <label>Ngày gia nhập:</label>
+                                        <span id="joinDate">Chưa có thông tin</span>
+                                    </div>
+                                    <div class="membership-detail">
+                                        <label>Trạng thái:</label>
+                                        <span id="membershipStatusDetail" class="status-pending">Đang chờ phê duyệt</span>
+                                    </div>
+                                    <div class="membership-detail">
+                                        <label>Cấp độ:</label>
+                                        <span id="membershipLevel">Thành viên mới</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="membership-benefits">
+                                <h3>Quyền lợi thành viên</h3>
+                                <ul class="benefits-list">
+                                    <li><i class="fas fa-check"></i> Tham gia các lớp học võ cổ truyền</li>
+                                    <li><i class="fas fa-check"></i> Được hướng dẫn bởi các cao thủ</li>
+                                    <li><i class="fas fa-check"></i> Tham gia các sự kiện và thi đấu</li>
+                                    <li><i class="fas fa-check"></i> Sử dụng phòng tập và thiết bị</li>
+                                    <li><i class="fas fa-check"></i> Được cấp giấy chứng nhận</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <div id="footer-placeholder"></div>
+
+    <!-- Scripts -->
+    <script src="../../config/config.js"></script>
+    <script src="../../config/utils.js"></script>
+    <script src="../../database/database_manager.js"></script>
+    <script src="../../config/auth.js"></script>
+    <script src="../../script.js"></script>
+    <script>
+        // Profile page initialization
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Load components
+            await loadComponent('header-placeholder', '../../components/header.html');
+            await loadComponent('footer-placeholder', '../../components/footer.html');
+            
+            // Initialize profile
+            setTimeout(initializeProfile, 100);
+        });
+
+        async function initializeProfile() {
+            // Check authentication
+            if (!AuthManager.isAuthenticated()) {
+                window.location.href = 'dang-nhap.html';
+                return;
+            }
+
+            // Load user profile
+            await loadUserProfile();
+            
+            // Setup event listeners
+            setupProfileEventListeners();
+        }
+
+        async function loadUserProfile() {
+            const user = AuthManager.getCurrentUser();
+            if (!user) return;
+
+            // Update profile header
+            document.getElementById('profileName').textContent = user.fullName || 'Chưa cập nhật';
+            document.getElementById('profileEmail').textContent = user.email;
+            document.getElementById('profileRole').textContent = getRoleDisplayName(user.role);
+            
+            const statusElement = document.getElementById('membershipStatus');
+            statusElement.textContent = getMembershipStatusDisplayName(user.membershipStatus);
+            statusElement.className = `membership-status status-${user.membershipStatus}`;
+
+            // Update profile form
+            document.getElementById('fullName').value = user.fullName || '';
+            document.getElementById('username').value = user.username || '';
+            document.getElementById('email').value = user.email || '';
+            document.getElementById('phone').value = user.phone || '';
+            document.getElementById('dateOfBirth').value = user.dateOfBirth || '';
+            document.getElementById('gender').value = user.gender || '';
+            document.getElementById('address').value = user.address || '';
+            document.getElementById('bio').value = user.bio || '';
+
+            // Update membership info
+            document.getElementById('membershipId').textContent = user.membershipId || 'Chưa cấp';
+            document.getElementById('joinDate').textContent = user.joinDate ? 
+                new Date(user.joinDate).toLocaleDateString('vi-VN') : 'Chưa có thông tin';
+            
+            const membershipStatusDetail = document.getElementById('membershipStatusDetail');
+            membershipStatusDetail.textContent = getMembershipStatusDisplayName(user.membershipStatus);
+            membershipStatusDetail.className = `status-${user.membershipStatus}`;
+            
+            document.getElementById('membershipLevel').textContent = getMembershipLevelDisplayName(user.membershipLevel);
+
+            // Load avatar if exists
+            if (user.avatar) {
+                document.getElementById('profileAvatar').src = user.avatar;
+            }
+        }
+
+        function setupProfileEventListeners() {
+            // Tab navigation
+            document.querySelectorAll('.profile-nav-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tabName = this.dataset.tab;
+                    switchTab(tabName);
+                });
+            });
+
+            // Edit profile
+            document.getElementById('editInfoBtn').addEventListener('click', enableEditMode);
+            document.getElementById('cancelEditBtn').addEventListener('click', cancelEditMode);
+            
+            // Profile form submit
+            document.getElementById('profileForm').addEventListener('submit', handleProfileUpdate);
+            
+            // Password form submit
+            document.getElementById('passwordForm').addEventListener('submit', handlePasswordChange);
+            
+            // Avatar upload
+            document.getElementById('avatarInput').addEventListener('change', handleAvatarUpload);
+            
+            // Password strength checker
+            document.getElementById('newPassword').addEventListener('input', checkPasswordStrength);
+        }
+
+        function switchTab(tabName) {
+            // Update nav buttons
+            document.querySelectorAll('.profile-nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+
+            // Update tab content
+            document.querySelectorAll('.profile-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+        }
+
+        function enableEditMode() {
+            // Enable form inputs
+            const form = document.getElementById('profileForm');
+            const inputs = form.querySelectorAll('input, textarea, select');
+            inputs.forEach(input => {
+                if (input.name !== 'username' && input.name !== 'email') {
+                    input.removeAttribute('readonly');
+                    input.removeAttribute('disabled');
+                }
+            });
+
+            // Show form actions
+            document.getElementById('formActions').style.display = 'block';
+            document.getElementById('editInfoBtn').style.display = 'none';
+        }
+
+        function cancelEditMode() {
+            // Reload profile to reset changes
+            loadUserProfile();
+            
+            // Disable form inputs
+            const form = document.getElementById('profileForm');
+            const inputs = form.querySelectorAll('input, textarea, select');
+            inputs.forEach(input => {
+                input.setAttribute('readonly', 'readonly');
+                if (input.tagName === 'SELECT') {
+                    input.setAttribute('disabled', 'disabled');
+                }
+            });
+
+            // Hide form actions
+            document.getElementById('formActions').style.display = 'none';
+            document.getElementById('editInfoBtn').style.display = 'block';
+        }
+
+        async function handleProfileUpdate(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const updateData = Object.fromEntries(formData.entries());
+            
+            try {
+                const result = await AuthManager.updateProfile(AuthManager.getCurrentUser().id, updateData);
+                
+                if (result.success) {
+                    showMessage('Cập nhật thông tin thành công!', 'success');
+                    cancelEditMode();
+                    await loadUserProfile();
+                } else {
+                    showMessage(result.message, 'error');
+                }
+            } catch (error) {
+                console.error('Profile update error:', error);
+                showMessage('Đã xảy ra lỗi khi cập nhật thông tin', 'error');
+            }
+        }
+
+        async function handlePasswordChange(e) {
+            e.preventDefault();
+            
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (newPassword !== confirmPassword) {
+                showMessage('Mật khẩu xác nhận không khớp', 'error');
+                return;
+            }
+            
+            try {
+                const result = await AuthManager.changePassword(
+                    AuthManager.getCurrentUser().id,
+                    currentPassword,
+                    newPassword
+                );
+                
+                if (result.success) {
+                    showMessage('Đổi mật khẩu thành công!', 'success');
+                    e.target.reset();
+                } else {
+                    showMessage(result.message, 'error');
+                }
+            } catch (error) {
+                console.error('Password change error:', error);
+                showMessage('Đã xảy ra lỗi khi đổi mật khẩu', 'error');
+            }
+        }
+
+        function handleAvatarUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            // Validate file type and size
+            if (!file.type.startsWith('image/')) {
+                showMessage('Vui lòng chọn file hình ảnh', 'error');
+                return;
+            }
+            
+            if (file.size > 5 * 1024 * 1024) { // 5MB
+                showMessage('Kích thước file không được vượt quá 5MB', 'error');
+                return;
+            }
+            
+            // Preview image
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('profileAvatar').src = e.target.result;
+                // TODO: Upload to server and update user profile
+                showMessage('Avatar đã được cập nhật!', 'success');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function checkPasswordStrength(e) {
+            const password = e.target.value;
+            const strengthElement = document.getElementById('passwordStrength');
+            
+            if (!password) {
+                strengthElement.innerHTML = '';
+                return;
+            }
+            
+            const strength = ConfigUtils.checkPasswordStrength(password);
+            let strengthText = '';
+            let strengthClass = '';
+            
+            switch (strength) {
+                case 'weak':
+                    strengthText = 'Yếu';
+                    strengthClass = 'weak';
+                    break;
+                case 'medium':
+                    strengthText = 'Trung bình';
+                    strengthClass = 'medium';
+                    break;
+                case 'strong':
+                    strengthText = 'Mạnh';
+                    strengthClass = 'strong';
+                    break;
+            }
+            
+            strengthElement.innerHTML = `<span class="strength-${strengthClass}">Độ mạnh: ${strengthText}</span>`;
+        }
+
+        // Helper functions
+        function getRoleDisplayName(role) {
+            const roleNames = {
+                'admin': 'Quản trị viên',
+                'instructor': 'Huấn luyện viên',
+                'student': 'Học viên'
+            };
+            return roleNames[role] || 'Thành viên';
+        }
+
+        function getMembershipStatusDisplayName(status) {
+            const statusNames = {
+                'pending': 'Đang chờ phê duyệt',
+                'active': 'Đang hoạt động',
+                'inactive': 'Tạm ngưng',
+                'suspended': 'Bị đình chỉ'
+            };
+            return statusNames[status] || 'Chưa xác định';
+        }
+
+        function getMembershipLevelDisplayName(level) {
+            const levelNames = {
+                'beginner': 'Thành viên mới',
+                'intermediate': 'Thành viên trung cấp',
+                'advanced': 'Thành viên nâng cao',
+                'expert': 'Chuyên gia'
+            };
+            return levelNames[level] || 'Thành viên mới';
+        }
+
+        function showMessage(message, type) {
+            // Create message element
+            const messageEl = document.createElement('div');
+            messageEl.className = `message message-${type}`;
+            messageEl.textContent = message;
+            
+            // Style the message
+            messageEl.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 20px;
+                border-radius: 5px;
+                color: white;
+                font-weight: bold;
+                z-index: 10000;
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+            `;
+            
+            if (type === 'success') {
+                messageEl.style.backgroundColor = '#28a745';
+            } else if (type === 'error') {
+                messageEl.style.backgroundColor = '#dc3545';
+            }
+            
+            document.body.appendChild(messageEl);
+            
+            // Animate in
+            setTimeout(() => {
+                messageEl.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                messageEl.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    document.body.removeChild(messageEl);
+                }, 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

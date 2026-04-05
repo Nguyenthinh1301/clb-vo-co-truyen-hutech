@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Nhập - CLB Võ Cổ Truyền HUTECH</title>
+    <link rel="stylesheet" href="../../styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <div id="header-placeholder"></div>
+
+    <main>
+        <section class="auth-section">
+            <div class="container">
+                <div class="auth-container">
+                    <div class="auth-form">
+                        <h2>Đăng Nhập</h2>
+                        <form id="loginForm">
+                            <div class="form-group">
+                                <label for="email">Email:</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="password">Mật khẩu:</label>
+                                <input type="password" id="password" name="password" required>
+                            </div>
+                            
+                            <div class="form-options">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="remember"> Ghi nhớ đăng nhập
+                                </label>
+                                <a href="#" class="forgot-password">Quên mật khẩu?</a>
+                            </div>
+                            
+                            <button type="submit" class="auth-btn">Đăng Nhập</button>
+                        </form>
+                        
+                        <div class="auth-footer">
+                            <p>Chưa có tài khoản? <a href="dang-ky.html">Đăng ký ngay</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <div id="footer-placeholder"></div>
+
+    <script>
+        // Load components
+        async function loadComponent(elementId, componentPath) {
+            try {
+                const response = await fetch(componentPath);
+                const html = await response.text();
+                document.getElementById(elementId).innerHTML = html;
+            } catch (error) {
+                console.error(`Error loading component ${componentPath}:`, error);
+            }
+        }
+
+        // Load all components
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadComponent('header-placeholder', '../../components/header.html');
+            await loadComponent('footer-placeholder', '../../components/footer.html');
+        });
+
+        // Login form handling
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            // Simulate login process
+            console.log('Đăng nhập với:', { email, password });
+            
+            // Show success message
+            alert('Đăng nhập thành công! (Tính năng đang phát triển)');
+            
+            // Redirect to home page
+            window.location.href = '../../index.html';
+        });
+    </script>
+</body>
+</html>

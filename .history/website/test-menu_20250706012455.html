@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Menu - CLB Võ Cổ Truyền HUTECH</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Include header -->
+    <div id="header-container"></div>
+    
+    <!-- Test content -->
+    <main style="padding: 100px 20px; min-height: 100vh;">
+        <div class="container">
+            <h1>Test Menu Navigation</h1>
+            <p>Đây là trang test để kiểm tra menu navigation hoạt động đúng trên cả desktop và mobile.</p>
+            
+            <div style="margin-top: 50px;">
+                <h2>Hướng dẫn test:</h2>
+                <ul style="line-height: 1.8; margin-left: 20px;">
+                    <li><strong>Desktop:</strong> Hover vào các mục "Giới thiệu" và "Dịch vụ" để xem dropdown menu</li>
+                    <li><strong>Mobile:</strong> Click vào nút hamburger menu để mở/đóng menu</li>
+                    <li><strong>Mobile Dropdown:</strong> Click vào "Giới thiệu" hoặc "Dịch vụ" để mở dropdown</li>
+                    <li><strong>Thoát menu:</strong> Click ra ngoài hoặc nhấn ESC để đóng menu</li>
+                </ul>
+            </div>
+            
+            <div style="margin-top: 50px; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                <h3>Các tính năng đã cải thiện:</h3>
+                <ul style="line-height: 1.8; margin-left: 20px;">
+                    <li>✅ Hamburger menu button với hiệu ứng biến thành dấu X</li>
+                    <li>✅ Menu mobile full screen với overlay</li>
+                    <li>✅ Dropdown menu cho "Giới thiệu" và "Dịch vụ"</li>
+                    <li>✅ Hiệu ứng smooth và animation</li>
+                    <li>✅ Khóa scroll body khi menu mở</li>
+                    <li>✅ Đóng menu khi click ra ngoài hoặc nhấn ESC</li>
+                    <li>✅ Responsive design cho mọi kích thước màn hình</li>
+                </ul>
+            </div>
+            
+            <!-- Test sections -->
+            <section id="home" style="margin-top: 100px; padding: 50px 0;">
+                <h2>Trang chủ</h2>
+                <p>Nội dung trang chủ...</p>
+            </section>
+            
+            <section id="about" style="margin-top: 100px; padding: 50px 0;">
+                <h2>Giới thiệu</h2>
+                <p>Nội dung giới thiệu...</p>
+            </section>
+            
+            <section id="services" style="margin-top: 100px; padding: 50px 0;">
+                <h2>Dịch vụ</h2>
+                <p>Nội dung dịch vụ...</p>
+            </section>
+            
+            <section id="contact" style="margin-top: 100px; padding: 50px 0;">
+                <h2>Liên hệ</h2>
+                <p>Nội dung liên hệ...</p>
+            </section>
+        </div>
+    </main>
+    
+    <script>
+        // Load header
+        fetch('components/header.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('header-container').innerHTML = data;
+            })
+            .catch(error => {
+                console.error('Error loading header:', error);
+            });
+    </script>
+</body>
+</html>

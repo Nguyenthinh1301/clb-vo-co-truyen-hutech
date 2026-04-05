@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông tin cá nhân - CLB Võ Cổ Truyền HUTECH</title>
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .profile-page {
+            margin-top: 100px;
+            min-height: calc(100vh - 100px);
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 40px 20px;
+        }
+
+        .profile-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .profile-header {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            position: relative;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 4px solid #3498db;
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.3);
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-avatar .avatar-placeholder {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #3498db, #2ecc71);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            font-weight: bold;
+        }
+
+        .upload-btn {
+            position: absolute;
+            bottom: -5px;
+            right: -5px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .upload-btn:hover {
+            background: #2980b9;
+            transform: scale(1.1);
+        }
+
+        .profile-info h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .profile-info p {
+            color: #7f8c8d;
+            margin: 5px 0;
+        }
+
+        .profile-tabs {
+            display: flex;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+            gap: 10px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px 20px;
+            background: #ecf0f1;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+        }
+
+        .tab-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #2980b9, #1f4e79);
+            transform: translateY(-2px);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #ecf0f1, #bdc3c7);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 120px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #2c3e50;
+            padding: 10px 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .back-btn:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .profile-page {
+                margin-top: 80px;
+                padding: 20px 10px;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .profile-tabs {
+                flex-direction: column;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header sẽ được load từ component -->
+    <div id="header-placeholder"></div>
+
+    <a href="dashboard.html" class="back-btn">
+        <i class="fas fa-arrow-left"></i>
+        Quay lại Dashboard
+    </a>
+
+    <div class="profile-page">
+        <div class="profile-container">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    <img src="../../assets/images/z6220991542184_5df707998ebb7fe3c2c8b7135d923fd1.jpg" alt="Profile" style="display: none;" id="profileImage">
+                    <div class="avatar-placeholder" id="avatarPlaceholder">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <button class="upload-btn" onclick="uploadPhoto()">
+                        <i class="fas fa-camera"></i>
+                    </button>
+                </div>
+                <div class="profile-info">
+                    <h1 id="profileName">Đang tải...</h1>
+                    <p id="profileEmail">email@example.com</p>
+                    <p id="profileRole">Thành viên</p>
+                    <p id="memberSince">Thành viên từ: Tháng 1, 2025</p>
+                </div>
+            </div>
+
+            <div class="profile-tabs">
+                <button class="tab-btn active" onclick="showTab('personal')">
+                    <i class="fas fa-user"></i>
+                    Thông tin cá nhân
+                </button>
+                <button class="tab-btn" onclick="showTab('stats')">
+                    <i class="fas fa-chart-bar"></i>
+                    Thống kê
+                </button>
+                <button class="tab-btn" onclick="showTab('settings')">
+                    <i class="fas fa-cog"></i>
+                    Cài đặt
+                </button>
+            </div>
+
+            <!-- Personal Info Tab -->
+            <div id="personal-tab" class="tab-content active">
+                <h3 style="margin-bottom: 20px; color: #2c3e50;">
+                    <i class="fas fa-edit"></i>
+                    Chỉnh sửa thông tin cá nhân
+                </h3>
+                <form id="profileForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="firstName">Họ</label>
+                            <input type="text" id="firstName" class="form-control" placeholder="Nhập họ">
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Tên</label>
+                            <input type="text" id="lastName" class="form-control" placeholder="Nhập tên">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" class="form-control" placeholder="email@example.com" readonly>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="phone">Số điện thoại</label>
+                            <input type="tel" id="phone" class="form-control" placeholder="0123456789">
+                        </div>
+                        <div class="form-group">
+                            <label for="birthDate">Ngày sinh</label>
+                            <input type="date" id="birthDate" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="gender">Giới tính</label>
+                            <select id="gender" class="form-control">
+                                <option value="">Chọn giới tính</option>
+                                <option value="male">Nam</option>
+                                <option value="female">Nữ</option>
+                                <option value="other">Khác</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="experience">Kinh nghiệm võ thuật</label>
+                            <select id="experience" class="form-control">
+                                <option value="">Chọn mức độ</option>
+                                <option value="beginner">Mới bắt đầu</option>
+                                <option value="intermediate">Trung cấp</option>
+                                <option value="advanced">Nâng cao</option>
+                                <option value="expert">Chuyên gia</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="address">Địa chỉ</label>
+                        <textarea id="address" class="form-control" rows="3" placeholder="Nhập địa chỉ"></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-save"></i>
+                        Lưu thay đổi
+                    </button>
+                </form>
+            </div>
+
+            <!-- Stats Tab -->
+            <div id="stats-tab" class="tab-content">
+                <h3 style="margin-bottom: 20px; color: #2c3e50;">
+                    <i class="fas fa-chart-line"></i>
+                    Thống kê hoạt động
+                </h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">24</div>
+                        <div class="stat-label">Tổng buổi tập</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">5</div>
+                        <div class="stat-label">Tháng tham gia</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">18</div>
+                        <div class="stat-label">Giờ tập trong tháng</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">95%</div>
+                        <div class="stat-label">Tỷ lệ tham gia</div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
+                    <h4 style="color: #2c3e50; margin-bottom: 15px;">Hoạt động gần đây</h4>
+                    <div style="margin-bottom: 10px;">
+                        <strong>29/06/2025:</strong> Tham gia buổi tập Võ Cổ Truyền Nâng Cao
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <strong>27/06/2025:</strong> Hoàn thành bài tập về nhà
+                    </div>
+                    <div>
+                        <strong>25/06/2025:</strong> Tham gia buổi tập Võ Cổ Truyền Cơ Bản
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div id="settings-tab" class="tab-content">
+                <h3 style="margin-bottom: 20px; color: #2c3e50;">
+                    <i class="fas fa-sliders-h"></i>
+                    Cài đặt tài khoản
+                </h3>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="emailNotifications" style="margin-right: 10px;">
+                        Nhận thông báo qua email
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="smsNotifications" style="margin-right: 10px;">
+                        Nhận thông báo qua SMS
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="publicProfile" style="margin-right: 10px;">
+                        Hiển thị thông tin công khai
+                    </label>
+                </div>
+                
+                <hr style="margin: 30px 0;">
+                
+                <h4 style="color: #e74c3c; margin-bottom: 15px;">Đổi mật khẩu</h4>
+                <div class="form-group">
+                    <label for="currentPassword">Mật khẩu hiện tại</label>
+                    <input type="password" id="currentPassword" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="newPassword">Mật khẩu mới</label>
+                    <input type="password" id="newPassword" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="confirmNewPassword">Xác nhận mật khẩu mới</label>
+                    <input type="password" id="confirmNewPassword" class="form-control">
+                </div>
+                <button type="button" class="btn-primary" onclick="changePassword()">
+                    <i class="fas fa-key"></i>
+                    Đổi mật khẩu
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../script.js"></script>
+    <script>
+        // Load header component
+        async function loadComponent(elementId, componentPath) {
+            try {
+                const response = await fetch(componentPath);
+                const html = await response.text();
+                document.getElementById(elementId).innerHTML = html;
+            } catch (error) {
+                console.error(`Error loading component ${componentPath}:`, error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Check if user is logged in
+            const currentUser = localStorage.getItem('currentUser');
+            if (!currentUser) {
+                alert('Bạn cần đăng nhập để truy cập trang này!');
+                window.location.href = 'dang-nhap.html';
+                return;
+            }
+
+            const userData = JSON.parse(currentUser);
+            
+            // Load header
+            await loadComponent('header-placeholder', '../../components/header.html');
+            
+            // Load user profile data
+            loadUserProfile(userData);
+            
+            // Initialize auth manager after header is loaded
+            setTimeout(() => {
+                if (typeof AuthManager !== 'undefined') {
+                    AuthManager.updateHeaderForLoggedInUser();
+                }
+            }, 500);
+        });
+
+        function loadUserProfile(userData) {
+            // Update profile header
+            document.getElementById('profileName').textContent = userData.name;
+            document.getElementById('profileEmail').textContent = userData.email;
+            document.getElementById('profileRole').textContent = userData.role === 'admin' ? 'Quản trị viên' : 'Thành viên';
+            
+            // Set avatar
+            const avatarPlaceholder = document.getElementById('avatarPlaceholder');
+            if (userData.name) {
+                avatarPlaceholder.innerHTML = userData.name.charAt(0).toUpperCase();
+            }
+            
+            // Load registered user data if available
+            const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+            const fullUserData = registeredUsers.find(user => user.email === userData.email);
+            
+            if (fullUserData && fullUserData.profile) {
+                const profile = fullUserData.profile;
+                document.getElementById('firstName').value = profile.firstName || '';
+                document.getElementById('lastName').value = profile.lastName || '';
+                document.getElementById('email').value = profile.email || userData.email;
+                document.getElementById('phone').value = profile.phone || '';
+                document.getElementById('birthDate').value = profile.birthDate || '';
+                document.getElementById('gender').value = profile.gender || '';
+                document.getElementById('experience').value = profile.experience || '';
+            } else {
+                // Set basic info for demo accounts
+                document.getElementById('email').value = userData.email;
+                const nameParts = userData.name.split(' ');
+                if (nameParts.length > 1) {
+                    document.getElementById('firstName').value = nameParts.slice(0, -1).join(' ');
+                    document.getElementById('lastName').value = nameParts[nameParts.length - 1];
+                } else {
+                    document.getElementById('firstName').value = userData.name;
+                }
+            }
+        }
+
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function uploadPhoto() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const profileImage = document.getElementById('profileImage');
+                        const avatarPlaceholder = document.getElementById('avatarPlaceholder');
+                        
+                        profileImage.src = e.target.result;
+                        profileImage.style.display = 'block';
+                        avatarPlaceholder.style.display = 'none';
+                        
+                        // Save to localStorage (in real app, would upload to server)
+                        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                        currentUser.profileImage = e.target.result;
+                        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+            input.click();
+        }
+
+        function changePassword() {
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+            
+            if (!currentPassword || !newPassword || !confirmNewPassword) {
+                alert('Vui lòng điền đầy đủ thông tin!');
+                return;
+            }
+            
+            if (newPassword !== confirmNewPassword) {
+                alert('Mật khẩu mới không khớp!');
+                return;
+            }
+            
+            if (newPassword.length < 6) {
+                alert('Mật khẩu mới phải có ít nhất 6 ký tự!');
+                return;
+            }
+            
+            // In a real app, you would verify current password and update on server
+            alert('Đổi mật khẩu thành công!');
+            
+            // Clear password fields
+            document.getElementById('currentPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmNewPassword').value = '';
+        }
+
+        // Handle profile form submission
+        document.getElementById('profileForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                birthDate: document.getElementById('birthDate').value,
+                gender: document.getElementById('gender').value,
+                experience: document.getElementById('experience').value,
+                address: document.getElementById('address').value
+            };
+            
+            // Update current user
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            currentUser.name = `${formData.firstName} ${formData.lastName}`;
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            
+            // Update registered users
+            const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+            const userIndex = registeredUsers.findIndex(user => user.email === currentUser.email);
+            
+            if (userIndex !== -1) {
+                registeredUsers[userIndex].profile = formData;
+                registeredUsers[userIndex].name = currentUser.name;
+                localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
+            }
+            
+            alert('Cập nhật thông tin thành công!');
+            
+            // Update profile header
+            document.getElementById('profileName').textContent = currentUser.name;
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Logout & Login - CLB Võ Cổ Truyền HUTECH</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #c0392b;
+            margin-bottom: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+        .test-section h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        button {
+            background: #c0392b;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #a93226;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        .storage-info {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border-left: 4px solid #2196F3;
+        }
+        .storage-info pre {
+            margin: 5px 0;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Test Logout & Login Flow</h1>
+        
+        <div class="storage-info">
+            <h3>📦 LocalStorage hiện tại:</h3>
+            <div id="storageInfo"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Test 1: Kiểm tra trạng thái đăng nhập</h3>
+            <p>Kiểm tra xem có token và user data trong localStorage không</p>
+            <button onclick="checkLoginStatus()">Kiểm tra</button>
+            <div id="result1" class="result" style="display:none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Test 2: Đăng nhập với tài khoản admin</h3>
+            <p>Email: <strong>admin@test.com</strong> | Password: <strong>admin123</strong></p>
+            <button onclick="testLogin()">Đăng nhập</button>
+            <div id="result2" class="result" style="display:none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Test 3: Verify token hiện tại</h3>
+            <p>Kiểm tra xem token có còn hợp lệ với backend không</p>
+            <button onclick="testVerifyToken()">Verify Token</button>
+            <div id="result3" class="result" style="display:none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Test 4: Đăng xuất</h3>
+            <p>Đăng xuất và xóa tất cả dữ liệu authentication</p>
+            <button onclick="testLogout()">Đăng xuất</button>
+            <div id="result4" class="result" style="display:none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Test 5: Kiểm tra sau khi đăng xuất</h3>
+            <p>Xác nhận localStorage đã được xóa sạch</p>
+            <button onclick="checkAfterLogout()">Kiểm tra</button>
+            <div id="result5" class="result" style="display:none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Test 6: Đăng nhập lại sau khi đăng xuất</h3>
+            <p>Thử đăng nhập lại với cùng tài khoản</p>
+            <button onclick="testLoginAgain()">Đăng nhập lại</button>
+            <div id="result6" class="result" style="display:none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔄 Reset Test</h3>
+            <button onclick="clearAllData()" style="background: #e74c3c;">Xóa tất cả dữ liệu</button>
+            <button onclick="location.reload()" style="background: #3498db;">Refresh trang</button>
+        </div>
+    </div>
+
+    <script src="website/config/config.js"></script>
+    <script src="website/config/api-config.js"></script>
+    <script src="website/config/api-client.js"></script>
+    <script src="website/config/auth.js"></script>
+    <script>
+        const API_BASE_URL = 'http://localhost:3000';
+
+        // Update storage info display
+        function updateStorageInfo() {
+            const storageDiv = document.getElementById('storageInfo');
+            const authToken = localStorage.getItem('authToken');
+            const currentUser = localStorage.getItem('currentUser');
+            const refreshToken = localStorage.getItem('refreshToken');
+            
+            let html = '<pre>';
+            html += `authToken: ${authToken ? authToken.substring(0, 50) + '...' : 'null'}\n`;
+            html += `currentUser: ${currentUser ? JSON.stringify(JSON.parse(currentUser), null, 2) : 'null'}\n`;
+            html += `refreshToken: ${refreshToken ? refreshToken.substring(0, 50) + '...' : 'null'}`;
+            html += '</pre>';
+            
+            storageDiv.innerHTML = html;
+        }
+
+        function checkLoginStatus() {
+            const resultDiv = document.getElementById('result1');
+            resultDiv.style.display = 'block';
+            
+            const authToken = localStorage.getItem('authToken');
+            const currentUser = localStorage.getItem('currentUser');
+            
+            if (authToken && currentUser) {
+                try {
+                    const user = JSON.parse(currentUser);
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = '✅ ĐÃ ĐĂNG NHẬP\n\n' +
+                        `User: ${user.email}\n` +
+                        `Role: ${user.role}\n` +
+                        `Token: ${authToken.substring(0, 50)}...`;
+                } catch (error) {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = '❌ DỮ LIỆU KHÔNG HỢP LỆ\n\n' + error.message;
+                }
+            } else {
+                resultDiv.className = 'result warning';
+                resultDiv.textContent = '⚠️ CHƯA ĐĂNG NHẬP\n\nKhông tìm thấy token hoặc user data';
+            }
+            
+            updateStorageInfo();
+        }
+
+        async function testLogin() {
+            const resultDiv = document.getElementById('result2');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result info';
+            resultDiv.textContent = 'Đang đăng nhập...';
+
+            try {
+                const result = await Auth.login('admin@test.com', 'admin123', false);
+
+                if (result.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = '✅ ĐĂNG NHẬP THÀNH CÔNG!\n\n' +
+                        JSON.stringify(result, null, 2);
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = '❌ ĐĂNG NHẬP THẤT BẠI!\n\n' +
+                        JSON.stringify(result, null, 2);
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '❌ LỖI!\n\n' + error.message;
+            }
+            
+            updateStorageInfo();
+        }
+
+        async function testVerifyToken() {
+            const resultDiv = document.getElementById('result3');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result info';
+            resultDiv.textContent = 'Đang verify token...';
+
+            const authToken = localStorage.getItem('authToken');
+            
+            if (!authToken) {
+                resultDiv.className = 'result warning';
+                resultDiv.textContent = '⚠️ KHÔNG CÓ TOKEN\n\nVui lòng đăng nhập trước';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/auth/verify`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = '✅ TOKEN HỢP LỆ!\n\n' +
+                        JSON.stringify(result, null, 2);
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = '❌ TOKEN KHÔNG HỢP LỆ!\n\n' +
+                        JSON.stringify(result, null, 2);
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '❌ LỖI KẾT NỐI!\n\n' + error.message;
+            }
+        }
+
+        async function testLogout() {
+            const resultDiv = document.getElementById('result4');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result info';
+            resultDiv.textContent = 'Đang đăng xuất...';
+
+            try {
+                await Auth.logout();
+                
+                // Check if data was cleared
+                const authToken = localStorage.getItem('authToken');
+                const currentUser = localStorage.getItem('currentUser');
+                
+                if (!authToken && !currentUser) {
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = '✅ ĐĂNG XUẤT THÀNH CÔNG!\n\n' +
+                        'LocalStorage đã được xóa sạch';
+                } else {
+                    resultDiv.className = 'result warning';
+                    resultDiv.textContent = '⚠️ ĐĂNG XUẤT NHƯNG DỮ LIỆU CHƯA XÓA HẾT\n\n' +
+                        `authToken: ${authToken ? 'còn' : 'đã xóa'}\n` +
+                        `currentUser: ${currentUser ? 'còn' : 'đã xóa'}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '❌ LỖI!\n\n' + error.message;
+            }
+            
+            updateStorageInfo();
+        }
+
+        function checkAfterLogout() {
+            const resultDiv = document.getElementById('result5');
+            resultDiv.style.display = 'block';
+            
+            const authToken = localStorage.getItem('authToken');
+            const currentUser = localStorage.getItem('currentUser');
+            const refreshToken = localStorage.getItem('refreshToken');
+            const sessionId = localStorage.getItem('sessionId');
+            
+            const remaining = [];
+            if (authToken) remaining.push('authToken');
+            if (currentUser) remaining.push('currentUser');
+            if (refreshToken) remaining.push('refreshToken');
+            if (sessionId) remaining.push('sessionId');
+            
+            if (remaining.length === 0) {
+                resultDiv.className = 'result success';
+                resultDiv.textContent = '✅ HOÀN HẢO!\n\nTất cả dữ liệu đã được xóa sạch';
+            } else {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '❌ CÒN DỮ LIỆU THỪA!\n\n' +
+                    'Các key còn lại: ' + remaining.join(', ');
+            }
+            
+            updateStorageInfo();
+        }
+
+        async function testLoginAgain() {
+            const resultDiv = document.getElementById('result6');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result info';
+            resultDiv.textContent = 'Đang đăng nhập lại...';
+
+            try {
+                const result = await Auth.login('admin@test.com', 'admin123', false);
+
+                if (result.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = '✅ ĐĂNG NHẬP LẠI THÀNH CÔNG!\n\n' +
+                        'Hệ thống hoạt động bình thường sau khi đăng xuất\n\n' +
+                        JSON.stringify(result, null, 2);
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = '❌ KHÔNG THỂ ĐĂNG NHẬP LẠI!\n\n' +
+                        'Đây là lỗi cần khắc phục\n\n' +
+                        JSON.stringify(result, null, 2);
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '❌ LỖI!\n\n' + error.message;
+            }
+            
+            updateStorageInfo();
+        }
+
+        function clearAllData() {
+            localStorage.clear();
+            updateStorageInfo();
+            alert('Đã xóa tất cả dữ liệu localStorage');
+        }
+
+        // Initialize
+        updateStorageInfo();
+        setInterval(updateStorageInfo, 2000); // Update every 2 seconds
+    </script>
+</body>
+</html>

@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xác thực thay đổi email - CLB Võ Cổ Truyền HUTECH</title>
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Auth page specific styles */
+        .auth-page {
+            background: linear-gradient(135deg, #1a252f 0%, #2c3e50 50%, #34495e 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-page::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('../../assets/images/z6220991542184_5df707998ebb7fe3c2c8b7135d923fd1.jpg') center/cover;
+            opacity: 0.05;
+            z-index: 1;
+        }
+
+        .auth-container {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 25px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+            max-width: 500px;
+            width: 100%;
+            position: relative;
+            z-index: 2;
+        }
+
+        .auth-header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 40px 30px 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .auth-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('../../assets/images/z6220991542184_5df707998ebb7fe3c2c8b7135d923fd1.jpg') center/cover;
+            opacity: 0.1;
+            z-index: 1;
+        }
+
+        .auth-header-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .auth-logo {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .auth-logo i {
+            font-size: 2.5rem;
+            color: #f39c12;
+        }
+
+        .auth-header h1 {
+            margin: 0 0 10px;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .auth-header p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .auth-body {
+            padding: 40px 30px;
+        }
+
+        .email-change-info {
+            background: #e8f4fd;
+            border: 1px solid #bee5eb;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .email-change-info h3 {
+            margin: 0 0 15px;
+            color: #0c5460;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .email-info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px 0;
+            padding: 8px 0;
+            border-bottom: 1px solid #d1ecf1;
+        }
+
+        .email-info-item:last-child {
+            border-bottom: none;
+        }
+
+        .email-label {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .email-value {
+            color: #0c5460;
+            font-weight: 500;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px 20px 15px 50px;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: rgba(248, 249, 250, 0.8);
+            box-sizing: border-box;
+            text-align: center;
+            letter-spacing: 3px;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #3498db;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .form-group .input-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            margin-top: 12px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db, #2ecc71);
+            color: white;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: rgba(149, 165, 166, 0.1);
+            color: #2c3e50;
+            border: 2px solid #e9ecef;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(149, 165, 166, 0.2);
+            border-color: #bdc3c7;
+        }
+
+        .btn-warning {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #e67e22;
+            transform: translateY(-2px);
+        }
+
+        .auth-links {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .auth-links a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+            margin: 0 10px;
+        }
+
+        .auth-links a:hover {
+            color: #2980b9;
+            transform: translateY(-1px);
+        }
+
+        .divider {
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #e9ecef;
+        }
+
+        .divider span {
+            background: white;
+            padding: 0 15px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .success-message,
+        .error-message,
+        .warning-message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 0.95rem;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .warning-message {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .verification-status {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .status-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2.5rem;
+        }
+
+        .status-success .status-icon {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-error .status-icon {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-pending .status-icon {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .countdown {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #e67e22;
+            margin: 10px 0;
+        }
+
+        .resend-timer {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin-top: 10px;
+        }
+
+        .back-home {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 10;
+        }
+
+        .back-home a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .back-home a:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .auth-page {
+                padding: 10px;
+            }
+
+            .auth-container {
+                max-width: 100%;
+                margin: 0 10px;
+            }
+
+            .auth-header {
+                padding: 30px 20px 20px;
+            }
+
+            .auth-body {
+                padding: 30px 20px;
+            }
+
+            .auth-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .back-home {
+                position: static;
+                text-align: center;
+                margin-bottom: 20px;
+            }
+
+            .auth-links a {
+                display: block;
+                margin: 10px 0;
+            }
+
+            .email-info-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-page">
+        <div class="back-home">
+            <a href="../../../dashboard/dashboard.html">
+                <i class="fas fa-arrow-left"></i>
+                Về dashboard
+            </a>
+        </div>
+
+        <div class="auth-container">
+            <div class="auth-header">
+                <div class="auth-header-content">
+                    <div class="auth-logo">
+                        <i class="fas fa-envelope-open-text"></i>
+                    </div>
+                    <h1>Xác thực thay đổi email</h1>
+                    <p>Xác thực email mới để hoàn tất việc thay đổi</p>
+                </div>
+            </div>
+
+            <div class="auth-body">
+                <!-- Email Change Information -->
+                <div class="email-change-info" id="emailChangeInfo">
+                    <h3><i class="fas fa-info-circle"></i> Thông tin thay đổi email</h3>
+                    <div class="email-info-item">
+                        <span class="email-label">Email hiện tại:</span>
+                        <span class="email-value" id="currentEmail">-</span>
+                    </div>
+                    <div class="email-info-item">
+                        <span class="email-label">Email mới:</span>
+                        <span class="email-value" id="newEmail">-</span>
+                    </div>
+                    <div class="email-info-item">
+                        <span class="email-label">Thời gian yêu cầu:</span>
+                        <span class="email-value" id="requestTime">-</span>
+                    </div>
+                </div>
+
+                <!-- Success/Error/Warning Messages -->
+                <div id="successMessage" class="success-message">
+                    <i class="fas fa-check-circle"></i> <span id="successText"></span>
+                </div>
+                <div id="errorMessage" class="error-message">
+                    <i class="fas fa-exclamation-circle"></i> <span id="errorText"></span>
+                </div>
+                <div id="warningMessage" class="warning-message">
+                    <i class="fas fa-exclamation-triangle"></i> <span id="warningText"></span>
+                </div>
+
+                <!-- Verification Form -->
+                <div id="verificationForm" style="display: none;">
+                    <form id="emailVerificationForm">
+                        <div class="form-group">
+                            <label for="verificationCode">Mã xác thực từ email mới</label>
+                            <div class="input-icon">
+                                <i class="fas fa-key"></i>
+                            </div>
+                            <input type="text" id="verificationCode" name="verificationCode" placeholder="000000" maxlength="6" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" id="verifyBtn">
+                            <i class="fas fa-check"></i>
+                            Xác thực email mới
+                        </button>
+
+                        <button type="button" class="btn btn-warning" id="resendCodeBtn">
+                            <i class="fas fa-redo"></i>
+                            Gửi lại mã xác thực
+                        </button>
+
+                        <div class="resend-timer" id="resendTimer" style="display: none;">
+                            Có thể gửi lại sau: <span id="timer">60</span> giây
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Verification Status -->
+                <div id="verificationStatus" class="verification-status" style="display: none;">
+                    <div class="status-icon" id="statusIcon">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <h3 id="statusTitle">Email đã được xác thực thành công!</h3>
+                    <p id="statusMessage">Email của bạn đã được thay đổi thành công.</p>
+                    <div class="countdown" id="redirectCountdown" style="display: none;">
+                        Tự động chuyển hướng sau: <span id="countdownTimer">5</span> giây
+                    </div>
+                </div>
+
+                <div class="divider">
+                    <span>hoặc</span>
+                </div>
+
+                <div class="auth-links">
+                    <a href="edit.html">
+                        <i class="fas fa-edit"></i>
+                        Chỉnh sửa thông tin
+                    </a>
+                    <a href="../../../dashboard/dashboard.html">
+                        <i class="fas fa-home"></i>
+                        Về dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../script.js"></script>
+    <script src="../../config/auth.js"></script>
+    <script>
+        let changeRequestToken = '';
+        let currentEmailValue = '';
+        let newEmailValue = '';
+        let verificationCode = '';
+        let resendTimer = 0;
+        let countdownInterval = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is logged in
+            if (!AuthManager || !AuthManager.isLoggedIn()) {
+                window.location.href = 'dang-nhap.html';
+                return;
+            }
+
+            // Get token from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            changeRequestToken = urlParams.get('token');
+            currentEmailValue = urlParams.get('current_email');
+            newEmailValue = urlParams.get('new_email');
+
+            if (!changeRequestToken || !currentEmailValue || !newEmailValue) {
+                showMessage('error', 'Liên kết xác thực không hợp lệ');
+                setTimeout(() => {
+                    window.location.href = 'edit.html';
+                }, 3000);
+                return;
+            }
+
+            // Initialize page
+            initializeEmailVerification();
+        });
+
+        function initializeEmailVerification() {
+            // Display email change information
+            displayEmailChangeInfo();
+
+            // Verify token validity
+            verifyChangeToken();
+
+            // Setup form handlers
+            setupFormHandlers();
+
+            // Auto-focus on verification code input
+            setTimeout(() => {
+                const codeInput = document.getElementById('verificationCode');
+                if (codeInput) codeInput.focus();
+            }, 500);
+        }
+
+        function displayEmailChangeInfo() {
+            document.getElementById('currentEmail').textContent = currentEmailValue;
+            document.getElementById('newEmail').textContent = newEmailValue;
+            
+            // Get request time from token data
+            const tokenData = localStorage.getItem(`emailChangeToken_${changeRequestToken}`);
+            if (tokenData) {
+                const { timestamp } = JSON.parse(tokenData);
+                const requestDate = new Date(timestamp);
+                document.getElementById('requestTime').textContent = requestDate.toLocaleString('vi-VN');
+            }
+        }
+
+        function verifyChangeToken() {
+            const tokenData = localStorage.getItem(`emailChangeToken_${changeRequestToken}`);
+            
+            if (!tokenData) {
+                showMessage('error', 'Mã xác thực không hợp lệ hoặc đã hết hạn');
+                setTimeout(() => {
+                    window.location.href = 'edit.html';
+                }, 3000);
+                return;
+            }
+
+            const { currentEmail, newEmail, timestamp, verified } = JSON.parse(tokenData);
+            const now = Date.now();
+            const tokenAge = now - timestamp;
+            const maxAge = 30 * 60 * 1000; // 30 minutes
+
+            if (tokenAge > maxAge) {
+                localStorage.removeItem(`emailChangeToken_${changeRequestToken}`);
+                showMessage('error', 'Mã xác thực đã hết hạn. Vui lòng thực hiện lại từ trang chỉnh sửa thông tin');
+                setTimeout(() => {
+                    window.location.href = 'edit.html';
+                }, 3000);
+                return;
+            }
+
+            if (currentEmail !== currentEmailValue || newEmail !== newEmailValue) {
+                showMessage('error', 'Thông tin không khớp');
+                setTimeout(() => {
+                    window.location.href = 'edit.html';
+                }, 3000);
+                return;
+            }
+
+            if (verified) {
+                showVerificationStatus('success', 'Email đã được xác thực', 'Email của bạn đã được thay đổi thành công trước đó.');
+                return;
+            }
+
+            // Show verification form
+            document.getElementById('verificationForm').style.display = 'block';
+            
+            // Generate and "send" verification code
+            sendVerificationCode();
+        }
+
+        function sendVerificationCode() {
+            verificationCode = generateVerificationCode();
+            console.log('Email verification code:', verificationCode); // In thực tế sẽ gửi qua email
+            
+            showMessage('success', `Mã xác thực đã được gửi đến ${newEmailValue}`);
+            
+            // Start resend timer
+            startResendTimer();
+        }
+
+        function setupFormHandlers() {
+            const form = document.getElementById('emailVerificationForm');
+            if (form) {
+                form.addEventListener('submit', handleVerification);
+            }
+
+            const resendBtn = document.getElementById('resendCodeBtn');
+            if (resendBtn) {
+                resendBtn.addEventListener('click', resendVerificationCode);
+            }
+
+            // Auto-format verification code input
+            const codeInput = document.getElementById('verificationCode');
+            if (codeInput) {
+                codeInput.addEventListener('input', function(e) {
+                    let value = e.target.value.replace(/\D/g, '');
+                    if (value.length > 6) value = value.slice(0, 6);
+                    e.target.value = value;
+                });
+            }
+        }
+
+        function handleVerification(e) {
+            e.preventDefault();
+            
+            const inputCode = document.getElementById('verificationCode').value.trim();
+            
+            if (!inputCode) {
+                showMessage('error', 'Vui lòng nhập mã xác thực');
+                return;
+            }
+
+            if (inputCode !== verificationCode) {
+                showMessage('error', 'Mã xác thực không đúng');
+                return;
+            }
+
+            // Update email in user data
+            updateUserEmail();
+        }
+
+        function updateUserEmail() {
+            try {
+                const currentUser = AuthManager.getCurrentUser();
+                
+                // Update user email
+                currentUser.email = newEmailValue;
+                
+                // Save to localStorage
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                
+                // Update users array
+                const users = JSON.parse(localStorage.getItem('users') || '[]');
+                const userIndex = users.findIndex(u => u.email === currentEmailValue);
+                
+                if (userIndex !== -1) {
+                    users[userIndex].email = newEmailValue;
+                    localStorage.setItem('users', JSON.stringify(users));
+                }
+
+                // Mark token as verified
+                const tokenData = JSON.parse(localStorage.getItem(`emailChangeToken_${changeRequestToken}`));
+                tokenData.verified = true;
+                tokenData.verifiedAt = Date.now();
+                localStorage.setItem(`emailChangeToken_${changeRequestToken}`, JSON.stringify(tokenData));
+
+                // Show success status
+                showVerificationStatus('success', 'Email đã được xác thực thành công!', 
+                    `Email của bạn đã được thay đổi từ ${currentEmailValue} thành ${newEmailValue}`);
+                
+                // Start countdown for redirect
+                startRedirectCountdown();
+
+            } catch (error) {
+                console.error('Error updating email:', error);
+                showMessage('error', 'Có lỗi xảy ra khi cập nhật email. Vui lòng thử lại!');
+            }
+        }
+
+        function resendVerificationCode() {
+            if (resendTimer > 0) {
+                showMessage('warning', `Vui lòng đợi ${resendTimer} giây trước khi gửi lại`);
+                return;
+            }
+
+            sendVerificationCode();
+        }
+
+        function startResendTimer() {
+            resendTimer = 60;
+            const timerElement = document.getElementById('timer');
+            const resendTimerDiv = document.getElementById('resendTimer');
+            const resendBtn = document.getElementById('resendCodeBtn');
+            
+            resendTimerDiv.style.display = 'block';
+            resendBtn.disabled = true;
+            
+            const interval = setInterval(() => {
+                resendTimer--;
+                timerElement.textContent = resendTimer;
+                
+                if (resendTimer <= 0) {
+                    clearInterval(interval);
+                    resendTimerDiv.style.display = 'none';
+                    resendBtn.disabled = false;
+                }
+            }, 1000);
+        }
+
+        function startRedirectCountdown() {
+            const countdownDiv = document.getElementById('redirectCountdown');
+            const timerElement = document.getElementById('countdownTimer');
+            let countdown = 5;
+            
+            countdownDiv.style.display = 'block';
+            
+            countdownInterval = setInterval(() => {
+                countdown--;
+                timerElement.textContent = countdown;
+                
+                if (countdown <= 0) {
+                    clearInterval(countdownInterval);
+                    window.location.href = '../../../dashboard/dashboard.html';
+                }
+            }, 1000);
+        }
+
+        function showVerificationStatus(type, title, message) {
+            // Hide form
+            const form = document.getElementById('verificationForm');
+            if (form) form.style.display = 'none';
+            
+            // Show status
+            const statusDiv = document.getElementById('verificationStatus');
+            const statusIcon = document.getElementById('statusIcon');
+            const statusTitle = document.getElementById('statusTitle');
+            const statusMessage = document.getElementById('statusMessage');
+            
+            statusDiv.style.display = 'block';
+            statusDiv.className = `verification-status status-${type}`;
+            statusTitle.textContent = title;
+            statusMessage.textContent = message;
+            
+            if (type === 'success') {
+                statusIcon.innerHTML = '<i class="fas fa-check"></i>';
+            } else if (type === 'error') {
+                statusIcon.innerHTML = '<i class="fas fa-times"></i>';
+            }
+        }
+
+        function generateVerificationCode() {
+            return Math.floor(100000 + Math.random() * 900000).toString();
+        }
+
+        function showMessage(type, message) {
+            const successMsg = document.getElementById('successMessage');
+            const errorMsg = document.getElementById('errorMessage');
+            const warningMsg = document.getElementById('warningMessage');
+            
+            // Hide all messages first
+            hideMessages();
+            
+            // Show appropriate message
+            if (type === 'success') {
+                document.getElementById('successText').textContent = message;
+                successMsg.style.display = 'block';
+            } else if (type === 'error') {
+                document.getElementById('errorText').textContent = message;
+                errorMsg.style.display = 'block';
+            } else if (type === 'warning') {
+                document.getElementById('warningText').textContent = message;
+                warningMsg.style.display = 'block';
+            }
+            
+            // Auto hide after 5 seconds
+            setTimeout(hideMessages, 5000);
+        }
+
+        function hideMessages() {
+            document.getElementById('successMessage').style.display = 'none';
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('warningMessage').style.display = 'none';
+        }
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', function() {
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+            }
+        });
+    </script>
+</body>
+</html>

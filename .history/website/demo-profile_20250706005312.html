@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo Profile Page - CLB Võ Cổ Truyền HUTECH</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .demo-container {
+            max-width: 800px;
+            margin: 150px auto 50px;
+            padding: 40px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .demo-title {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        
+        .demo-description {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        
+        .demo-actions {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .demo-btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .demo-btn-primary {
+            background: #3498db;
+            color: white;
+        }
+        
+        .demo-btn-primary:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        .demo-btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        .demo-btn-secondary:hover {
+            background: #7f8c8d;
+            transform: translateY(-2px);
+        }
+        
+        .demo-info {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+            text-align: left;
+        }
+        
+        .demo-info h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .demo-info ul {
+            color: #6c757d;
+            line-height: 1.8;
+        }
+        
+        @media (max-width: 600px) {
+            .demo-container {
+                margin: 100px 20px 50px;
+                padding: 30px 20px;
+            }
+            
+            .demo-title {
+                font-size: 2rem;
+            }
+            
+            .demo-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .demo-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div id="header-placeholder"></div>
+
+    <div class="demo-container">
+        <h1 class="demo-title">🥋 Demo Trang Profile</h1>
+        
+        <p class="demo-description">
+            Chào mừng bạn đến với trang demo của hệ thống thông tin cá nhân CLB Võ Cổ Truyền HUTECH. 
+            Trang này cho phép bạn trải nghiệm đầy đủ tính năng của profile page với dữ liệu mẫu.
+        </p>
+        
+        <div class="demo-actions">
+            <button class="demo-btn demo-btn-primary" onclick="loadDemoData()">
+                🚀 Tải Demo Data & Xem Profile
+            </button>
+            <button class="demo-btn demo-btn-secondary" onclick="clearDemoData()">
+                🗑️ Xóa Demo Data
+            </button>
+            <a href="views/account/profile.html" class="demo-btn demo-btn-secondary">
+                👀 Xem Profile (Không có data)
+            </a>
+        </div>
+        
+        <div class="demo-info">
+            <h3>📋 Thông tin Demo User</h3>
+            <ul>
+                <li><strong>Tên:</strong> Nguyễn Văn Demo</li>
+                <li><strong>Email:</strong> demo@example.com</li>
+                <li><strong>Môn võ:</strong> Taekwondo</li>
+                <li><strong>Cấp bậc:</strong> Đai đen 1 đẳng</li>
+                <li><strong>Số năm luyện tập:</strong> 5 năm</li>
+                <li><strong>Thành tích:</strong> 3 giải thưởng</li>
+            </ul>
+        </div>
+        
+        <div class="demo-info">
+            <h3>✨ Tính năng có thể test</h3>
+            <ul>
+                <li>Chỉnh sửa thông tin cá nhân</li>
+                <li>Cập nhật thông tin võ thuật</li>
+                <li>Quản lý thành tích và giải thưởng</li>
+                <li>Thay đổi avatar</li>
+                <li>Cài đặt thông báo</li>
+                <li>Đổi mật khẩu</li>
+                <li>Responsive design trên mobile</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div id="footer-placeholder"></div>
+
+    <script src="script.js"></script>
+    <script src="config/demo-data.js"></script>
+    <script>
+        // Load header and footer
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                await loadComponent('header-placeholder', 'components/header.html');
+                await loadComponent('footer-placeholder', 'components/footer.html');
+            } catch (error) {
+                console.error('Error loading components:', error);
+            }
+        });
+    </script>
+</body>
+</html>

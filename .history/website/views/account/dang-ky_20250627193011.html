@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Ký - CLB Võ Cổ Truyền HUTECH</title>
+    <link rel="stylesheet" href="../../styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <div id="header-placeholder"></div>
+
+    <main>
+        <section class="auth-section">
+            <div class="container">
+                <div class="auth-container">
+                    <div class="auth-form signup-form">
+                        <h2>Đăng Ký Thành Viên</h2>
+                        <form id="signupForm">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="firstName">Họ:</label>
+                                    <input type="text" id="firstName" name="firstName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="lastName">Tên:</label>
+                                    <input type="text" id="lastName" name="lastName" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="email">Email:</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="phone">Số điện thoại:</label>
+                                <input type="tel" id="phone" name="phone" required>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="birthDate">Ngày sinh:</label>
+                                    <input type="date" id="birthDate" name="birthDate" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="gender">Giới tính:</label>
+                                    <select id="gender" name="gender" required>
+                                        <option value="">Chọn giới tính</option>
+                                        <option value="male">Nam</option>
+                                        <option value="female">Nữ</option>
+                                        <option value="other">Khác</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="experience">Kinh nghiệm võ thuật:</label>
+                                <select id="experience" name="experience" required>
+                                    <option value="">Chọn mức độ</option>
+                                    <option value="beginner">Mới bắt đầu</option>
+                                    <option value="intermediate">Trung bình</option>
+                                    <option value="advanced">Nâng cao</option>
+                                    <option value="expert">Chuyên gia</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="interests">Quan tâm đến môn võ nào:</label>
+                                <div class="checkbox-group">
+                                    <label><input type="checkbox" name="interests" value="binh-dinh"> Võ Bình Định</label>
+                                    <label><input type="checkbox" name="interests" value="tay-son"> Võ Tây Sơn</label>
+                                    <label><input type="checkbox" name="interests" value="thieu-lam"> Thiếu Lâm</label>
+                                    <label><input type="checkbox" name="interests" value="thai-cuc"> Thái Cực Quyền</label>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="password">Mật khẩu:</label>
+                                <input type="password" id="password" name="password" required minlength="6">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="confirmPassword">Xác nhận mật khẩu:</label>
+                                <input type="password" id="confirmPassword" name="confirmPassword" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="terms" name="terms" required>
+                                    Tôi đồng ý với <a href="#" style="color: #007bff;">Điều khoản sử dụng</a> và <a href="#" style="color: #007bff;">Chính sách bảo mật</a>
+                                </label>
+                            </div>
+                            
+                            <button type="submit" class="auth-btn">Đăng Ký</button>
+                        </form>
+                        
+                        <div class="auth-footer">
+                            <p>Đã có tài khoản? <a href="dang-nhap.html">Đăng nhập ngay</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <div id="footer-placeholder"></div>
+
+    <script>
+        // Load components
+        async function loadComponent(elementId, componentPath) {
+            try {
+                const response = await fetch(componentPath);
+                const html = await response.text();
+                document.getElementById(elementId).innerHTML = html;
+            } catch (error) {
+                console.error(`Error loading component ${componentPath}:`, error);
+            }
+        }
+
+        // Load all components
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadComponent('header-placeholder', '../../components/header.html');
+            await loadComponent('footer-placeholder', '../../components/footer.html');
+        });
+
+        // Signup form handling
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            // Validate passwords
+            if (password !== confirmPassword) {
+                alert('Mật khẩu xác nhận không khớp!');
+                return;
+            }
+            
+            if (password.length < 6) {
+                alert('Mật khẩu phải có ít nhất 6 ký tự!');
+                return;
+            }
+            
+            // Collect form data
+            const formData = new FormData(this);
+            const userData = Object.fromEntries(formData.entries());
+            
+            // Collect interests
+            const interests = Array.from(document.querySelectorAll('input[name="interests"]:checked'))
+                .map(checkbox => checkbox.value);
+            userData.interests = interests;
+            
+            console.log('Đăng ký với thông tin:', userData);
+            
+            // Show success message
+            alert('Đăng ký thành công! Chào mừng bạn đến với CLB Võ Cổ Truyền HUTECH!');
+            
+            // Redirect to login page
+            window.location.href = 'dang-nhap.html';
+        });
+    </script>
+</body>
+</html>

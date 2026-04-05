@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Registration - CLB Võ Cổ Truyền HUTECH</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #c0392b;
+            margin-bottom: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+        .test-section h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        button {
+            background: #c0392b;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #a93226;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .password-requirements {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        .password-requirements ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .password-requirements li {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Test Đăng Ký Tài Khoản</h1>
+        
+        <div class="password-requirements">
+            <h3>⚠️ Yêu cầu mật khẩu:</h3>
+            <ul>
+                <li>Tối thiểu 8 ký tự</li>
+                <li>Phải có ít nhất 1 chữ HOA (A-Z)</li>
+                <li>Phải có ít nhất 1 chữ thường (a-z)</li>
+                <li>Phải có ít nhất 1 chữ số (0-9)</li>
+            </ul>
+            <p><strong>Ví dụ mật khẩu hợp lệ:</strong> Password123, MyPass456, Test1234</p>
+        </div>
+
+        <div class="test-section">
+            <h3>Test 1: Đăng ký với mật khẩu hợp lệ</h3>
+            <p>Sẽ tạo tài khoản với mật khẩu: <strong>Test1234</strong></p>
+            <button onclick="testValidRegistration()">Chạy Test</button>
+            <div id="result1" class="result" style="display:none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Test 2: Đăng ký với mật khẩu không hợp lệ (thiếu chữ hoa)</h3>
+            <p>Sẽ thử tạo tài khoản với mật khẩu: <strong>test1234</strong></p>
+            <button onclick="testInvalidPassword()">Chạy Test</button>
+            <div id="result2" class="result" style="display:none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Test 3: Đăng ký với mật khẩu quá ngắn</h3>
+            <p>Sẽ thử tạo tài khoản với mật khẩu: <strong>Test12</strong></p>
+            <button onclick="testShortPassword()">Chạy Test</button>
+            <div id="result3" class="result" style="display:none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Test 4: Kiểm tra backend đang chạy</h3>
+            <button onclick="testBackendHealth()">Kiểm tra Backend</button>
+            <div id="result4" class="result" style="display:none;"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:3000';
+
+        async function testValidRegistration() {
+            const resultDiv = document.getElementById('result1');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result info';
+            resultDiv.textContent = 'Đang test...';
+
+            try {
+                const timestamp = Date.now();
+                const testData = {
+                    email: `test${timestamp}@example.com`,
+                    username: `test${timestamp}`,
+                    password: 'Test1234',
+                    first_name: 'Test',
+                    last_name: 'User',
+                    phone_number: '0123456789',
+                    date_of_birth: '2000-01-01',
+                    gender: 'male'
+                };
+
+                const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(testData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = '✅ THÀNH CÔNG!\n\n' + 
+                        `Email: ${testData.email}\n` +
+                        `Password: ${testData.password}\n\n` +
+                        JSON.stringify(result, null, 2);
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = '❌ THẤT BẠI!\n\n' + JSON.stringify(result, null, 2);
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '❌ LỖI KẾT NỐI!\n\n' + error.message + 
+                    '\n\nVui lòng kiểm tra:\n' +
+                    '1. Backend đang chạy (npm start trong thư mục backend)\n' +
+                    '2. URL backend: http://localhost:3000\n' +
+                    '3. Tường lửa không chặn kết nối';
+            }
+        }
+
+        async function testInvalidPassword() {
+            const resultDiv = document.getElementById('result2');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result info';
+            resultDiv.textContent = 'Đang test...';
+
+            try {
+                const timestamp = Date.now();
+                const testData = {
+                    email: `test${timestamp}@example.com`,
+                    username: `test${timestamp}`,
+                    password: 'test1234', // Thiếu chữ hoa
+                    first_name: 'Test',
+                    last_name: 'User',
+                    phone_number: '0123456789',
+                    date_of_birth: '2000-01-01',
+                    gender: 'male'
+                };
+
+                const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(testData)
+                });
+
+                const result = await response.json();
+
+                if (!response.ok || !result.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = '✅ ĐÚNG! Backend đã từ chối mật khẩu không hợp lệ\n\n' + 
+                        JSON.stringify(result, null, 2);
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = '❌ SAI! Backend đã chấp nhận mật khẩu không hợp lệ\n\n' + 
+                        JSON.stringify(result, null, 2);
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '❌ LỖI KẾT NỐI!\n\n' + error.message;
+            }
+        }
+
+        async function testShortPassword() {
+            const resultDiv = document.getElementById('result3');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result info';
+            resultDiv.textContent = 'Đang test...';
+
+            try {
+                const timestamp = Date.now();
+                const testData = {
+                    email: `test${timestamp}@example.com`,
+                    username: `test${timestamp}`,
+                    password: 'Test12', // Quá ngắn
+                    first_name: 'Test',
+                    last_name: 'User',
+                    phone_number: '0123456789',
+                    date_of_birth: '2000-01-01',
+                    gender: 'male'
+                };
+
+                const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(testData)
+                });
+
+                const result = await response.json();
+
+                if (!response.ok || !result.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = '✅ ĐÚNG! Backend đã từ chối mật khẩu quá ngắn\n\n' + 
+                        JSON.stringify(result, null, 2);
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = '❌ SAI! Backend đã chấp nhận mật khẩu quá ngắn\n\n' + 
+                        JSON.stringify(result, null, 2);
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '❌ LỖI KẾT NỐI!\n\n' + error.message;
+            }
+        }
+
+        async function testBackendHealth() {
+            const resultDiv = document.getElementById('result4');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result info';
+            resultDiv.textContent = 'Đang kiểm tra...';
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/health`);
+                const result = await response.json();
+
+                if (response.ok && result.status === 'healthy') {
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = '✅ Backend đang chạy tốt!\n\n' + 
+                        JSON.stringify(result, null, 2);
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = '⚠️ Backend có vấn đề!\n\n' + 
+                        JSON.stringify(result, null, 2);
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '❌ KHÔNG THỂ KẾT NỐI ĐẾN BACKEND!\n\n' + 
+                    error.message + 
+                    '\n\nVui lòng:\n' +
+                    '1. Mở terminal trong thư mục backend\n' +
+                    '2. Chạy lệnh: npm start\n' +
+                    '3. Đợi backend khởi động xong\n' +
+                    '4. Thử lại test này';
+            }
+        }
+    </script>
+</body>
+</html>

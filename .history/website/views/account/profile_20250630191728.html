@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông tin cá nhân - CLB Võ Cổ Truyền HUTECH</title>
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .profile-page {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+
+        .profile-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .profile-header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 40px;
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('../../assets/images/z6220991542184_5df707998ebb7fe3c2c8b7135d923fd1.jpg') center/cover;
+            opacity: 0.1;
+            z-index: 1;
+        }
+
+        .profile-header-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 5px solid white;
+            margin: 0 auto 20px;
+            background: #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: #666;
+            overflow: hidden;
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-name {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .profile-role {
+            font-size: 1.2em;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .profile-status {
+            display: inline-block;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+
+        .profile-content {
+            background: white;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .profile-nav {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+            color: #666;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .nav-tab.active {
+            background: white;
+            color: #d32f2f;
+            border-bottom: 3px solid #d32f2f;
+        }
+
+        .nav-tab:hover {
+            background: #e9ecef;
+            color: #d32f2f;
+        }
+
+        .tab-content {
+            padding: 40px;
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .info-group {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 5px solid #d32f2f;
+        }
+
+        .info-group h3 {
+            color: #d32f2f;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .info-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #495057;
+            flex: 1;
+        }
+
+        .info-value {
+            flex: 2;
+            color: #212529;
+            text-align: right;
+        }
+
+        .edit-profile-btn {
+            background: linear-gradient(135deg, #d32f2f, #c62828);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0 auto;
+        }
+
+        .edit-profile-btn:hover {
+            background: linear-gradient(135deg, #c62828, #b71c1c);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(211, 47, 47, 0.3);
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2em;
+            color: #d32f2f;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .back-btn:hover {
+            background: white;
+            transform: scale(1.1);
+        }
+
+        .membership-info {
+            background: linear-gradient(135deg, #d32f2f, #c62828);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .membership-info h3 {
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+
+        .membership-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .membership-item {
+            text-align: center;
+        }
+
+        .membership-item .number {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .membership-item .label {
+            opacity: 0.9;
+            font-size: 0.9em;
+        }
+
+        .achievement-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .achievement-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .achievement-card:hover {
+            border-color: #d32f2f;
+            transform: translateY(-5px);
+        }
+
+        .achievement-icon {
+            font-size: 3em;
+            color: #d32f2f;
+            margin-bottom: 15px;
+        }
+
+        .achievement-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #212529;
+        }
+
+        .achievement-description {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .profile-nav {
+                flex-direction: column;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .profile-name {
+                font-size: 2em;
+            }
+            
+            .tab-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-page">
+        <button class="back-btn" onclick="goBack()">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+
+        <div class="profile-container">
+            <div class="profile-header">
+                <div class="profile-header-content">
+                    <div class="profile-avatar" id="profileAvatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <h1 class="profile-name" id="profileName">Đang tải...</h1>
+                    <div class="profile-role" id="profileRole">Thành viên</div>
+                    <div class="profile-status" id="profileStatus">Đang hoạt động</div>
+                </div>
+            </div>
+
+            <div class="profile-content">
+                <nav class="profile-nav">
+                    <button class="nav-tab active" onclick="showTab('personal')">
+                        <i class="fas fa-user"></i>
+                        Thông tin cá nhân
+                    </button>
+                    <button class="nav-tab" onclick="showTab('membership')">
+                        <i class="fas fa-id-card"></i>
+                        Thành viên
+                    </button>
+                    <button class="nav-tab" onclick="showTab('achievements')">
+                        <i class="fas fa-trophy"></i>
+                        Thành tích
+                    </button>
+                    <button class="nav-tab" onclick="showTab('settings')">
+                        <i class="fas fa-cog"></i>
+                        Cài đặt
+                    </button>
+                </nav>
+
+                <!-- Personal Information Tab -->
+                <div id="personal" class="tab-content active">
+                    <div class="info-grid">
+                        <div class="info-group">
+                            <h3><i class="fas fa-user"></i> Thông tin cơ bản</h3>
+                            <div class="info-item">
+                                <span class="info-label">Họ và tên:</span>
+                                <span class="info-value" id="fullName">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Tên đăng nhập:</span>
+                                <span class="info-value" id="username">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Ngày sinh:</span>
+                                <span class="info-value" id="dateOfBirth">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Giới tính:</span>
+                                <span class="info-value" id="gender">-</span>
+                            </div>
+                        </div>
+
+                        <div class="info-group">
+                            <h3><i class="fas fa-envelope"></i> Liên hệ</h3>
+                            <div class="info-item">
+                                <span class="info-label">Email:</span>
+                                <span class="info-value" id="email">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Số điện thoại:</span>
+                                <span class="info-value" id="phoneNumber">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Địa chỉ:</span>
+                                <span class="info-value" id="address">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="edit-profile-btn" onclick="editProfile()">
+                        <i class="fas fa-edit"></i>
+                        Chỉnh sửa thông tin
+                    </button>
+                </div>
+
+                <!-- Membership Tab -->
+                <div id="membership" class="tab-content">
+                    <div class="membership-info">
+                        <h3><i class="fas fa-id-card"></i> Thông tin thành viên</h3>
+                        <div class="membership-details">
+                            <div class="membership-item">
+                                <div class="number" id="memberSince">2024</div>
+                                <div class="label">Năm gia nhập</div>
+                            </div>
+                            <div class="membership-item">
+                                <div class="number" id="totalClasses">0</div>
+                                <div class="label">Buổi tập</div>
+                            </div>
+                            <div class="membership-item">
+                                <div class="number" id="membershipLevel">Sơ cấp</div>
+                                <div class="label">Cấp độ</div>
+                            </div>
+                            <div class="membership-item">
+                                <div class="number" id="rank">Chưa có</div>
+                                <div class="label">Đai/Hạng</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-grid">
+                        <div class="info-group">
+                            <h3><i class="fas fa-calendar"></i> Lịch sử hoạt động</h3>
+                            <div class="info-item">
+                                <span class="info-label">Ngày gia nhập:</span>
+                                <span class="info-value" id="joinDate">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Lần đăng nhập cuối:</span>
+                                <span class="info-value" id="lastLogin">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Trạng thái:</span>
+                                <span class="info-value" id="membershipStatus">-</span>
+                            </div>
+                        </div>
+
+                        <div class="info-group">
+                            <h3><i class="fas fa-dumbbell"></i> Thông tin luyện tập</h3>
+                            <div class="info-item">
+                                <span class="info-label">Môn võ chính:</span>
+                                <span class="info-value" id="mainMartialArt">Võ cổ truyền</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Huấn luyện viên:</span>
+                                <span class="info-value" id="instructor">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Lớp tập:</span>
+                                <span class="info-value" id="trainingClass">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Achievements Tab -->
+                <div id="achievements" class="tab-content">
+                    <h3 style="text-align: center; margin-bottom: 30px; color: #d32f2f;">
+                        <i class="fas fa-trophy"></i> Thành tích và Giải thưởng
+                    </h3>
+                    
+                    <div class="achievement-grid" id="achievementGrid">
+                        <div class="achievement-card">
+                            <div class="achievement-icon">
+                                <i class="fas fa-medal"></i>
+                            </div>
+                            <div class="achievement-title">Thành viên mới</div>
+                            <div class="achievement-description">Chào mừng bạn đến với CLB!</div>
+                        </div>
+                        
+                        <div class="achievement-card">
+                            <div class="achievement-icon">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                            <div class="achievement-title">Tham gia đều đặn</div>
+                            <div class="achievement-description">Tham gia 10 buổi tập liên tiếp</div>
+                        </div>
+                        
+                        <div class="achievement-card">
+                            <div class="achievement-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="achievement-title">Tinh thần đồng đội</div>
+                            <div class="achievement-description">Hỗ trợ thành viên mới</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Tab -->
+                <div id="settings" class="tab-content">
+                    <div class="info-grid">
+                        <div class="info-group">
+                            <h3><i class="fas fa-lock"></i> Bảo mật</h3>
+                            <button class="edit-profile-btn" onclick="changePassword()">
+                                <i class="fas fa-key"></i>
+                                Đổi mật khẩu
+                            </button>
+                        </div>
+
+                        <div class="info-group">
+                            <h3><i class="fas fa-bell"></i> Thông báo</h3>
+                            <div class="info-item">
+                                <span class="info-label">Email thông báo:</span>
+                                <span class="info-value">
+                                    <input type="checkbox" id="emailNotifications" checked>
+                                </span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">SMS thông báo:</span>
+                                <span class="info-value">
+                                    <input type="checkbox" id="smsNotifications">
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 30px;">
+                        <button class="edit-profile-btn" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Đăng xuất
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load user data from localStorage
+        function loadUserProfile() {
+            const currentUser = localStorage.getItem('currentUser');
+            if (currentUser) {
+                const user = JSON.parse(currentUser);
+                
+                // Update profile header
+                document.getElementById('profileName').textContent = user.fullName || 'Người dùng';
+                document.getElementById('profileRole').textContent = getRoleText(user.role);
+                document.getElementById('profileStatus').textContent = getStatusText(user.membershipStatus);
+                
+                // Update personal information
+                document.getElementById('fullName').textContent = user.fullName || '-';
+                document.getElementById('username').textContent = user.username || '-';
+                document.getElementById('email').textContent = user.email || '-';
+                document.getElementById('phoneNumber').textContent = user.phoneNumber || '-';
+                document.getElementById('dateOfBirth').textContent = formatDate(user.dateOfBirth) || '-';
+                document.getElementById('joinDate').textContent = formatDate(user.joinDate) || '-';
+                document.getElementById('lastLogin').textContent = formatDate(user.lastLoginDate) || '-';
+                document.getElementById('membershipStatus').textContent = getStatusText(user.membershipStatus);
+                
+                // Update membership info
+                if (user.joinDate) {
+                    const joinYear = new Date(user.joinDate).getFullYear();
+                    document.getElementById('memberSince').textContent = joinYear;
+                }
+                
+                // Set profile image if available
+                if (user.profileImage) {
+                    document.getElementById('profileAvatar').innerHTML = 
+                        `<img src="${user.profileImage}" alt="Profile Picture">`;
+                }
+            } else {
+                // Redirect to login if no user data
+                window.location.href = 'dang-nhap.html';
+            }
+        }
+
+        function getRoleText(role) {
+            const roles = {
+                'student': 'Học viên',
+                'instructor': 'Huấn luyện viên',
+                'admin': 'Quản trị viên'
+            };
+            return roles[role] || 'Thành viên';
+        }
+
+        function getStatusText(status) {
+            const statuses = {
+                'active': 'Đang hoạt động',
+                'inactive': 'Không hoạt động',
+                'pending': 'Chờ duyệt',
+                'suspended': 'Tạm ngưng'
+            };
+            return statuses[status] || 'Không xác định';
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return null;
+            const date = new Date(dateString);
+            return date.toLocaleDateString('vi-VN');
+        }
+
+        function showTab(tabName) {
+            // Hide all tabs
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Remove active class from all nav tabs
+            const navTabs = document.querySelectorAll('.nav-tab');
+            navTabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked nav tab
+            event.target.classList.add('active');
+        }
+
+        function editProfile() {
+            alert('Chức năng chỉnh sửa thông tin đang được phát triển!');
+        }
+
+        function changePassword() {
+            alert('Chức năng đổi mật khẩu đang được phát triển!');
+        }
+
+        function logout() {
+            if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
+                localStorage.removeItem('currentUser');
+                localStorage.removeItem('authToken');
+                window.location.href = '../../index.html';
+            }
+        }
+
+        function goBack() {
+            window.history.back();
+        }
+
+        // Load profile data when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserProfile();
+        });
+    </script>
+
+    <!-- Config Scripts -->
+    <script src="../../config/config.js"></script>
+    <script src="../../config/utils.js"></script>
+    <script src="../../config/database.js"></script>
+    <script src="../../config/auth.js"></script>
+    <script src="../../config/app.js"></script>
+</body>
+</html>

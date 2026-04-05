@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CLB Võ Cổ Truyền HUTECH - Demo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="demo-styles.css">
+</head>
+<body>
+    <!-- Loading Spinner -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <p>Đang tải...</p>
+    </div>
+
+    <!-- Header -->
+    <header class="main-header" id="main-header">
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="logo">
+                    <div class="logo-icon">🥋</div>
+                    <div class="logo-text">
+                        <h1>CLB VÕ CỔ TRUYỀN</h1>
+                        <span class="subtitle">HUTECH</span>
+                    </div>
+                </div>
+                
+                <div class="nav-toggle" id="nav-toggle">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </div>
+                
+                <ul class="nav-menu" id="nav-menu">
+                    <li class="nav-item">
+                        <a href="#home" class="nav-link active">Trang chủ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#about" class="nav-link">Giới thiệu</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#schedule" class="nav-link">Lịch tập</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#coaches" class="nav-link">Huấn luyện viên</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#gallery" class="nav-link">Thành tích</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#contact" class="nav-link">Liên hệ</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link">
+                            Thành viên <i class="fas fa-chevron-down"></i>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#login">Đăng nhập</a></li>
+                            <li><a href="#register">Đăng ký</a></li>
+                            <li><a href="#dashboard">Dashboard</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="home" class="hero-section">
+            <div class="hero-content">
+                <h1 class="hero-title">Câu Lạc Bộ Võ Cổ Truyền HUTECH</h1>
+                <p class="hero-subtitle">Rèn luyện thể chất - Trau dồi tinh thần - Kế thừa truyền thống</p>
+                <div class="hero-buttons">
+                    <a href="#about" class="btn btn-primary">Tìm hiểu thêm</a>
+                    <a href="#contact" class="btn btn-secondary">Đăng ký ngay</a>
+                </div>
+            </div>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <div class="stat-number">26+</div>
+                    <div class="stat-label">Năm hoạt động</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">20+</div>
+                    <div class="stat-label">Thành viên</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">50+</div>
+                    <div class="stat-label">Giải thưởng</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="about-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Về Chúng Tôi</h2>
+                    <p>Câu lạc bộ võ cổ truyền uy tín tại HUTECH</p>
+                </div>
+                <div class="about-content">
+                    <div class="about-text">
+                        <h3>Sứ mệnh của chúng tôi</h3>
+                        <p>CLB Võ Cổ Truyền HUTECH được thành lập từ năm 1999 với sứ mệnh phát triển thể chất, rèn luyện tinh thần và gìn giữ bản sắc văn hóa võ thuật truyền thống Việt Nam.</p>
+                        <ul class="about-features">
+                            <li><i class="fas fa-check"></i> Đào tạo bài bản, chuyên nghiệp</li>
+                            <li><i class="fas fa-check"></i> Huấn luyện viên giàu kinh nghiệm</li>
+                            <li><i class="fas fa-check"></i> Cơ sở vật chất hiện đại</li>
+                            <li><i class="fas fa-check"></i> Cộng đồng thân thiện, đoàn kết</li>
+                        </ul>
+                        <div class="about-stats">
+                            <div class="stat-box">
+                                <div class="stat-number">26+</div>
+                                <div class="stat-text">Năm kinh nghiệm</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-number">200+</div>
+                                <div class="stat-text">Học viên</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="about-image">
+                        <div class="image-carousel">
+                            <div class="carousel-container">
+                                <div class="carousel-slide active">
+                                    <div class="image-item">
+                                        <i class="fas fa-users fa-4x"></i>
+                                        <h4>Đội ngũ CLB</h4>
+                                        <p>Thành viên đoàn kết, nhiệt huyết</p>
+                                    </div>
+                                </div>
+                                <div class="carousel-slide">
+                                    <div class="image-item">
+                                        <i class="fas fa-fist-raised fa-4x"></i>
+                                        <h4>Luyện tập</h4>
+                                        <p>Rèn luyện kỹ thuật chuyên nghiệp</p>
+                                    </div>
+                                </div>
+                                <div class="carousel-slide">
+                                    <div class="image-item">
+                                        <i class="fas fa-trophy fa-4x"></i>
+                                        <h4>Thành tích</h4>
+                                        <p>Nhiều giải thưởng danh giá</p>
+                                    </div>
+                                </div>
+                                <div class="carousel-slide">
+                                    <div class="image-item">
+                                        <i class="fas fa-graduation-cap fa-4x"></i>
+                                        <h4>Đào tạo</h4>
+                                        <p>Chương trình học bài bản</p>
+                                    </div>
+                                </div>
+                                <div class="carousel-slide">
+                                    <div class="image-item">
+                                        <i class="fas fa-heart fa-4x"></i>
+                                        <h4>Tinh thần</h4>
+                                        <p>Gìn giữ truyền thống võ học</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-indicators">
+                                <span class="indicator active" data-slide="0"></span>
+                                <span class="indicator" data-slide="1"></span>
+                                <span class="indicator" data-slide="2"></span>
+                                <span class="indicator" data-slide="3"></span>
+                                <span class="indicator" data-slide="4"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Schedule Section -->
+        <section id="schedule" class="schedule-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Lịch Tập Luyện</h2>
+                    <p>Thời gian biểu các lớp học trong tuần</p>
+                </div>
+                <div class="schedule-grid">
+                    <div class="schedule-card">
+                        <div class="schedule-day">Thứ 2 - Thứ 4 - Thứ 6</div>
+                        <div class="schedule-time">17:00 - 19:00</div>
+                        <div class="schedule-class">Lớp Cơ Bản</div>
+                        <div class="schedule-location">Sân tập A</div>
+                        <div class="schedule-coach">HLV: Nguyễn Văn A</div>
+                    </div>
+                    <div class="schedule-card featured">
+                        <div class="schedule-day">Thứ 3 - Thứ 5 - Thứ 7</div>
+                        <div class="schedule-time">17:00 - 19:00</div>
+                        <div class="schedule-class">Lớp Nâng Cao</div>
+                        <div class="schedule-location">Sân tập B</div>
+                        <div class="schedule-coach">HLV: Trần Văn B</div>
+                    </div>
+                    <div class="schedule-card">
+                        <div class="schedule-day">Thứ 7 - Chủ Nhật</div>
+                        <div class="schedule-time">08:00 - 10:00</div>
+                        <div class="schedule-class">Lớp Thi Đấu</div>
+                        <div class="schedule-location">Sân tập C</div>
+                        <div class="schedule-coach">HLV: Lê Văn C</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Coaches Section -->
+        <section id="coaches" class="coaches-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Đội Ngũ Huấn Luyện Viên</h2>
+                    <p>Những người thầy tận tâm và giàu kinh nghiệm</p>
+                </div>
+                <div class="coaches-grid">
+                    <div class="coach-card">
+                        <div class="coach-avatar">
+                            <i class="fas fa-user-tie fa-3x"></i>
+                        </div>
+                        <h3>Nguyễn Văn A</h3>
+                        <div class="coach-title">Trưởng Ban Huấn Luyện</div>
+                        <div class="coach-belt">Đai Đen 5 Đẳng</div>
+                        <p>15 năm kinh nghiệm giảng dạy</p>
+                    </div>
+                    <div class="coach-card">
+                        <div class="coach-avatar">
+                            <i class="fas fa-user-tie fa-3x"></i>
+                        </div>
+                        <h3>Trần Văn B</h3>
+                        <div class="coach-title">Phó Ban Huấn Luyện</div>
+                        <div class="coach-belt">Đai Đen 4 Đẳng</div>
+                        <p>12 năm kinh nghiệm giảng dạy</p>
+                    </div>
+                    <div class="coach-card">
+                        <div class="coach-avatar">
+                            <i class="fas fa-user-tie fa-3x"></i>
+                        </div>
+                        <h3>Lê Văn C</h3>
+                        <div class="coach-title">Huấn Luyện Viên</div>
+                        <div class="coach-belt">Đai Đen 3 Đẳng</div>
+                        <p>8 năm kinh nghiệm giảng dạy</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Gallery Section -->
+        <section id="gallery" class="gallery-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Thành Tích & Hoạt Động</h2>
+                    <p>Những khoảnh khắc đáng nhớ của CLB</p>
+                </div>
+                <div class="gallery-grid">
+                    <div class="gallery-item">
+                        <div class="gallery-placeholder">
+                            <i class="fas fa-trophy fa-3x"></i>
+                            <p>Giải Nhất<br>Võ Cổ Truyền TP.HCM 2024</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item">
+                        <div class="gallery-placeholder">
+                            <i class="fas fa-medal fa-3x"></i>
+                            <p>Giải Nhì<br>Giải Võ Sinh Viên 2023</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item">
+                        <div class="gallery-placeholder">
+                            <i class="fas fa-award fa-3x"></i>
+                            <p>Giải Ba<br>Võ Thuật Toàn Quốc 2023</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item">
+                        <div class="gallery-placeholder">
+                            <i class="fas fa-users fa-3x"></i>
+                            <p>Hoạt động<br>Team Building 2024</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="contact-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Liên Hệ Với Chúng Tôi</h2>
+                    <p>Hãy để lại thông tin, chúng tôi sẽ liên hệ lại sớm nhất</p>
+                </div>
+                <div class="contact-content">
+                    <div class="contact-form-wrapper">
+                        <form id="contactForm" class="contact-form">
+                            <div class="form-group">
+                                <label for="name">Họ và tên *</label>
+                                <input type="text" id="name" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email *</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Số điện thoại *</label>
+                                <input type="tel" id="phone" name="phone" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="message">Nội dung</label>
+                                <textarea id="message" name="message" rows="5"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">Gửi liên hệ</button>
+                        </form>
+                    </div>
+                    <div class="contact-info">
+                        <div class="info-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div>
+                                <h4>Địa chỉ</h4>
+                                <p>475 Điện Biên Phủ, P.25<br>Q. Bình Thạnh, TP.HCM</p>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-phone"></i>
+                            <div>
+                                <h4>Điện thoại</h4>
+                                <p>+84 912 209 095</p>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-envelope"></i>
+                            <div>
+                                <h4>Email</h4>
+                                <p>vocotruyenhutech1999@gmail.com</p>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-clock"></i>
+                            <div>
+                                <h4>Giờ làm việc</h4>
+                                <p>T2-T6: 17:00 - 20:00<br>T7-CN: 08:00 - 11:00</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="map-container">
+                    <iframe 
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.0634788394447!2d106.71084731533432!3d10.807127161678!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x317528b2747a81a3%3A0x33c1813055acb613!2zNDc1IMSQaeG7h24gQmnDqm4gUGjhu6UsIFBoxrDhu51uZyAyNSwgQsOsbmggVGjhuqFuaCwgVGjDoG5oIHBo4buRIEjhu5MgQ2jDrSBNaW5oLCBWaeG7h3QgTmFt!5e0!3m2!1svi!2s!4v1234567890123!5m2!1svi!2s" 
+                        width="100%" 
+                        height="400" 
+                        style="border:0;" 
+                        allowfullscreen="" 
+                        loading="lazy">
+                    </iframe>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>CLB Võ Cổ Truyền HUTECH</h3>
+                    <p>Phát triển thể chất, rèn luyện tinh thần, kế thừa truyền thống võ thuật Việt Nam.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-tiktok"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Liên kết nhanh</h4>
+                    <ul>
+                        <li><a href="#home">Trang chủ</a></li>
+                        <li><a href="#about">Giới thiệu</a></li>
+                        <li><a href="#schedule">Lịch tập</a></li>
+                        <li><a href="#coaches">Huấn luyện viên</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Thành viên</h4>
+                    <ul>
+                        <li><a href="#login">Đăng nhập</a></li>
+                        <li><a href="#register">Đăng ký</a></li>
+                        <li><a href="#dashboard">Dashboard</a></li>
+                        <li><a href="#profile">Hồ sơ cá nhân</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Liên hệ</h4>
+                    <p><i class="fas fa-map-marker-alt"></i> 475 Điện Biên Phủ, Q. Bình Thạnh</p>
+                    <p><i class="fas fa-phone"></i> +84 912 209 095</p>
+                    <p><i class="fas fa-envelope"></i> vocotruyenhutech1999@gmail.com</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 CLB Võ Cổ Truyền HUTECH. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="demo-script.js"></script>
+</body>
+</html>

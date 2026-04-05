@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CLB Võ Cổ Truyền HUTECH - Trang chủ</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Loading Spinner -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <p>Đang tải...</p>
+    </div>
+
+    <!-- Header -->
+    <div id="header-placeholder"></div>
+
+    <main>
+        <!-- Hero Section -->
+        <div id="hero-placeholder"></div>
+        
+        <!-- About Section --->
+        <div id="about-placeholder"></div>
+        
+        <!-- Schedule Section -->
+        <div id="schedule-placeholder"></div>
+        
+        <!-- Coaches Section -->
+        <div id="coaches-placeholder"></div>
+        
+        <!-- Gallery Section -->
+        <div id="gallery-placeholder"></div>
+        
+        <!-- Services Section -->
+        <div id="services-placeholder"></div>
+        
+        <!-- Contact Section -->
+        <div id="contact-placeholder"></div>
+    </main>
+
+    <!-- Footer -->
+    <div id="footer-placeholder"></div>
+
+    <script src="script.js"></script>
+    <script src="config/auth.js"></script>
+    <script>
+        // Load components
+        async function loadComponent(elementId, componentPath) {
+            try {
+                const response = await fetch(componentPath);
+                const html = await response.text();
+                document.getElementById(elementId).innerHTML = html;
+            } catch (error) {
+                console.error(`Error loading component ${componentPath}:`, error);
+                // Show error in UI
+                document.getElementById(elementId).innerHTML = `
+                    <div style="padding: 40px; text-align: center; color: #999;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 20px;"></i>
+                        <p>Không thể tải nội dung. Vui lòng thử lại sau.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Load all components
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadComponent('header-placeholder', 'components/header.html');
+            await loadComponent('hero-placeholder', 'components/hero-section.html');
+            await loadComponent('about-placeholder', 'components/about-section.html');
+            await loadComponent('schedule-placeholder', 'components/schedule-section.html');
+            await loadComponent('coaches-placeholder', 'components/coaches-section.html');
+            await loadComponent('gallery-placeholder', 'components/gallery-section.html');
+            await loadComponent('services-placeholder', 'components/services-section.html');
+            await loadComponent('contact-placeholder', 'components/contact-section.html');
+            await loadComponent('footer-placeholder', 'components/footer.html');
+            
+            // Hide loading overlay
+            setTimeout(() => {
+                document.getElementById('loading-overlay').classList.add('hidden');
+            }, 1000);
+            
+            // Initialize components
+            setTimeout(initializeComponents, 200);
+        });
+
+        function initializeComponents() {
+            // Update auth menu in header after components are loaded
+            setTimeout(() => {
+                console.log('Initializing components...');
+                if (typeof updateAuthMenu === 'function') {
+                    console.log('Calling updateAuthMenu...');
+                    updateAuthMenu();
+                } else {
+                    console.log('updateAuthMenu function not found, retrying...');
+                    setTimeout(() => {
+                        if (typeof updateAuthMenu === 'function') {
+                            updateAuthMenu();
+                        }
+                    }, 1000);
+                }
+            }, 500);
+            
+            // Initialize contact form
+            const contactForm = document.getElementById('contactForm');
+            if (contactForm) {
+                contactForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    // Get form data
+                    const formData = {
+                        name: document.getElementById('name').value,
+                        email: document.getElementById('email').value,
+                        phone: document.getElementById('phone').value,
+                        message: document.getElementById('message').value
+                    };
+                    
+                    // Validate
+                    if (!formData.name || !formData.email || !formData.phone) {
+                        showNotification('Vui lòng điền đầy đủ thông tin bắt buộc!', 'error');
+                        return;
+                    }
+                    
+                    // Email validation
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailRegex.test(formData.email)) {
+                        showNotification('Email không hợp lệ!', 'error');
+                        return;
+                    }
+                    
+                    // Phone validation
+                    const phoneRegex = /^[0-9]{10,11}$/;
+                    const cleanPhone = formData.phone.replace(/\D/g, '');
+                    if (!phoneRegex.test(cleanPhone)) {
+                        showNotification('Số điện thoại không hợp lệ!', 'error');
+                        return;
+                    }
+                    
+                    showNotification('Đang gửi...', 'info');
+                    
+                    setTimeout(() => {
+                        console.log('Form data:', formData);
+                        showNotification('Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi trong thời gian sớm nhất.', 'success');
+                        contactForm.reset();
+                    }, 1500);
+                });
+            }
+
+            // Initialize CTA buttons
+            document.querySelectorAll('.cta-button, .btn-primary').forEach(button => {
+                if (button.textContent.includes('Đăng ký')) {
+                    button.addEventListener('click', function(e) {
+                        if (this.tagName === 'BUTTON' || this.getAttribute('href') === '#') {
+                            e.preventDefault();
+                            window.location.href = 'views/account/dang-ky.html';
+                        }
+                    });
+                }
+            });
+        }
+    </script>
+</body>
+</html>

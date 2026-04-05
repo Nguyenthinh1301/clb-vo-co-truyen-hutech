@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Đăng ký bằng Google/Facebook</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .test-container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .test-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .test-header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e1e8ed;
+            border-radius: 10px;
+        }
+
+        .test-section h3 {
+            color: #555;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 5px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #219a52;
+        }
+
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: #138496;
+        }
+
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .user-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
+        .user-info pre {
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+
+        .links {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .links a {
+            margin: 0 10px;
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        .links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-header">
+            <h1><i class="fas fa-user-plus"></i> Test Đăng ký Social Login</h1>
+            <p>Kiểm tra chức năng đăng ký bằng Google và Facebook</p>
+        </div>
+
+        <div class="test-section">
+            <h3><i class="fas fa-vial"></i> Kiểm tra Trang Đăng ký</h3>
+            <p>Kiểm tra trang đăng ký đã có nút đăng ký bằng Google/Facebook chưa:</p>
+            <a href="account/dang-ky.html" class="btn btn-primary">
+                <i class="fas fa-external-link-alt"></i> Mở Trang Đăng ký
+            </a>
+        </div>
+
+        <div class="test-section">
+            <h3><i class="fas fa-code"></i> Kiểm tra LocalStorage</h3>
+            <p>Xem dữ liệu người dùng đã đăng ký:</p>
+            <button onclick="checkLocalStorage()" class="btn btn-info">
+                <i class="fas fa-database"></i> Kiểm tra Dữ liệu
+            </button>
+            <button onclick="clearLocalStorage()" class="btn btn-success">
+                <i class="fas fa-trash"></i> Xóa Dữ liệu
+            </button>
+            <div id="storageStatus"></div>
+        </div>
+
+        <div class="test-section">
+            <h3><i class="fas fa-user-check"></i> Thông tin User Hiện tại</h3>
+            <button onclick="checkCurrentUser()" class="btn btn-primary">
+                <i class="fas fa-user"></i> Kiểm tra User
+            </button>
+            <div id="currentUserStatus"></div>
+        </div>
+
+        <div class="test-section">
+            <h3><i class="fas fa-link"></i> Kiểm tra Liên kết</h3>
+            <p>Kiểm tra các trang liên quan:</p>
+            <a href="account/dang-nhap.html" class="btn btn-info">
+                <i class="fas fa-sign-in-alt"></i> Trang Đăng nhập
+            </a>
+            <a href="account/dashboard.html" class="btn btn-success">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+        </div>
+
+        <div class="links">
+            <a href="../index.html"><i class="fas fa-home"></i> Về Trang chủ</a>
+            <a href="api-demo.html"><i class="fas fa-cogs"></i> API Demo</a>
+        </div>
+    </div>
+
+    <script>
+        function checkLocalStorage() {
+            const registeredUsers = localStorage.getItem('registeredUsers');
+            const statusDiv = document.getElementById('storageStatus');
+            
+            if (registeredUsers) {
+                const users = JSON.parse(registeredUsers);
+                statusDiv.innerHTML = `
+                    <div class="status success">
+                        <strong>Tìm thấy ${users.length} người dùng đã đăng ký:</strong>
+                        <div class="user-info">
+                            <pre>${JSON.stringify(users, null, 2)}</pre>
+                        </div>
+                    </div>
+                `;
+            } else {
+                statusDiv.innerHTML = `
+                    <div class="status info">
+                        <strong>Chưa có người dùng nào đăng ký.</strong>
+                    </div>
+                `;
+            }
+        }
+
+        function clearLocalStorage() {
+            localStorage.removeItem('registeredUsers');
+            localStorage.removeItem('currentUser');
+            const statusDiv = document.getElementById('storageStatus');
+            statusDiv.innerHTML = `
+                <div class="status success">
+                    <strong>Đã xóa tất cả dữ liệu người dùng!</strong>
+                </div>
+            `;
+            
+            // Also clear current user status
+            document.getElementById('currentUserStatus').innerHTML = '';
+        }
+
+        function checkCurrentUser() {
+            const currentUser = localStorage.getItem('currentUser');
+            const statusDiv = document.getElementById('currentUserStatus');
+            
+            if (currentUser) {
+                const user = JSON.parse(currentUser);
+                statusDiv.innerHTML = `
+                    <div class="status success">
+                        <strong>Người dùng hiện tại:</strong>
+                        <div class="user-info">
+                            <strong>Tên:</strong> ${user.name || 'N/A'}<br>
+                            <strong>Email:</strong> ${user.email || 'N/A'}<br>
+                            <strong>Phương thức:</strong> ${user.signupMethod || user.loginMethod || 'N/A'}<br>
+                            <strong>Thời gian:</strong> ${user.signupTime || user.loginTime || 'N/A'}
+                            <pre>${JSON.stringify(user, null, 2)}</pre>
+                        </div>
+                    </div>
+                `;
+            } else {
+                statusDiv.innerHTML = `
+                    <div class="status info">
+                        <strong>Chưa có người dùng nào đăng nhập.</strong>
+                    </div>
+                `;
+            }
+        }
+
+        // Auto check on page load
+        window.onload = function() {
+            checkLocalStorage();
+            checkCurrentUser();
+        };
+    </script>
+</body>
+</html>

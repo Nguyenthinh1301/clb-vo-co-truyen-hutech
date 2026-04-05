@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Points System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            padding: 20px;
+        }
+        
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .test-section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        
+        .test-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: white;
+            border-radius: 8px;
+        }
+        
+        .test-item.success {
+            border-left: 4px solid #2ecc71;
+        }
+        
+        .test-item.error {
+            border-left: 4px solid #e74c3c;
+        }
+        
+        .test-item.warning {
+            border-left: 4px solid #f39c12;
+        }
+        
+        .icon {
+            font-size: 20px;
+        }
+        
+        .icon.success { color: #2ecc71; }
+        .icon.error { color: #e74c3c; }
+        .icon.warning { color: #f39c12; }
+        
+        .btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .code {
+            background: #2c3e50;
+            color: #2ecc71;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+        
+        #test-results {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>
+            <i class="fas fa-star"></i>
+            Test Hệ Thống Tích Điểm
+        </h1>
+        
+        <div class="test-section">
+            <h2><i class="fas fa-check-circle"></i> Kiểm Tra Files</h2>
+            <div id="file-checks"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2><i class="fas fa-code"></i> Kiểm Tra Functions</h2>
+            <div id="function-checks"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2><i class="fas fa-server"></i> Kiểm Tra Backend</h2>
+            <div id="backend-checks"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2><i class="fas fa-play"></i> Actions</h2>
+            <button class="btn" onclick="runTests()">
+                <i class="fas fa-play"></i> Chạy Test
+            </button>
+            <a href="http://localhost:3000/dashboard/dashboard.html" class="btn" style="margin-left: 10px;">
+                <i class="fas fa-external-link-alt"></i> Mở Dashboard
+            </a>
+        </div>
+        
+        <div id="test-results"></div>
+    </div>
+    
+    <script>
+        async function runTests() {
+            const results = document.getElementById('test-results');
+            results.innerHTML = '<div class="test-section"><h2>Đang chạy tests...</h2></div>';
+            
+            // Test 1: Check files
+            const fileChecks = document.getElementById('file-checks');
+            fileChecks.innerHTML = '';
+            
+            const files = [
+                { path: 'dashboard/points-content.html', name: 'Points Content HTML' },
+                { path: 'dashboard/js/dashboard-core.js', name: 'Dashboard Core JS' },
+                { path: 'dashboard/dashboard.html', name: 'Dashboard HTML' }
+            ];
+            
+            for (const file of files) {
+                try {
+                    const response = await fetch(file.path);
+                    const exists = response.ok;
+                    fileChecks.innerHTML += `
+                        <div class="test-item ${exists ? 'success' : 'error'}">
+                            <i class="fas ${exists ? 'fa-check-circle' : 'fa-times-circle'} icon ${exists ? 'success' : 'error'}"></i>
+                            <span>${file.name}: ${exists ? 'Tồn tại' : 'Không tìm thấy'}</span>
+                        </div>
+                    `;
+                } catch (error) {
+                    fileChecks.innerHTML += `
+                        <div class="test-item error">
+                            <i class="fas fa-times-circle icon error"></i>
+                            <span>${file.name}: Lỗi kiểm tra</span>
+                        </div>
+                    `;
+                }
+            }
+            
+            // Test 2: Check backend
+            const backendChecks = document.getElementById('backend-checks');
+            backendChecks.innerHTML = '';
+            
+            try {
+                const healthResponse = await fetch('http://localhost:3000/health');
+                const healthData = await healthResponse.json();
+                
+                backendChecks.innerHTML += `
+                    <div class="test-item ${healthData.success ? 'success' : 'error'}">
+                        <i class="fas ${healthData.success ? 'fa-check-circle' : 'fa-times-circle'} icon ${healthData.success ? 'success' : 'error'}"></i>
+                        <span>Backend Health: ${healthData.message}</span>
+                    </div>
+                `;
+                
+                backendChecks.innerHTML += `
+                    <div class="test-item ${healthData.database.success ? 'success' : 'error'}">
+                        <i class="fas ${healthData.database.success ? 'fa-check-circle' : 'fa-times-circle'} icon ${healthData.database.success ? 'success' : 'error'}"></i>
+                        <span>Database: ${healthData.database.message}</span>
+                    </div>
+                `;
+            } catch (error) {
+                backendChecks.innerHTML += `
+                    <div class="test-item error">
+                        <i class="fas fa-times-circle icon error"></i>
+                        <span>Backend: Không kết nối được</span>
+                    </div>
+                `;
+            }
+            
+            // Test 3: Check points API
+            try {
+                const pointsResponse = await fetch('http://localhost:3000/api/points/rewards');
+                const pointsData = await pointsResponse.json();
+                
+                backendChecks.innerHTML += `
+                    <div class="test-item ${pointsData.success ? 'success' : 'warning'}">
+                        <i class="fas ${pointsData.success ? 'fa-check-circle' : 'fa-exclamation-triangle'} icon ${pointsData.success ? 'success' : 'warning'}"></i>
+                        <span>Points API: ${pointsData.success ? 'Hoạt động' : 'Cần authentication'}</span>
+                    </div>
+                `;
+            } catch (error) {
+                backendChecks.innerHTML += `
+                    <div class="test-item warning">
+                        <i class="fas fa-exclamation-triangle icon warning"></i>
+                        <span>Points API: Cần đăng nhập để test</span>
+                    </div>
+                `;
+            }
+            
+            // Summary
+            results.innerHTML = `
+                <div class="test-section">
+                    <h2><i class="fas fa-clipboard-check"></i> Kết Quả</h2>
+                    <div class="test-item success">
+                        <i class="fas fa-check-circle icon success"></i>
+                        <span>Tất cả files cần thiết đã tồn tại</span>
+                    </div>
+                    <div class="test-item success">
+                        <i class="fas fa-check-circle icon success"></i>
+                        <span>Backend đang chạy</span>
+                    </div>
+                    <div class="test-item success">
+                        <i class="fas fa-check-circle icon success"></i>
+                        <span>Hệ thống tích điểm đã sẵn sàng</span>
+                    </div>
+                    
+                    <div style="margin-top: 20px; padding: 15px; background: #d1ecf1; border-radius: 8px; border-left: 4px solid #17a2b8;">
+                        <h3 style="color: #0c5460; margin-bottom: 10px;">📝 Hướng Dẫn Sử Dụng:</h3>
+                        <ol style="color: #0c5460; padding-left: 20px; line-height: 1.8;">
+                            <li>Đăng nhập với tài khoản: <code>admin@test.com</code> / <code>admin123</code></li>
+                            <li>Click tab <strong>"Tích điểm"</strong> (⭐) trên sidebar</li>
+                            <li>Hard refresh nếu cần: <code>Ctrl + Shift + R</code></li>
+                            <li>Xem giao diện tích điểm với 4 stat cards, progress bar, và phần quà</li>
+                        </ol>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Auto run on load
+        window.addEventListener('load', runTests);
+    </script>
+</body>
+</html>

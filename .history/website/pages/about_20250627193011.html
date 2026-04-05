@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giới thiệu - CLB Võ Cổ Truyền HUTECH</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <div id="header-placeholder"></div>
+
+    <main>
+        <section class="page-header">
+            <div class="container">
+                <h1>Giới thiệu về Câu Lạc Bộ</h1>
+                <p>Tìm hiểu về lịch sử, sứ mệnh và tầm nhìn của chúng tôi</p>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <div id="about-placeholder"></div>
+        
+        <section class="history">
+            <div class="container">
+                <h2>Lịch sử hình thành</h2>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="year">1999</div>
+                        <div class="content">
+                            <h3>Thành lập</h3>
+                            <p>Câu lạc bộ được thành lập bởi nhóm sinh viên yêu thích võ thuật cổ truyền tại HUTECH.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="year">2005</div>
+                        <div class="content">
+                            <h3>Phát triển</h3>
+                            <p>Mở rộng hoạt động và thu hút nhiều thành viên tham gia.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="year">2010</div>
+                        <div class="content">
+                            <h3>Thành tựu</h3>
+                            <p>Đạt nhiều giải thưởng trong các cuộc thi võ thuật cấp thành phố.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="year">2025</div>
+                        <div class="content">
+                            <h3>Hiện tại</h3>
+                            <p>Tiếp tục phát triển và đổi mới với website thông tin hiện đại.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <div id="footer-placeholder"></div>
+
+    <script src="../script.js"></script>
+    <script>
+        // Load components
+        async function loadComponent(elementId, componentPath) {
+            try {
+                const response = await fetch(componentPath);
+                const html = await response.text();
+                document.getElementById(elementId).innerHTML = html;
+            } catch (error) {
+                console.error(`Error loading component ${componentPath}:`, error);
+            }
+        }
+
+        // Load all components
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadComponent('header-placeholder', '../components/header.html');
+            await loadComponent('about-placeholder', '../components/about-section.html');
+            await loadComponent('footer-placeholder', '../components/footer.html');
+        });
+    </script>
+</body>
+</html>

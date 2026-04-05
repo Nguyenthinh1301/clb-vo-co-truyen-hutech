@@ -1,0 +1,120 @@
+<header class="main-header">
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <div class="logo-image">
+                    <img src="assets/images/z6220991542184_5df707998ebb7fe3c2c8b7135d923fd1.jpg" alt="CLB Võ Cổ Truyền HUTECH" class="header-logo-img">
+                </div>
+                <div class="logo-text">
+                    <h1>CLB VÕ CỔ TRUYỀN</h1>
+                    <span class="subtitle">HUTECH</span>
+                </div>
+            </div>
+            
+            <div class="nav-toggle" id="nav-toggle">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+            
+            <ul class="nav-menu" id="nav-menu">
+                <li class="nav-item">
+                    <a href="#home" class="nav-link">
+                        <span>Trang chủ</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#about" class="nav-link">
+                        <span>Giới thiệu</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#services" class="nav-link">
+                        <span>Dịch vụ</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#contact" class="nav-link">
+                        <span>Liên hệ</span>
+                    </a>
+                </li>
+                <li class="nav-item auth-item">
+                    <a href="views/account/dang-nhap.html" class="nav-link login-btn">
+                        <span>Đăng nhập</span>
+                    </a>
+                </li>
+                <li class="nav-item auth-item">
+                    <a href="views/account/dang-ky.html" class="nav-link signup-btn">
+                        <span>Đăng ký</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</header>
+
+<script>
+// Mobile menu toggle
+document.addEventListener('DOMContentLoaded', function() {
+    const navToggle = document.getElementById('nav-toggle');
+    const navMenu = document.getElementById('nav-menu');
+    const body = document.body;
+    
+    if (navToggle && navMenu) {
+        // Toggle menu
+        navToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const isActive = navMenu.classList.contains('active');
+            
+            navMenu.classList.toggle('active');
+            navToggle.classList.toggle('active');
+            
+            // Lock/unlock body scroll
+            if (!isActive) {
+                body.style.overflow = 'hidden';
+            } else {
+                body.style.overflow = '';
+            }
+        });
+        
+        // Close menu when clicking on a link
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                navMenu.classList.remove('active');
+                navToggle.classList.remove('active');
+                body.style.overflow = '';
+            });
+        });
+        
+        // Close menu when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!navMenu.contains(e.target) && !navToggle.contains(e.target)) {
+                navMenu.classList.remove('active');
+                navToggle.classList.remove('active');
+                body.style.overflow = '';
+            }
+        });
+        
+        // Close menu on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && navMenu.classList.contains('active')) {
+                navMenu.classList.remove('active');
+                navToggle.classList.remove('active');
+                body.style.overflow = '';
+            }
+        });
+    }
+    
+    // Header scroll effect
+    window.addEventListener('scroll', function() {
+        const header = document.querySelector('.main-header');
+        if (header) {
+            if (window.scrollY > 100) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        }
+    });
+});
+</script>

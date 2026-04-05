@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - CLB Võ Cổ Truyền HUTECH</title>
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .dashboard-page {
+            margin-top: 100px;
+            min-height: calc(100vh - 100px);
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 40px 20px;
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .welcome-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .welcome-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .welcome-avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #3498db, #2ecc71);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .welcome-info h1 {
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .welcome-info p {
+            color: #7f8c8d;
+            margin: 0;
+        }
+
+        .user-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .card-icon.blue {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+        }
+
+        .card-icon.green {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+        }
+
+        .card-icon.orange {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+        }
+
+        .card-icon.purple {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+        }
+
+        .card-title {
+            color: #2c3e50;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .card-content {
+            color: #7f8c8d;
+            line-height: 1.6;
+        }
+
+        .quick-actions {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .quick-actions h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #ecf0f1, #bdc3c7);
+            color: #2c3e50;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .action-btn:hover {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .back-home-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 50px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            box-shadow: 0 10px 30px rgba(52, 152, 219, 0.3);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .back-home-btn:hover {
+            background: linear-gradient(135deg, #2980b9, #1f4e79);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(52, 152, 219, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-page {
+                margin-top: 80px;
+                padding: 20px 10px;
+            }
+            
+            .welcome-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Logo styling for dashboard header */
+        .header-logo-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            object-fit: cover;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .header-logo-img:hover {
+            border-color: #3498db;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+            transform: scale(1.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-text h1 {
+            color: white;
+            font-size: 1.2rem;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .logo-text .subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Personal Info Card Styling */
+        .personal-info-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+            border: 2px solid transparent;
+            background-clip: padding-box;
+        }
+
+        .personal-info-card:hover {
+            border-color: rgba(52, 152, 219, 0.3);
+            transform: translateY(-2px);
+            transition: all 0.3s ease;
+        }
+
+        .personal-info-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+
+        .personal-info-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: #2c3e50;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .personal-info-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.3rem;
+        }
+
+        .edit-profile-btn {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .edit-profile-btn:hover {
+            background: linear-gradient(135deg, #27ae60, #229954);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+        }
+
+        .personal-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .info-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #3498db;
+            transition: all 0.3s ease;
+        }
+
+        .info-item:hover {
+            background: #e9ecef;
+            border-left-color: #2980b9;
+        }
+
+        .info-label {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            color: #2c3e50;
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-active {
+            background: rgba(46, 204, 113, 0.2);
+            color: #27ae60;
+        }
+
+        .status-pending {
+            background: rgba(241, 196, 15, 0.2);
+            color: #f39c12;
+        }
+
+        .membership-progress {
+            margin-top: 15px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        .progress-bar-container {
+            background: #ecf0f1;
+            height: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2980b9);
+            border-radius: 5px;
+            transition: width 0.3s ease;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-header {
+            padding: 25px 30px;
+            border-bottom: 2px solid #ecf0f1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-header h3 {
+            color: #2c3e50;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.4rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: #95a5a6;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .modal-close:hover {
+            color: #e74c3c;
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #ecf0f1;
+        }
+
+        .btn-cancel,
+        .btn-save {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .btn-cancel {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .btn-cancel:hover {
+            background: #7f8c8d;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+        }
+
+        .btn-save:hover {
+            background: linear-gradient(135deg, #27ae60, #229954);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .modal-content {
+                width: 95%;
+                margin: 20px;
+            }
+            
+            .modal-header,
+            .modal-body {
+                padding: 20px;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header sẽ được load từ component -->
+    <div id="header-placeholder"></div>
+
+    <div class="dashboard-page">
+        <div class="dashboard-container">
+            <div class="welcome-section">
+                <div class="welcome-header">
+                    <div class="welcome-avatar" id="userAvatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="welcome-info">
+                        <h1 id="welcomeMessage">Chào mừng!</h1>
+                        <p id="userEmail">Đang tải thông tin...</p>
+                        <span class="user-badge" id="userRole">Thành viên</span>
+                    </div>
+                </div>
+                <p>Chào mừng bạn quay trở lại với CLB Võ Cổ Truyền HUTECH. Đây là khu vực cá nhân của bạn.</p>
+            </div>
+
+            <!-- Personal Information Section -->
+            <div class="personal-info-card">
+                <div class="personal-info-header">
+                    <div class="personal-info-title">
+                        <div class="personal-info-icon">
+                            <i class="fas fa-id-card"></i>
+                        </div>
+                        <span>Thông tin cá nhân</span>
+                    </div>
+                    <a href="#" class="edit-profile-btn" id="editProfileBtn">
+                        <i class="fas fa-edit"></i>
+                        Chỉnh sửa
+                    </a>
+                </div>
+                
+                <div class="personal-info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Họ và tên</div>
+                        <div class="info-value" id="profileName">
+                            <i class="fas fa-user"></i>
+                            <span>Đang tải...</span>
+                        </div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">Email</div>
+                        <div class="info-value" id="profileEmail">
+                            <i class="fas fa-envelope"></i>
+                            <span>Đang tải...</span>
+                        </div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">Số điện thoại</div>
+                        <div class="info-value" id="profilePhone">
+                            <i class="fas fa-phone"></i>
+                            <span>Chưa cập nhật</span>
+                        </div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">Ngày sinh</div>
+                        <div class="info-value" id="profileBirthdate">
+                            <i class="fas fa-birthday-cake"></i>
+                            <span>Chưa cập nhật</span>
+                        </div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">Địa chỉ</div>
+                        <div class="info-value" id="profileAddress">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Chưa cập nhật</span>
+                        </div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">Trạng thái thành viên</div>
+                        <div class="info-value">
+                            <i class="fas fa-shield-alt"></i>
+                            <span class="status-badge status-active" id="membershipStatus">Đang hoạt động</span>
+                        </div>
+                        <div class="membership-progress">
+                            <div class="progress-label">
+                                <span>Thời gian thành viên</span>
+                                <span id="membershipDuration">8/12 tháng</span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: 67%" id="membershipProgressBar"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">Ngày tham gia</div>
+                        <div class="info-value" id="joinDate">
+                            <i class="fas fa-calendar-plus"></i>
+                            <span>15/10/2024</span>
+                        </div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">Cấp độ võ thuật</div>
+                        <div class="info-value" id="martialArtsLevel">
+                            <i class="fas fa-medal"></i>
+                            <span>Trung cấp</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <div class="card-icon blue">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <h3 class="card-title">Lịch tập sắp tới</h3>
+                    </div>
+                    <div class="card-content">
+                        <p>Bạn có 3 buổi tập trong tuần này:</p>
+                        <ul>
+                            <li>Thứ 2: 18:00 - Võ Cổ Truyền Cơ Bản</li>
+                            <li>Thứ 4: 19:00 - Võ Cổ Truyền Nâng Cao</li>
+                            <li>Thứ 6: 18:30 - Biểu diễn võ thuật</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <div class="card-icon green">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <h3 class="card-title">Thành tích</h3>
+                    </div>
+                    <div class="card-content">
+                        <p>Tổng số buổi tập: <strong>24 buổi</strong></p>
+                        <p>Cấp độ hiện tại: <strong>Trung cấp</strong></p>
+                        <p>Điểm kinh nghiệm: <strong>850/1000</strong></p>
+                        <div style="background: #ecf0f1; height: 8px; border-radius: 4px; margin-top: 10px;">
+                            <div style="background: linear-gradient(90deg, #2ecc71, #27ae60); height: 100%; width: 85%; border-radius: 4px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <div class="card-icon orange">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <h3 class="card-title">Thông báo</h3>
+                    </div>
+                    <div class="card-content">
+                        <p><strong>Mới:</strong> Cuộc thi võ thuật sẽ diễn ra vào tháng tới</p>
+                        <p><strong>Nhắc nhở:</strong> Đóng phí CLB tháng này</p>
+                        <p><strong>Sự kiện:</strong> Giao lưu với CLB khác vào cuối tuần</p>
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <div class="card-icon purple">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3 class="card-title">Cộng đồng</h3>
+                    </div>
+                    <div class="card-content">
+                        <p>Tổng thành viên: <strong>156 người</strong></p>
+                        <p>Hoạt động hôm nay: <strong>23 người</strong></p>
+                        <p>Bạn bè trong CLB: <strong>12 người</strong></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quick-actions">
+                <h3>
+                    <i class="fas fa-bolt"></i>
+                    Thao tác nhanh
+                </h3>
+                <div class="action-buttons">
+                    <a href="#" class="action-btn">
+                        <i class="fas fa-calendar-plus"></i>
+                        Đăng ký buổi tập
+                    </a>
+                    <a href="#" class="action-btn" id="updateInfoBtn">
+                        <i class="fas fa-user-edit"></i>
+                        Cập nhật thông tin
+                    </a>
+                    <a href="#" class="action-btn">
+                        <i class="fas fa-history"></i>
+                        Lịch sử tập luyện
+                    </a>
+                    <a href="#" class="action-btn">
+                        <i class="fas fa-credit-card"></i>
+                        Thanh toán phí
+                    </a>
+                    <a href="#" class="action-btn" id="adminPanel" style="display: none;">
+                        <i class="fas fa-shield-alt"></i>
+                        Quản lý CLB
+                    </a>
+                </div>
+            </div>
+
+            <!-- Personal Info Section -->
+            <div class="personal-info-card">
+                <div class="personal-info-header">
+                    <div class="personal-info-title">
+                        <div class="personal-info-icon">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        Thông tin cá nhân
+                    </div>
+                    <a href="#" class="edit-profile-btn">
+                        <i class="fas fa-edit"></i>
+                        Chỉnh sửa
+                    </a>
+                </div>
+                <div class="personal-info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Họ và tên</div>
+                        <div class="info-value" id="userName">Đang tải...</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Email</div>
+                        <div class="info-value" id="userEmailInfo">Đang tải...</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Số điện thoại</div>
+                        <div class="info-value" id="userPhone">Đang tải...</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Địa chỉ</div>
+                        <div class="info-value" id="userAddress">Đang tải...</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Ngày tham gia</div>
+                        <div class="info-value" id="userJoinDate">Đang tải...</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Trạng thái</div>
+                        <div class="info-value">
+                            <span class="status-badge status-active" id="userStatus">Đang hoạt động</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="membership-progress">
+                    <div class="progress-label">
+                        <span>Tiến độ thành viên</span>
+                        <span id="membershipLevel">Cơ bản</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="membershipProgressBar" style="width: 70%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a href="../../index.html" class="back-home-btn">
+        <i class="fas fa-home"></i>
+        Về trang chủ
+    </a>
+
+    <script src="../../script.js"></script>
+    <script>
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Check if user is logged in
+            const currentUser = localStorage.getItem('currentUser');
+            if (!currentUser) {
+                alert('Bạn cần đăng nhập để truy cập trang này!');
+                window.location.href = 'dang-nhap.html';
+                return;
+            }
+
+            const userData = JSON.parse(currentUser);
+            
+            // Load header with custom logo path for dashboard
+            await loadDashboardHeader();
+            
+            // Update user info
+            document.getElementById('welcomeMessage').textContent = `Chào mừng, ${userData.name}!`;
+            document.getElementById('userEmail').textContent = userData.email;
+            document.getElementById('userRole').textContent = userData.role === 'admin' ? 'Quản trị viên' : 'Thành viên';
+            
+            // Set user avatar
+            const userAvatar = document.getElementById('userAvatar');
+            if (userData.name) {
+                userAvatar.textContent = userData.name.charAt(0).toUpperCase();
+            }
+            
+            // Show admin panel if user is admin
+            if (userData.role === 'admin') {
+                document.getElementById('adminPanel').style.display = 'flex';
+            }
+            
+            // Initialize auth manager after header is loaded
+            setTimeout(() => {
+                if (typeof AuthManager !== 'undefined') {
+                    AuthManager.updateHeaderForLoggedInUser();
+                }
+            }, 500);
+
+            // Load user personal info
+            loadUserInfo(userData);
+        });
+
+        // Custom header loader for dashboard with correct image paths
+        async function loadDashboardHeader() {
+            const headerHTML = `
+                <header class="main-header">
+                    <nav class="navbar">
+                        <div class="nav-container">
+                            <div class="logo">
+                                <div class="logo-image">
+                                    <img src="../../assets/images/z6220991542184_5df707998ebb7fe3c2c8b7135d923fd1.jpg" alt="CLB Võ Cổ Truyền HUTECH" class="header-logo-img">
+                                </div>
+                                <div class="logo-text">
+                                    <h1>CLB VÕ CỔ TRUYỀN</h1>
+                                    <span class="subtitle">HUTECH</span>
+                                </div>
+                            </div>
+                            
+                            <div class="nav-toggle" id="nav-toggle">
+                                <span class="bar"></span>
+                                <span class="bar"></span>
+                                <span class="bar"></span>
+                            </div>
+                            
+                            <ul class="nav-menu" id="nav-menu">
+                                <li class="nav-item">
+                                    <a href="../../index.html#home" class="nav-link">
+                                        <span>Trang chủ</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="../../index.html#about" class="nav-link">
+                                        <span>Giới thiệu</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="../../index.html#services" class="nav-link">
+                                        <span>Dịch vụ</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="../../index.html#contact" class="nav-link">
+                                        <span>Liên hệ</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item auth-item">
+                                    <a href="#" class="nav-link user-profile" id="userProfile">
+                                        <i class="fas fa-user-circle"></i>
+                                        <span id="headerUserName">Tài khoản</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item auth-item">
+                                    <a href="#" class="nav-link logout-btn" id="logoutBtn">
+                                        <i class="fas fa-sign-out-alt"></i>
+                                        <span>Đăng xuất</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </nav>
+                </header>
+            `;
+            
+            document.getElementById('header-placeholder').innerHTML = headerHTML;
+            
+            // Add logout functionality
+            document.getElementById('logoutBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
+                    localStorage.removeItem('currentUser');
+                    window.location.href = '../../index.html';
+                }
+            });
+        }
+
+        // Load user personal information
+        function loadUserInfo(userData) {
+            // Update personal info section
+            document.getElementById('profileName').querySelector('span').textContent = userData.name || 'Chưa cập nhật';
+            document.getElementById('profileEmail').querySelector('span').textContent = userData.email || 'Chưa cập nhật';
+            
+            // Get additional user data from localStorage or set defaults
+            const userProfile = JSON.parse(localStorage.getItem('userProfile_' + userData.email)) || {};
+            
+            document.getElementById('profilePhone').querySelector('span').textContent = userProfile.phone || 'Chưa cập nhật';
+            document.getElementById('profileBirthdate').querySelector('span').textContent = userProfile.birthdate || 'Chưa cập nhật';
+            document.getElementById('profileAddress').querySelector('span').textContent = userProfile.address || 'Chưa cập nhật';
+            
+            // Calculate membership duration (assume joined 8 months ago)
+            const joinDate = userProfile.joinDate || '15/10/2024';
+            document.getElementById('joinDate').querySelector('span').textContent = joinDate;
+            
+            // Set martial arts level
+            document.getElementById('martialArtsLevel').querySelector('span').textContent = userProfile.martialArtsLevel || 'Trung cấp';
+            
+            // Add edit profile functionality
+            document.getElementById('editProfileBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                openEditProfileModal();
+            });
+
+            // Add event listener for quick action update info button
+            document.getElementById('updateInfoBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                openEditProfileModal();
+            });
+        }
+
+        // Open edit profile modal
+        function openEditProfileModal() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            const userProfile = JSON.parse(localStorage.getItem('userProfile_' + currentUser.email)) || {};
+            
+            const modalHTML = `
+                <div class="modal-overlay" id="editProfileModal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3><i class="fas fa-edit"></i> Chỉnh sửa thông tin cá nhân</h3>
+                            <button class="modal-close" onclick="closeEditProfileModal()">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="editProfileForm">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="editName">Họ và tên</label>
+                                        <input type="text" id="editName" value="${currentUser.name || ''}" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editPhone">Số điện thoại</label>
+                                        <input type="tel" id="editPhone" value="${userProfile.phone || ''}">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="editBirthdate">Ngày sinh</label>
+                                        <input type="date" id="editBirthdate" value="${userProfile.birthdate || ''}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editMartialArtsLevel">Cấp độ võ thuật</label>
+                                        <select id="editMartialArtsLevel">
+                                            <option value="Mới bắt đầu" ${userProfile.martialArtsLevel === 'Mới bắt đầu' ? 'selected' : ''}>Mới bắt đầu</option>
+                                            <option value="Cơ bản" ${userProfile.martialArtsLevel === 'Cơ bản' ? 'selected' : ''}>Cơ bản</option>
+                                            <option value="Trung cấp" ${userProfile.martialArtsLevel === 'Trung cấp' ? 'selected' : ''}>Trung cấp</option>
+                                            <option value="Nâng cao" ${userProfile.martialArtsLevel === 'Nâng cao' ? 'selected' : ''}>Nâng cao</option>
+                                            <option value="Chuyên nghiệp" ${userProfile.martialArtsLevel === 'Chuyên nghiệp' ? 'selected' : ''}>Chuyên nghiệp</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="editAddress">Địa chỉ</label>
+                                    <textarea id="editAddress" rows="3">${userProfile.address || ''}</textarea>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="button" class="btn-cancel" onclick="closeEditProfileModal()">Hủy</button>
+                                    <button type="submit" class="btn-save">Lưu thay đổi</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            
+            // Handle form submission
+            document.getElementById('editProfileForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveProfileChanges();
+            });
+        }
+
+        // Close edit profile modal
+        function closeEditProfileModal() {
+            const modal = document.getElementById('editProfileModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        // Save profile changes
+        function saveProfileChanges() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            const name = document.getElementById('editName').value;
+            const phone = document.getElementById('editPhone').value;
+            const birthdate = document.getElementById('editBirthdate').value;
+            const address = document.getElementById('editAddress').value;
+            const martialArtsLevel = document.getElementById('editMartialArtsLevel').value;
+            
+            // Update current user name
+            currentUser.name = name;
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            
+            // Save profile data
+            const userProfile = {
+                phone: phone,
+                birthdate: birthdate,
+                address: address,
+                martialArtsLevel: martialArtsLevel,
+                joinDate: '15/10/2024' // Default join date
+            };
+            
+            localStorage.setItem('userProfile_' + currentUser.email, JSON.stringify(userProfile));
+            
+            // Update UI
+            loadUserInfo(currentUser);
+            document.getElementById('welcomeMessage').textContent = `Chào mừng, ${name}!`;
+            
+            // Close modal
+            closeEditProfileModal();
+            
+            // Show success message
+            alert('Thông tin cá nhân đã được cập nhật thành công!');
+        }
+    </script>
+</body>
+</html>

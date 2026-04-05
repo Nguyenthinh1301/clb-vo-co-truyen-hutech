@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông tin cá nhân - CLB Võ Cổ Truyền HUTECH</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="../../assets/css/profile.css">
+</head>
+<body>
+    <!-- Header -->
+    <div id="header-placeholder"></div>
+
+    <main class="profile-main">
+        <div class="profile-container">
+            <!-- Sidebar Navigation -->
+            <div class="profile-sidebar">
+                <div class="profile-user-info">
+                    <div class="profile-avatar">
+                        <img src="../../assets/images/default-avatar.svg" alt="Avatar" id="avatar-img">
+                        <div class="avatar-upload">
+                            <input type="file" id="avatar-input" accept="image/*" style="display: none;">
+                            <button class="avatar-btn" onclick="document.getElementById('avatar-input').click()">
+                                <i class="fas fa-camera"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="profile-info">
+                        <h2 id="profile-name">anh voi</h2>
+                        <p id="profile-email">123@gmail.com</p>
+                        <span class="profile-badge" id="profile-role">Thành viên</span>
+                    </div>
+                </div>
+
+                <nav class="profile-nav">
+                    <a href="dashboard.html" class="nav-item">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="#" class="nav-item active" data-tab="personal">
+                        <i class="fas fa-user"></i>
+                        <span>Thông tin cá nhân</span>
+                    </a>
+                    <a href="#" class="nav-item" data-tab="martial-arts">
+                        <i class="fas fa-fist-raised"></i>
+                        <span>Thông tin võ thuật</span>
+                    </a>
+                    <a href="#" class="nav-item" data-tab="achievements">
+                        <i class="fas fa-trophy"></i>
+                        <span>Thành tích</span>
+                    </a>
+                    <a href="#" class="nav-item" data-tab="settings">
+                        <i class="fas fa-cog"></i>
+                        <span>Cài đặt</span>
+                    </a>
+                    <a href="#" class="nav-item logout" onclick="handleLogout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Đăng xuất</span>
+                    </a>
+                </nav>
+            </div>
+
+            <div class="profile-content">
+
+                <div class="profile-sections">
+                    <!-- Personal Information Tab -->
+                    <div class="tab-content active" id="personal-tab">
+                        <div class="section-card">
+                            <h3>Thông tin cá nhân</h3>
+                            <form id="personal-form">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="full-name">Họ và tên</label>
+                                        <input type="text" id="full-name" name="fullName" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="phone">Số điện thoại</label>
+                                        <input type="tel" id="phone" name="phone">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="birth-date">Ngày sinh</label>
+                                        <input type="date" id="birth-date" name="birthDate">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="gender">Giới tính</label>
+                                        <select id="gender" name="gender">
+                                            <option value="">Chọn giới tính</option>
+                                            <option value="male">Nam</option>
+                                            <option value="female">Nữ</option>
+                                            <option value="other">Khác</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="address">Địa chỉ</label>
+                                    <textarea id="address" name="address" rows="3"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="bio">Giới thiệu bản thân</label>
+                                    <textarea id="bio" name="bio" rows="4" placeholder="Hãy chia sẻ một chút về bản thân..."></textarea>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Martial Arts Information Tab -->
+                    <div class="tab-content" id="martial-arts-tab">
+                        <div class="section-card">
+                            <h3>Thông tin võ thuật</h3>
+                            <form id="martial-arts-form">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="martial-art-style">Môn phái</label>
+                                        <select id="martial-art-style" name="martialArtStyle">
+                                            <option value="">Chọn môn phái</option>
+                                            <option value="taekwondo">Taekwondo</option>
+                                            <option value="karate">Karate</option>
+                                            <option value="judo">Judo</option>
+                                            <option value="vovinam">Vovinam</option>
+                                            <option value="kungfu">Kung Fu</option>
+                                            <option value="muay-thai">Muay Thai</option>
+                                            <option value="other">Khác</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="belt-rank">Cấp bậc/Đai</label>
+                                        <input type="text" id="belt-rank" name="beltRank" placeholder="Ví dụ: Đai đen 1 đẳng">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="training-years">Số năm luyện tập</label>
+                                        <input type="number" id="training-years" name="trainingYears" min="0">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="join-date">Ngày gia nhập CLB</label>
+                                        <input type="date" id="join-date" name="joinDate">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="specialties">Chuyên môn</label>
+                                    <textarea id="specialties" name="specialties" rows="3" placeholder="Mô tả chuyên môn và kỹ năng đặc biệt..."></textarea>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Achievements Tab -->
+                    <div class="tab-content" id="achievements-tab">
+                        <div class="section-card">
+                            <h3>Thành tích và Giải thưởng</h3>
+                            <div class="achievements-list" id="achievements-list">
+                                <!-- Achievements will be loaded here -->
+                            </div>
+                            <button class="btn btn-secondary" id="add-achievement-btn">Thêm thành tích</button>
+                        </div>
+
+                        <!-- Add Achievement Modal -->
+                        <div class="modal" id="achievement-modal">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4>Thêm thành tích</h4>
+                                    <button class="close-btn" onclick="closeModal('achievement-modal')">&times;</button>
+                                </div>
+                                <form id="achievement-form">
+                                    <div class="form-group">
+                                        <label for="achievement-title">Tên giải thưởng</label>
+                                        <input type="text" id="achievement-title" name="title" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="achievement-competition">Cuộc thi/Sự kiện</label>
+                                        <input type="text" id="achievement-competition" name="competition" required>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="achievement-rank">Hạng</label>
+                                            <select id="achievement-rank" name="rank">
+                                                <option value="1">Nhất</option>
+                                                <option value="2">Nhì</option>
+                                                <option value="3">Ba</option>
+                                                <option value="other">Khác</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="achievement-date">Ngày đạt được</label>
+                                            <input type="date" id="achievement-date" name="date" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="achievement-description">Mô tả</label>
+                                        <textarea id="achievement-description" name="description" rows="3"></textarea>
+                                    </div>
+                                    <div class="form-actions">
+                                        <button type="button" class="btn btn-secondary" onclick="closeModal('achievement-modal')">Hủy</button>
+                                        <button type="submit" class="btn btn-primary">Lưu</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Settings Tab -->
+                    <div class="tab-content" id="settings-tab">
+                        <div class="section-card">
+                            <h3>Cài đặt tài khoản</h3>
+                            <form id="settings-form">
+                                <div class="form-group">
+                                    <label for="current-password">Mật khẩu hiện tại</label>
+                                    <input type="password" id="current-password" name="currentPassword">
+                                </div>
+                                <div class="form-group">
+                                    <label for="new-password">Mật khẩu mới</label>
+                                    <input type="password" id="new-password" name="newPassword">
+                                </div>
+                                <div class="form-group">
+                                    <label for="confirm-password">Xác nhận mật khẩu mới</label>
+                                    <input type="password" id="confirm-password" name="confirmPassword">
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">Đổi mật khẩu</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="section-card">
+                            <h3>Cài đặt thông báo</h3>
+                            <div class="notification-settings">
+                                <div class="setting-item">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="email-notifications" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                    <div class="setting-info">
+                                        <h4>Email thông báo</h4>
+                                        <p>Nhận thông báo về các sự kiện và tin tức của CLB</p>
+                                    </div>
+                                </div>
+                                <div class="setting-item">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="training-reminders" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                    <div class="setting-info">
+                                        <h4>Nhắc nhở luyện tập</h4>
+                                        <p>Nhận nhắc nhở về lịch tập và sự kiện</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section-card danger-zone">
+                            <h3>Vùng nguy hiểm</h3>
+                            <div class="danger-actions">
+                                <button class="btn btn-danger" onclick="confirmDeleteAccount()">Xóa tài khoản</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <div id="footer-placeholder"></div>
+
+    <script src="../../script.js"></script>
+    <script src="../../config/auth.js"></script>
+    <script src="../../config/config.js"></script>
+    <script>
+        // Profile page functionality
+        class ProfileManager {
+            constructor() {
+                this.currentUser = null;
+                this.achievements = [];
+                this.init();
+            }
+
+            async init() {
+                await this.loadComponents();
+                this.loadUserData();
+                this.setupEventListeners();
+                this.setupTabs();
+            }
+
+            async loadComponents() {
+                try {
+                    await loadComponent('header-placeholder', '../../components/header.html');
+                    await loadComponent('footer-placeholder', '../../components/footer.html');
+                    
+                    // Initialize auth after header is loaded
+                    setTimeout(() => {
+                        if (typeof AuthManager !== 'undefined') {
+                            const authManager = new AuthManager();
+                            authManager.init();
+                        }
+                    }, 100);
+                } catch (error) {
+                    console.error('Error loading components:', error);
+                }
+            }
+
+            loadUserData() {
+                const userData = localStorage.getItem('currentUser');
+                if (userData) {
+                    this.currentUser = JSON.parse(userData);
+                    this.populateUserInfo();
+                } else {
+                    // Redirect to login if not authenticated
+                    window.location.href = 'dang-nhap.html';
+                }
+            }
+
+            populateUserInfo() {
+                if (!this.currentUser) return;
+
+                // Update profile header
+                document.getElementById('profile-name').textContent = this.currentUser.fullName || 'Tên người dùng';
+                document.getElementById('profile-email').textContent = this.currentUser.email || 'email@example.com';
+                document.getElementById('profile-role').textContent = this.currentUser.role || 'Thành viên';
+
+                // Populate form fields
+                if (this.currentUser.fullName) {
+                    document.getElementById('full-name').value = this.currentUser.fullName;
+                }
+                if (this.currentUser.phone) {
+                    document.getElementById('phone').value = this.currentUser.phone;
+                }
+                if (this.currentUser.birthDate) {
+                    document.getElementById('birth-date').value = this.currentUser.birthDate;
+                }
+                if (this.currentUser.gender) {
+                    document.getElementById('gender').value = this.currentUser.gender;
+                }
+                if (this.currentUser.address) {
+                    document.getElementById('address').value = this.currentUser.address;
+                }
+                if (this.currentUser.bio) {
+                    document.getElementById('bio').value = this.currentUser.bio;
+                }
+
+                // Load martial arts info
+                if (this.currentUser.martialArts) {
+                    const ma = this.currentUser.martialArts;
+                    if (ma.style) document.getElementById('martial-art-style').value = ma.style;
+                    if (ma.beltRank) document.getElementById('belt-rank').value = ma.beltRank;
+                    if (ma.trainingYears) document.getElementById('training-years').value = ma.trainingYears;
+                    if (ma.joinDate) document.getElementById('join-date').value = ma.joinDate;
+                    if (ma.specialties) document.getElementById('specialties').value = ma.specialties;
+                }
+
+                // Load achievements
+                if (this.currentUser.achievements) {
+                    this.achievements = this.currentUser.achievements;
+                    this.renderAchievements();
+                }
+            }
+
+            setupEventListeners() {
+                // Personal info form
+                document.getElementById('personal-form').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.savePersonalInfo();
+                });
+
+                // Martial arts form
+                document.getElementById('martial-arts-form').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.saveMartialArtsInfo();
+                });
+
+                // Settings form
+                document.getElementById('settings-form').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.changePassword();
+                });
+
+                // Achievement form
+                document.getElementById('achievement-form').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.addAchievement();
+                });
+
+                // Add achievement button
+                document.getElementById('add-achievement-btn').addEventListener('click', () => {
+                    this.showModal('achievement-modal');
+                });
+
+                // Avatar upload
+                document.getElementById('avatar-input').addEventListener('change', (e) => {
+                    this.handleAvatarUpload(e);
+                });
+            }
+
+            setupTabs() {
+                const navItems = document.querySelectorAll('.profile-nav .nav-item[data-tab]');
+                const tabContents = document.querySelectorAll('.tab-content');
+
+                navItems.forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const tabName = item.dataset.tab;
+                        
+                        // Remove active class from all nav items
+                        navItems.forEach(nav => nav.classList.remove('active'));
+                        tabContents.forEach(content => content.classList.remove('active'));
+                        
+                        // Add active class to current nav item and tab
+                        item.classList.add('active');
+                        document.getElementById(tabName + '-tab').classList.add('active');
+                    });
+                });
+            }
+
+            savePersonalInfo() {
+                const formData = new FormData(document.getElementById('personal-form'));
+                const personalInfo = Object.fromEntries(formData);
+
+                // Update current user data
+                this.currentUser = { ...this.currentUser, ...personalInfo };
+                
+                // Save to localStorage
+                localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
+
+                // Update profile header
+                document.getElementById('profile-name').textContent = personalInfo.fullName || 'Tên người dùng';
+
+                this.showNotification('Thông tin cá nhân đã được cập nhật!', 'success');
+            }
+
+            saveMartialArtsInfo() {
+                const formData = new FormData(document.getElementById('martial-arts-form'));
+                const martialArtsInfo = Object.fromEntries(formData);
+
+                // Update current user data
+                this.currentUser.martialArts = martialArtsInfo;
+                
+                // Save to localStorage
+                localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
+
+                this.showNotification('Thông tin võ thuật đã được cập nhật!', 'success');
+            }
+
+            changePassword() {
+                const currentPassword = document.getElementById('current-password').value;
+                const newPassword = document.getElementById('new-password').value;
+                const confirmPassword = document.getElementById('confirm-password').value;
+
+                if (newPassword !== confirmPassword) {
+                    this.showNotification('Mật khẩu xác nhận không khớp!', 'error');
+                    return;
+                }
+
+                if (newPassword.length < 6) {
+                    this.showNotification('Mật khẩu phải có ít nhất 6 ký tự!', 'error');
+                    return;
+                }
+
+                // In a real app, this would make an API call
+                this.showNotification('Mật khẩu đã được thay đổi thành công!', 'success');
+                document.getElementById('settings-form').reset();
+            }
+
+            addAchievement() {
+                const formData = new FormData(document.getElementById('achievement-form'));
+                const achievement = Object.fromEntries(formData);
+                achievement.id = Date.now(); // Simple ID generation
+
+                this.achievements.push(achievement);
+                this.currentUser.achievements = this.achievements;
+                
+                // Save to localStorage
+                localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
+
+                this.renderAchievements();
+                this.closeModal('achievement-modal');
+                document.getElementById('achievement-form').reset();
+                
+                this.showNotification('Thành tích đã được thêm!', 'success');
+            }
+
+            renderAchievements() {
+                const container = document.getElementById('achievements-list');
+                
+                if (this.achievements.length === 0) {
+                    container.innerHTML = '<p class="no-achievements">Chưa có thành tích nào. Hãy thêm thành tích đầu tiên!</p>';
+                    return;
+                }
+
+                container.innerHTML = this.achievements.map(achievement => `
+                    <div class="achievement-item">
+                        <div class="achievement-rank">
+                            <span class="rank-badge rank-${achievement.rank}">${this.getRankText(achievement.rank)}</span>
+                        </div>
+                        <div class="achievement-info">
+                            <h4>${achievement.title}</h4>
+                            <p class="competition">${achievement.competition}</p>
+                            <p class="date">${new Date(achievement.date).toLocaleDateString('vi-VN')}</p>
+                            ${achievement.description ? `<p class="description">${achievement.description}</p>` : ''}
+                        </div>
+                        <div class="achievement-actions">
+                            <button class="btn-icon" onclick="profileManager.removeAchievement(${achievement.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            getRankText(rank) {
+                switch(rank) {
+                    case '1': return 'Nhất';
+                    case '2': return 'Nhì';
+                    case '3': return 'Ba';
+                    default: return 'Khác';
+                }
+            }
+
+            removeAchievement(id) {
+                if (confirm('Bạn có chắc muốn xóa thành tích này?')) {
+                    this.achievements = this.achievements.filter(a => a.id !== id);
+                    this.currentUser.achievements = this.achievements;
+                    localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
+                    this.renderAchievements();
+                    this.showNotification('Thành tích đã được xóa!', 'success');
+                }
+            }
+
+            handleAvatarUpload(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        document.getElementById('avatar-img').src = e.target.result;
+                        // In a real app, this would upload to server
+                        this.showNotification('Ảnh đại diện đã được cập nhật!', 'success');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+
+            showModal(modalId) {
+                document.getElementById(modalId).style.display = 'block';
+            }
+
+            closeModal(modalId) {
+                document.getElementById(modalId).style.display = 'none';
+            }
+
+            showNotification(message, type = 'info') {
+                // Create notification element
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                notification.textContent = message;
+                
+                // Add to page
+                document.body.appendChild(notification);
+                
+                // Remove after 3 seconds
+                setTimeout(() => {
+                    notification.remove();
+                }, 3000);
+            }
+        }
+
+        // Global functions
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function confirmDeleteAccount() {
+            if (confirm('Bạn có chắc chắn muốn xóa tài khoản? Hành động này không thể hoàn tác!')) {
+                // In a real app, this would make an API call
+                alert('Tài khoản đã được xóa!');
+                localStorage.clear();
+                window.location.href = '../../index.html';
+            }
+        }
+
+        function handleLogout() {
+            if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
+                localStorage.removeItem('currentUser');
+                localStorage.removeItem('authToken');
+                window.location.href = '../../index.html';
+            }
+        }
+
+        // Initialize profile manager
+        const profileManager = new ProfileManager();
+
+        // Load component function (if not already defined)
+        if (typeof loadComponent === 'undefined') {
+            async function loadComponent(elementId, componentPath) {
+                try {
+                    const response = await fetch(componentPath);
+                    const html = await response.text();
+                    document.getElementById(elementId).innerHTML = html;
+                } catch (error) {
+                    console.error(`Error loading component ${componentPath}:`, error);
+                }
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liên hệ - CLB Võ Cổ Truyền HUTECH</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <div id="header-placeholder"></div>
+
+    <main>
+        <section class="page-header">
+            <div class="container">
+                <h1>Liên hệ với chúng tôi</h1>
+                <p>Hãy liên hệ để biết thêm thông tin hoặc đăng ký tham gia</p>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <div id="contact-placeholder"></div>
+        
+        <section class="map-section">
+            <div class="container">
+                <h2>Vị trí của chúng tôi</h2>
+                <div class="map-container">
+                    <div class="map-placeholder">
+                        <p>🗺️ Bản đồ Google Maps sẽ được tích hợp tại đây</p>
+                        <p><strong>Địa chỉ:</strong> 475 Điện Biên Phủ, Phường 25, Bình Thạnh, Hồ Chí Minh</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="faq-section">
+            <div class="container">
+                <h2>Câu hỏi thường gặp</h2>
+                <div class="faq-list">
+                    <div class="faq-item">
+                        <h3>Câu lạc bộ có phù hợp với người mới bắt đầu không?</h3>
+                        <p>Có, chúng tôi có các lớp dành riêng cho người mới bắt đầu với huấn luyện viên giàu kinh nghiệm.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>Thời gian hoạt động của câu lạc bộ như thế nào?</h3>
+                        <p>Thứ 2-6: 17:00-20:00, Thứ 7-CN: 08:00-11:00. Có thể linh hoạt theo lịch học của sinh viên.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>Cần chuẩn bị gì khi tham gia?</h3>
+                        <p>Chỉ cần tinh thần học hỏi và trang phục thể thao thoải mái. Câu lạc bộ sẽ hỗ trợ các dụng cụ cần thiết.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>Có cơ hội tham gia thi đấu không?</h3>
+                        <p>Có, thành viên sẽ được tham gia các giải đấu cấp trường, thành phố và quốc gia.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <div id="footer-placeholder"></div>
+
+    <script src="../script.js"></script>
+    <script>
+        // Load components
+        async function loadComponent(elementId, componentPath) {
+            try {
+                const response = await fetch(componentPath);
+                const html = await response.text();
+                document.getElementById(elementId).innerHTML = html;
+            } catch (error) {
+                console.error(`Error loading component ${componentPath}:`, error);
+            }
+        }
+
+        // Load all components
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadComponent('header-placeholder', '../components/header.html');
+            await loadComponent('contact-placeholder', '../components/contact-section.html');
+            await loadComponent('footer-placeholder', '../components/footer.html');
+            
+            // Initialize contact form after loading
+            setTimeout(initializeContactForm, 100);
+        });
+
+        function initializeContactForm() {
+            const contactForm = document.getElementById('contactForm');
+            if (contactForm) {
+                contactForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    alert('Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi trong thời gian sớm nhất.');
+                    this.reset();
+                });
+            }
+        }
+
+        // FAQ toggle functionality
+        document.addEventListener('click', function(e) {
+            if (e.target.matches('.faq-item h3')) {
+                const faqItem = e.target.parentElement;
+                faqItem.classList.toggle('active');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký - CLB Võ Cổ Truyền HUTECH (Demo)</title>
+    <link rel="stylesheet" href="demo-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="auth-page">
+    <a href="index.html" class="back-home">
+        <i class="fas fa-arrow-left"></i>
+        Về trang chủ
+    </a>
+
+    <div class="auth-container">
+        <div class="auth-header">
+            <h1>Đăng ký</h1>
+            <p>Tạo tài khoản mới</p>
+        </div>
+        
+        <div class="auth-body">
+            <div id="error-message" class="error-message" style="display: none;"></div>
+            <div id="success-message" class="success-message" style="display: none;"></div>
+            
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="fullname">Họ và tên *</label>
+                    <input type="text" id="fullname" name="fullname" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email *</label>
+                    <input type="email" id="email" name="email" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Số điện thoại *</label>
+                    <input type="tel" id="phone" name="phone" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Mật khẩu *</label>
+                    <div class="password-group">
+                        <input type="password" id="password" name="password" class="form-control" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('password')">
+                            <i class="fas fa-eye" id="password-icon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm-password">Xác nhận mật khẩu *</label>
+                    <div class="password-group">
+                        <input type="password" id="confirm-password" name="confirm-password" class="form-control" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('confirm-password')">
+                            <i class="fas fa-eye" id="confirm-password-icon"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="terms" name="terms" required>
+                        Tôi đồng ý với <a href="#">Điều khoản sử dụng</a>
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn-login">
+                    <i class="fas fa-user-plus"></i>
+                    Đăng ký
+                </button>
+            </form>
+            
+            <div class="divider">
+                <span>hoặc</span>
+            </div>
+            
+            <!-- Social Login Buttons -->
+            <div class="social-login">
+                <button type="button" class="btn-google">
+                    <i class="fab fa-google"></i>
+                    Đăng ký bằng Google
+                </button>
+                
+                <button type="button" class="btn-facebook">
+                    <i class="fab fa-facebook-f"></i>
+                    Đăng ký bằng Facebook
+                </button>
+            </div>
+            
+            <div class="register-link">
+                <p>Đã có tài khoản? <a href="dang-nhap.html">Đăng nhập ngay</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function togglePassword(fieldId) {
+            const passwordInput = document.getElementById(fieldId);
+            const passwordIcon = document.getElementById(fieldId + '-icon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                passwordIcon.className = 'fas fa-eye-slash';
+            } else {
+                passwordInput.type = 'password';
+                passwordIcon.className = 'fas fa-eye';
+            }
+        }
+
+        function showMessage(message, type = 'error') {
+            const errorDiv = document.getElementById('error-message');
+            const successDiv = document.getElementById('success-message');
+            
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+            
+            if (type === 'error') {
+                errorDiv.textContent = message;
+                errorDiv.style.display = 'block';
+            } else {
+                successDiv.textContent = message;
+                successDiv.style.display = 'block';
+            }
+        }
+
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const fullname = document.getElementById('fullname').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            const terms = document.getElementById('terms').checked;
+            
+            // Validation
+            if (!fullname || !email || !phone || !password || !confirmPassword) {
+                showMessage('Vui lòng điền đầy đủ thông tin!');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showMessage('Mật khẩu xác nhận không khớp!');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showMessage('Mật khẩu phải có ít nhất 6 ký tự!');
+                return;
+            }
+            
+            if (!terms) {
+                showMessage('Vui lòng đồng ý với điều khoản sử dụng!');
+                return;
+            }
+            
+            // Demo register
+            showMessage('Đăng ký thành công! Đang chuyển đến trang đăng nhập...', 'success');
+            setTimeout(() => {
+                window.location.href = 'dang-nhap.html';
+            }, 2000);
+        });
+
+        // Social register demo
+        document.querySelector('.btn-google').addEventListener('click', function() {
+            showMessage('Đăng ký Google (Demo) thành công!', 'success');
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 1500);
+        });
+
+        document.querySelector('.btn-facebook').addEventListener('click', function() {
+            showMessage('Đăng ký Facebook (Demo) thành công!', 'success');
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 1500);
+        });
+    </script>
+</body>
+</html>

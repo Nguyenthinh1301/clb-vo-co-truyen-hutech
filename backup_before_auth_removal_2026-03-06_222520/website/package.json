@@ -1,0 +1,22 @@
+{
+  "name": "clb-vo-co-truyen-hutech-frontend",
+  "version": "1.0.0",
+  "description": "Frontend for CLB Võ Cổ Truyền HUTECH",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "serve": "node server.js"
+  },
+  "keywords": [
+    "frontend",
+    "martial-arts",
+    "hutech",
+    "web-server"
+  ],
+  "author": "CLB Võ Cổ Truyền HUTECH",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

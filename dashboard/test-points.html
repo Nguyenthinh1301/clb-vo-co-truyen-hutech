@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Points System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/points-system.css">
+</head>
+<body style="padding: 20px; background: #f5f5f5;">
+    <h1>Test Hệ Thống Tích Điểm</h1>
+    
+    <div id="test-results" style="background: white; padding: 20px; border-radius: 10px; margin: 20px 0;">
+        <h2>Kết quả test:</h2>
+        <div id="results"></div>
+    </div>
+    
+    <div id="points-section"></div>
+    
+    <script src="../website/config/config.js"></script>
+    <script src="../website/config/api-config.js"></script>
+    <script src="../website/config/api-client.js"></script>
+    <script src="../website/config/auth.js"></script>
+    <script src="js/dashboard-points.js"></script>
+    
+    <script>
+        const results = document.getElementById('results');
+        
+        function addResult(test, status, message) {
+            const div = document.createElement('div');
+            div.style.padding = '10px';
+            div.style.margin = '5px 0';
+            div.style.borderRadius = '5px';
+            div.style.background = status === 'success' ? '#d4edda' : '#f8d7da';
+            div.style.color = status === 'success' ? '#155724' : '#721c24';
+            div.innerHTML = `<strong>${test}:</strong> ${message}`;
+            results.appendChild(div);
+        }
+        
+        // Test 1: Check Auth
+        try {
+            const user = Auth.getCurrentUser();
+            if (user) {
+                addResult('Auth', 'success', `User found: ${user.email}`);
+            } else {
+                addResult('Auth', 'error', 'No user found - Please login first');
+            }
+        } catch (e) {
+            addResult('Auth', 'error', e.message);
+        }
+        
+        // Test 2: Check API Client
+        try {
+            if (typeof apiClient !== 'undefined') {
+                addResult('API Client', 'success', 'API Client loaded');
+            } else {
+                addResult('API Client', 'error', 'API Client not found');
+            }
+        } catch (e) {
+            addResult('API Client', 'error', e.message);
+        }
+        
+        // Test 3: Check DashboardPoints
+        try {
+            if (typeof DashboardPoints !== 'undefined') {
+                addResult('DashboardPoints', 'success', 'DashboardPoints module loaded');
+            } else {
+                addResult('DashboardPoints', 'error', 'DashboardPoints not found');
+            }
+        } catch (e) {
+            addResult('DashboardPoints', 'error', e.message);
+        }
+        
+        // Test 4: Try to initialize
+        async function testInit() {
+            try {
+                if (!Auth.isAuthenticated()) {
+                    addResult('Init', 'error', 'Not authenticated - redirecting to login');
+                    setTimeout(() => {
+                        window.location.href = '../website/views/account/dang-nhap.html';
+                    }, 2000);
+                    return;
+                }
+                
+                addResult('Init', 'success', 'Starting initialization...');
+                
+                // Test with mock data first
+                DashboardPoints.currentUser = Auth.getCurrentUser();
+                DashboardPoints.userPoints = {
+                    user_id: DashboardPoints.currentUser.id,
+                    total_points: 75,
+                    available_points: 60,
+                    spent_points: 15,
+                    rank_level: 'gold',
+                    streak_days: 7
+                };
+                
+                const isAdmin = DashboardPoints.currentUser.role === 'admin';
+                addResult('Role', 'success', `User role: ${DashboardPoints.currentUser.role}`);
+                
+                if (isAdmin) {
+                    await DashboardPoints.renderAdminView();
+                    addResult('Render', 'success', 'Admin view rendered');
+                } else {
+                    await DashboardPoints.renderUserView();
+                    addResult('Render', 'success', 'User view rendered');
+                }
+                
+            } catch (e) {
+                addResult('Init', 'error', e.message);
+                console.error('Init error:', e);
+            }
+        }
+        
+        // Run test after page load
+        window.addEventListener('load', testInit);
+    </script>
+</body>
+</html>

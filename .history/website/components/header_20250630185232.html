@@ -1,0 +1,104 @@
+<header class="main-header">
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <div class="logo-image">
+                    <img src="assets/images/z6220991542184_5df707998ebb7fe3c2c8b7135d923fd1.jpg" alt="CLB Võ Cổ Truyền HUTECH" class="header-logo-img">
+                </div>
+                <div class="logo-text">
+                    <h1>CLB VÕ CỔ TRUYỀN</h1>
+                    <span class="subtitle">HUTECH</span>
+                </div>
+            </div>
+            
+            <div class="nav-toggle" id="nav-toggle">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+            
+            <ul class="nav-menu" id="nav-menu">
+                <li class="nav-item">
+                    <a href="#home" class="nav-link">
+                        <span>Trang chủ</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#about" class="nav-link">
+                        <span>Giới thiệu</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#services" class="nav-link">
+                        <span>Dịch vụ</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#contact" class="nav-link">
+                        <span>Liên hệ</span>
+                    </a>
+                </li>
+                <!-- Auth items for non-logged in users -->
+                <li class="nav-item auth-item guest-only">
+                    <a href="views/account/dang-nhap.html" class="nav-link login-btn">
+                        <span>Đăng nhập</span>
+                    </a>
+                </li>
+                <li class="nav-item auth-item guest-only">
+                    <a href="views/account/dang-ky.html" class="nav-link signup-btn">
+                        <span>Đăng ký</span>
+                    </a>
+                </li>
+                
+                <!-- User profile dropdown for logged in users -->
+                <li class="nav-item user-menu logged-in-only" style="display: none;">
+                    <a href="#" class="nav-link user-profile-btn">
+                        <img src="assets/images/default-avatar.jpg" alt="Profile" class="user-avatar" id="headerUserAvatar">
+                        <span id="headerUserName">Người dùng</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="views/account/profile.html"><i class="fas fa-user"></i> Thông tin cá nhân</a></li>
+                        <li><a href="views/account/dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                        <li><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</header>
+
+<script>
+// Mobile menu toggle
+document.addEventListener('DOMContentLoaded', function() {
+    const navToggle = document.getElementById('nav-toggle');
+    const navMenu = document.getElementById('nav-menu');
+    
+    if (navToggle && navMenu) {
+        navToggle.addEventListener('click', function() {
+            navMenu.classList.toggle('active');
+            navToggle.classList.toggle('active');
+        });
+        
+        // Close menu when clicking on a link
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                navMenu.classList.remove('active');
+                navToggle.classList.remove('active');
+            });
+        });
+    }
+    
+    // Header scroll effect
+    window.addEventListener('scroll', function() {
+        const header = document.querySelector('.main-header');
+        if (header) {
+            if (window.scrollY > 100) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        }
+    });
+});
+</script>

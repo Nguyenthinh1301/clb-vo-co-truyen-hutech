@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CLB Võ Cổ Truyền HUTECH - Trang chủ</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Loading Spinner -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <p>Đang tải...</p>
+    </div>
+
+    <!-- Header -->
+    <div id="header-placeholder"></div>
+
+    <main>
+        <!-- Hero Section -->
+        <div id="hero-placeholder"></div>
+        
+        <!-- About Section --->
+        <div id="about-placeholder"></div>
+        
+        <!-- Schedule Section -->
+        <div id="schedule-placeholder"></div>
+        
+        <!-- Coaches Section -->
+        <div id="coaches-placeholder"></div>
+        
+        <!-- Gallery Section -->
+        <div id="gallery-placeholder"></div>
+        
+        <!-- Events Section -->
+        <div id="events-placeholder"></div>
+        
+        <!-- Services Section -->
+        <div id="services-placeholder"></div>
+        
+        <!-- Contact Section -->
+        <div id="contact-placeholder"></div>
+    </main>
+
+    <!-- Footer -->
+    <div id="footer-placeholder"></div>
+
+    <!-- Coach Detail Modal -->
+    <div id="coachModal" class="coach-modal-overlay" onclick="closeCoachModal(event)">
+        <div class="coach-modal-box">
+            <button class="coach-modal-close" onclick="closeCoachModal()">&times;</button>
+            <div class="coach-modal-header">
+                <!-- SVG hoa văn trống đồng -->
+                <svg class="coach-modal-dong-son" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Ngôi sao trung tâm -->
+                    <circle cx="100" cy="100" r="12" fill="#c49e28"/>
+                    <polygon points="100,78 105,95 122,95 109,105 114,122 100,112 86,122 91,105 78,95 95,95" fill="#c49e28"/>
+                    <!-- Vòng tròn đồng tâm -->
+                    <circle cx="100" cy="100" r="20" fill="none" stroke="#c49e28" stroke-width="1.5"/>
+                    <circle cx="100" cy="100" r="30" fill="none" stroke="#c49e28" stroke-width="1"/>
+                    <circle cx="100" cy="100" r="42" fill="none" stroke="#c49e28" stroke-width="1.5"/>
+                    <circle cx="100" cy="100" r="55" fill="none" stroke="#c49e28" stroke-width="1"/>
+                    <circle cx="100" cy="100" r="68" fill="none" stroke="#c49e28" stroke-width="1.5"/>
+                    <circle cx="100" cy="100" r="82" fill="none" stroke="#c49e28" stroke-width="1"/>
+                    <circle cx="100" cy="100" r="95" fill="none" stroke="#c49e28" stroke-width="1.5"/>
+                    <!-- Tia hoa văn -->
+                    <g stroke="#c49e28" stroke-width="0.8" opacity="0.7">
+                        <line x1="100" y1="5"  x2="100" y2="195"/>
+                        <line x1="5"   y1="100" x2="195" y2="100"/>
+                        <line x1="29"  y1="29"  x2="171" y2="171"/>
+                        <line x1="171" y1="29"  x2="29"  y2="171"/>
+                        <line x1="100" y1="5"   x2="100" y2="195" transform="rotate(22.5,100,100)"/>
+                        <line x1="100" y1="5"   x2="100" y2="195" transform="rotate(45,100,100)"/>
+                        <line x1="100" y1="5"   x2="100" y2="195" transform="rotate(67.5,100,100)"/>
+                        <line x1="100" y1="5"   x2="100" y2="195" transform="rotate(112.5,100,100)"/>
+                        <line x1="100" y1="5"   x2="100" y2="195" transform="rotate(135,100,100)"/>
+                        <line x1="100" y1="5"   x2="100" y2="195" transform="rotate(157.5,100,100)"/>
+                    </g>
+                    <!-- Hình chim lạc cách điệu (vòng ngoài) -->
+                    <g fill="#c49e28" opacity="0.6" transform="translate(100,100)">
+                        <path d="M0,-68 Q8,-60 4,-52 Q0,-58 -4,-52 Q-8,-60 0,-68Z" transform="rotate(0)"/>
+                        <path d="M0,-68 Q8,-60 4,-52 Q0,-58 -4,-52 Q-8,-60 0,-68Z" transform="rotate(45)"/>
+                        <path d="M0,-68 Q8,-60 4,-52 Q0,-58 -4,-52 Q-8,-60 0,-68Z" transform="rotate(90)"/>
+                        <path d="M0,-68 Q8,-60 4,-52 Q0,-58 -4,-52 Q-8,-60 0,-68Z" transform="rotate(135)"/>
+                        <path d="M0,-68 Q8,-60 4,-52 Q0,-58 -4,-52 Q-8,-60 0,-68Z" transform="rotate(180)"/>
+                        <path d="M0,-68 Q8,-60 4,-52 Q0,-58 -4,-52 Q-8,-60 0,-68Z" transform="rotate(225)"/>
+                        <path d="M0,-68 Q8,-60 4,-52 Q0,-58 -4,-52 Q-8,-60 0,-68Z" transform="rotate(270)"/>
+                        <path d="M0,-68 Q8,-60 4,-52 Q0,-58 -4,-52 Q-8,-60 0,-68Z" transform="rotate(315)"/>
+                    </g>
+                </svg>
+                <div class="coach-modal-avatar">
+                    <img id="modalAvatar" src="" alt="">
+                </div>
+                <div class="coach-modal-info">
+                    <h2 id="modalName"></h2>
+                    <div id="modalTitle" class="coach-modal-role"></div>
+                    <div id="modalBelt" class="coach-modal-belt"></div>
+                </div>
+            </div>
+            <div class="coach-modal-body">
+                <table class="coach-detail-table">
+                    <tbody id="modalTableBody"></tbody>
+                </table>
+            </div>
+            <div class="coach-modal-footer">
+                <div class="coach-modal-footer-pattern">❖ ✦ ❖ ✦ ❖ ✦ ❖</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        const coachData = {
+            coach1: {
+                name: 'Trương Ngọc Lĩnh',
+                title: 'Phó Chủ Nhiệm',
+                belt: 'Cấp 14 - 2 đẳng',
+                avatar: 'assets/images_Avatar/Avatar_Anh_Linh.jpg',
+                details: [
+                    { label: 'Chức vụ', value: 'Phó Chủ Nhiệm CLB' },
+                    { label: 'Cấp bậc', value: 'Cấp 14 - 2 đẳng' },
+                    { label: 'Kinh nghiệm', value: '9 năm giảng dạy võ cổ truyền' },
+                    { label: 'Chuyên môn', value: 'Quyền thuật, Binh khí' },
+                    { label: 'Giải thưởng', value: '20+ giải thưởng quốc gia' },
+                    { label: 'Học viên đào tạo', value: '200+ học viên' },
+                    { label: 'Thành tích nổi bật', value: 'HCV GIẢI LIÊN HOAN QUỐC TẾ 2022' }
+                ]
+            },
+            coach2: {
+                name: 'Trần Võ Minh Ngọc',
+                title: 'Chủ nhiệm CLB',
+                belt: 'Cấp 16 - 4 đẳng',
+                avatar: 'assets/images_Avatar/Avatar_Anh_Ngoc.jpg',
+                details: [
+                    { label: 'Chức vụ', value: 'Chủ nhiệm CLB Võ Cổ Truyền HUTECH' },
+                    { label: 'Cấp bậc', value: 'Cấp 16 - 4 đẳng' },
+                    { label: 'Kinh nghiệm', value: '12 năm giảng dạy' },
+                    { label: 'Chuyên môn', value: 'Kỹ thuật thi đấu, Chiến thuật võ cổ truyền' },
+                    { label: 'Giải thưởng', value: '20+ giải thưởng' },
+                    { label: 'Học viên đào tạo', value: '200+ học viên' },
+                    { label: 'Thành tích nổi bật', value: 'HCV GIẢI LIÊN HOAN QUỐC TẾ TP.HCM 2022, 2023' }
+                ]
+            },
+            coach3: {
+                name: 'Nguyễn Quốc An',
+                title: 'Phó Chủ Nhiệm CLB',
+                belt: 'Cấp 15 - 3 đẳng',
+                avatar: 'assets/images_Avatar/Avatar_An_2.jpg',
+                details: [
+                    { label: 'Chức vụ', value: 'Phó Chủ Nhiệm CLB' },
+                    { label: 'Cấp bậc', value: 'Cấp 15 - 3 đẳng' },
+                    { label: 'Kinh nghiệm', value: '8 năm giảng dạy' },
+                    { label: 'Chuyên môn', value: 'Quyền thuật, Đối kháng' },
+                    { label: 'Giải thưởng', value: '20+ giải thưởng' },
+                    { label: 'Học viên đào tạo', value: '200+ học viên' },
+                    { label: 'Thành tích nổi bật', value: 'HCV, HCB GIẢI LIÊN HOAN QUỐC TẾ 2024' }
+                ]
+            },
+            coach4: {
+                name: 'Hoàng Văn B',
+                title: 'Huấn Luyện Viên',
+                belt: 'Cấp 0 - 0 đẳng',
+                avatar: '',
+                details: [
+                    { label: 'Chức vụ', value: 'Huấn Luyện Viên' },
+                    { label: 'Cấp bậc', value: 'Cấp 0 - 0 đẳng' },
+                    { label: 'Kinh nghiệm', value: '10 năm trong lĩnh vực võ cổ truyền' },
+                    { label: 'Chuyên môn', value: 'Môn phái truyền thống, Lịch sử võ học' },
+                    { label: 'Giải thưởng', value: '16+ giải thưởng' },
+                    { label: 'Học viên đào tạo', value: '90+ học viên' }
+                ]
+            },
+            coach5: {
+                name: 'Trần Quốc Huy',
+                title: 'Huấn Luyện Viên Quyền Thuật',
+                belt: 'Cấp 0 - 0 đẳng',
+                avatar: '',
+                details: [
+                    { label: 'Chức vụ', value: 'Huấn Luyện Viên Quyền Thuật' },
+                    { label: 'Cấp bậc', value: 'Cấp 0 - 0 đẳng' },
+                    { label: 'Kinh nghiệm', value: '8 năm chuyên về thi đấu và huấn luyện VĐV' },
+                    { label: 'Chuyên môn', value: 'Quyền thuật, Thi đấu đối kháng' },
+                    { label: 'Giải thưởng', value: '22+ giải thưởng' },
+                    { label: 'Học viên đào tạo', value: '75+ học viên' },
+                    { label: 'Thành tích nổi bật', value: 'Từng là VĐV quốc gia' }
+                ]
+            },
+            coach6: {
+                name: 'Nguyễn Thị Lan',
+                title: 'Huấn Luyện Viên',
+                belt: 'Cấp 0 - Sơ đẳng',
+                avatar: '',
+                details: [
+                    { label: 'Chức vụ', value: 'Huấn Luyện Viên' },
+                    { label: 'Cấp bậc', value: 'Cấp 0 - Sơ đẳng' },
+                    { label: 'Kinh nghiệm', value: '4 năm chuyên đào tạo trẻ em 5-12 tuổi' },
+                    { label: 'Chuyên môn', value: 'Đào tạo thiếu nhi, Võ cơ bản' },
+                    { label: 'Bằng cấp', value: 'Cử nhân Sư phạm Thể dục' },
+                    { label: 'Giải thưởng', value: '8+ giải thưởng' },
+                    { label: 'Học viên đào tạo', value: '60+ học viên' }
+                ]
+            }
+        };
+
+        function openCoachModal(id) {
+            const data = coachData[id];
+            if (!data) return;
+            document.getElementById('modalName').textContent = data.name;
+            document.getElementById('modalTitle').textContent = data.title;
+            document.getElementById('modalBelt').textContent = data.belt;
+            const img = document.getElementById('modalAvatar');
+            img.src = data.avatar || '';
+            img.alt = data.name;
+            img.style.display = data.avatar ? 'block' : 'none';
+            document.getElementById('modalTableBody').innerHTML = data.details.map(row => `
+                <tr>
+                    <td class="detail-label"><i class="fas fa-chevron-right"></i> ${row.label}</td>
+                    <td class="detail-value">${row.value}</td>
+                </tr>
+            `).join('');
+            document.getElementById('coachModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeCoachModal(event) {
+            if (event && event.target !== document.getElementById('coachModal') && !event.target.classList.contains('coach-modal-close')) return;
+            document.getElementById('coachModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.getElementById('coachModal').classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        });
+    </script>
+    <script>
+        // Load components
+        async function loadComponent(elementId, componentPath) {
+            try {
+                const response = await fetch(componentPath);
+                const html = await response.text();
+                document.getElementById(elementId).innerHTML = html;
+            } catch (error) {
+                console.error(`Error loading component ${componentPath}:`, error);
+                // Show error in UI
+                document.getElementById(elementId).innerHTML = `
+                    <div style="padding: 40px; text-align: center; color: #999;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 20px;"></i>
+                        <p>Không thể tải nội dung. Vui lòng thử lại sau.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Load all components
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadComponent('header-placeholder', 'components/header.html');
+            await loadComponent('hero-placeholder', 'components/hero-section.html');
+            await loadComponent('about-placeholder', 'components/about-section.html');
+            await loadComponent('schedule-placeholder', 'components/schedule-section.html');
+            await loadComponent('coaches-placeholder', 'components/coaches-section.html');
+            await loadComponent('gallery-placeholder', 'components/gallery-section.html');
+            await loadComponent('events-placeholder', 'components/events-section.html');
+            await loadComponent('services-placeholder', 'components/services-section.html');
+            await loadComponent('contact-placeholder', 'components/contact-section.html');
+            await loadComponent('footer-placeholder', 'components/footer.html');
+            
+            // Hide loading overlay
+            setTimeout(() => {
+                document.getElementById('loading-overlay').classList.add('hidden');
+            }, 1000);
+            
+            // Initialize components
+            setTimeout(initializeComponents, 200);
+        });
+
+        function initializeComponents() {
+            // Initialize contact form
+            const contactForm = document.getElementById('contactForm');
+            if (contactForm) {
+                contactForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    // Get form data
+                    const formData = {
+                        name: document.getElementById('name').value,
+                        email: document.getElementById('email').value,
+                        phone: document.getElementById('phone').value,
+                        message: document.getElementById('message').value
+                    };
+                    
+                    // Validate
+                    if (!formData.name || !formData.email || !formData.phone) {
+                        showNotification('Vui lòng điền đầy đủ thông tin bắt buộc!', 'error');
+                        return;
+                    }
+                    
+                    // Email validation
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailRegex.test(formData.email)) {
+                        showNotification('Email không hợp lệ!', 'error');
+                        return;
+                    }
+                    
+                    // Phone validation
+                    const phoneRegex = /^[0-9]{10,11}$/;
+                    const cleanPhone = formData.phone.replace(/\D/g, '');
+                    if (!phoneRegex.test(cleanPhone)) {
+                        showNotification('Số điện thoại không hợp lệ!', 'error');
+                        return;
+                    }
+                    
+                    showNotification('Đang gửi...', 'info');
+
+                    fetch('http://localhost:3001/api/contact', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formData)
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            showNotification('Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi trong thời gian sớm nhất.', 'success');
+                            contactForm.reset();
+                        } else {
+                            showNotification(data.message || 'Gửi thất bại, vui lòng thử lại.', 'error');
+                        }
+                    })
+                    .catch(() => {
+                        showNotification('⚠️ Server chưa khởi động. Vui lòng chạy lệnh: cd backend && npm start', 'error');
+                    });
+                });
+            }
+        }
+    </script>
+</body>
+</html>

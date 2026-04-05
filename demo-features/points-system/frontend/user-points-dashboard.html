@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo: Hệ Thống Tích Điểm - CLB Võ Cổ Truyền HUTECH</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/points-system.css">
+</head>
+<body>
+    <div class="demo-banner">
+        <i class="fas fa-info-circle"></i>
+        <span>ĐÂY LÀ DEMO - Chưa tích hợp vào hệ thống chính</span>
+    </div>
+
+    <div class="points-dashboard">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-content">
+                <h1><i class="fas fa-star"></i> Hệ Thống Tích Điểm</h1>
+                <p>Tích điểm - Nhận quà - Thăng hạng</p>
+            </div>
+            <div class="user-info">
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-details">
+                    <div class="user-name">Nguyễn Văn A</div>
+                    <div class="user-email">demo@test.com</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Points Overview -->
+        <section class="points-overview">
+            <div class="points-card main-points">
+                <div class="points-icon">
+                    <i class="fas fa-coins"></i>
+                </div>
+                <div class="points-info">
+                    <div class="points-label">Tổng điểm</div>
+                    <div class="points-value">75</div>
+                </div>
+            </div>
+
+            <div class="points-card available-points">
+                <div class="points-icon">
+                    <i class="fas fa-wallet"></i>
+                </div>
+                <div class="points-info">
+                    <div class="points-label">Điểm khả dụng</div>
+                    <div class="points-value">60</div>
+                </div>
+            </div>
+
+            <div class="points-card spent-points">
+                <div class="points-icon">
+                    <i class="fas fa-gift"></i>
+                </div>
+                <div class="points-info">
+                    <div class="points-label">Đã đổi quà</div>
+                    <div class="points-value">15</div>
+                </div>
+            </div>
+
+            <div class="points-card rank-card">
+                <div class="rank-badge gold">
+                    <i class="fas fa-medal"></i>
+                </div>
+                <div class="points-info">
+                    <div class="points-label">Hạng hiện tại</div>
+                    <div class="rank-name">Vàng</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Rank Progress -->
+        <section class="rank-progress-section">
+            <h2><i class="fas fa-chart-line"></i> Tiến độ thăng hạng</h2>
+            <div class="rank-progress-card">
+                <div class="current-rank">
+                    <div class="rank-icon gold">🥇</div>
+                    <div class="rank-info">
+                        <div class="rank-title">Vàng</div>
+                        <div class="rank-points">75 điểm</div>
+                    </div>
+                </div>
+                
+                <div class="progress-bar-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 50%"></div>
+                    </div>
+                    <div class="progress-text">Còn 15 điểm để lên Kim Cương</div>
+                </div>
+                
+                <div class="next-rank">
+                    <div class="rank-icon diamond">💎</div>
+                    <div class="rank-info">
+                        <div class="rank-title">Kim Cương</div>
+                        <div class="rank-points">90 điểm</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rank Levels -->
+            <div class="rank-levels">
+                <div class="rank-level completed">
+                    <div class="rank-icon">🥉</div>
+                    <div class="rank-name">Đồng</div>
+                    <div class="rank-requirement">0-29</div>
+                </div>
+                <div class="rank-level completed">
+                    <div class="rank-icon">🥈</div>
+                    <div class="rank-name">Bạc</div>
+                    <div class="rank-requirement">30-59</div>
+                </div>
+                <div class="rank-level active">
+                    <div class="rank-icon">🥇</div>
+                    <div class="rank-name">Vàng</div>
+                    <div class="rank-requirement">60-89</div>
+                </div>
+                <div class="rank-level">
+                    <div class="rank-icon">💎</div>
+                    <div class="rank-name">Kim Cương</div>
+                    <div class="rank-requirement">90-100</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('rewards')">
+                <i class="fas fa-gift"></i> Đổi quà
+            </button>
+            <button class="tab" onclick="showTab('history')">
+                <i class="fas fa-history"></i> Lịch sử
+            </button>
+            <button class="tab" onclick="showTab('leaderboard')">
+                <i class="fas fa-trophy"></i> Bảng xếp hạng
+            </button>
+            <button class="tab" onclick="showTab('achievements')">
+                <i class="fas fa-award"></i> Thành tích
+            </button>
+        </div>
+
+        <!-- Rewards Tab -->
+        <section id="rewards-tab" class="tab-content active">
+            <h2><i class="fas fa-gift"></i> Phần quà đổi điểm</h2>
+            <div class="rewards-grid">
+                <div class="reward-card">
+                    <div class="reward-image">
+                        <i class="fas fa-water"></i>
+                    </div>
+                    <div class="reward-info">
+                        <h3>Bình nước CLB</h3>
+                        <p>Bình nước thể thao có logo</p>
+                        <div class="reward-points">
+                            <i class="fas fa-coins"></i> 15 điểm
+                        </div>
+                        <button class="btn-redeem">Đổi ngay</button>
+                    </div>
+                </div>
+
+                <div class="reward-card">
+                    <div class="reward-image">
+                        <i class="fas fa-tshirt"></i>
+                    </div>
+                    <div class="reward-info">
+                        <h3>Áo CLB</h3>
+                        <p>Áo thun chính thức của CLB</p>
+                        <div class="reward-points">
+                            <i class="fas fa-coins"></i> 30 điểm
+                        </div>
+                        <button class="btn-redeem">Đổi ngay</button>
+                    </div>
+                </div>
+
+                <div class="reward-card">
+                    <div class="reward-image">
+                        <i class="fas fa-shopping-bag"></i>
+                    </div>
+                    <div class="reward-info">
+                        <h3>Túi tập võ</h3>
+                        <p>Túi đựng đồ tập võ tiện dụng</p>
+                        <div class="reward-points">
+                            <i class="fas fa-coins"></i> 40 điểm
+                        </div>
+                        <button class="btn-redeem">Đổi ngay</button>
+                    </div>
+                </div>
+
+                <div class="reward-card">
+                    <div class="reward-image">
+                        <i class="fas fa-hand-rock"></i>
+                    </div>
+                    <div class="reward-info">
+                        <h3>Găng tay võ</h3>
+                        <p>Găng tay tập luyện chất lượng</p>
+                        <div class="reward-points">
+                            <i class="fas fa-coins"></i> 50 điểm
+                        </div>
+                        <button class="btn-redeem">Đổi ngay</button>
+                    </div>
+                </div>
+
+                <div class="reward-card">
+                    <div class="reward-image">
+                        <i class="fas fa-ticket-alt"></i>
+                    </div>
+                    <div class="reward-info">
+                        <h3>Voucher 100k</h3>
+                        <p>Voucher mua sắm dụng cụ võ</p>
+                        <div class="reward-points">
+                            <i class="fas fa-coins"></i> 60 điểm
+                        </div>
+                        <button class="btn-redeem">Đổi ngay</button>
+                    </div>
+                </div>
+
+                <div class="reward-card">
+                    <div class="reward-image">
+                        <i class="fas fa-ribbon"></i>
+                    </div>
+                    <div class="reward-info">
+                        <h3>Đai võ</h3>
+                        <p>Đai võ các màu theo cấp độ</p>
+                        <div class="reward-points">
+                            <i class="fas fa-coins"></i> 70 điểm
+                        </div>
+                        <button class="btn-redeem disabled">Chưa đủ điểm</button>
+                    </div>
+                </div>
+
+                <div class="reward-card featured">
+                    <div class="featured-badge">HOT</div>
+                    <div class="reward-image">
+                        <i class="fas fa-percent"></i>
+                    </div>
+                    <div class="reward-info">
+                        <h3>Giảm 50% học phí</h3>
+                        <p>Giảm 50% cho khóa học tiếp theo</p>
+                        <div class="reward-points">
+                            <i class="fas fa-coins"></i> 85 điểm
+                        </div>
+                        <button class="btn-redeem disabled">Chưa đủ điểm</button>
+                    </div>
+                </div>
+
+                <div class="reward-card">
+                    <div class="reward-image">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <div class="reward-info">
+                        <h3>Buổi tập riêng với HLV</h3>
+                        <p>Một buổi tập 1-1 với HLV</p>
+                        <div class="reward-points">
+                            <i class="fas fa-coins"></i> 90 điểm
+                        </div>
+                        <button class="btn-redeem disabled">Chưa đủ điểm</button>
+                    </div>
+                </div>
+
+                <div class="reward-card featured">
+                    <div class="featured-badge">VIP</div>
+                    <div class="reward-image">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div class="reward-info">
+                        <h3>Khóa học miễn phí</h3>
+                        <p>Một khóa học miễn phí bất kỳ</p>
+                        <div class="reward-points">
+                            <i class="fas fa-coins"></i> 100 điểm
+                        </div>
+                        <button class="btn-redeem disabled">Chưa đủ điểm</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- History Tab -->
+        <section id="history-tab" class="tab-content">
+            <h2><i class="fas fa-history"></i> Lịch sử tích điểm</h2>
+            <div class="history-list">
+                <div class="history-item earn">
+                    <div class="history-icon">
+                        <i class="fas fa-plus-circle"></i>
+                    </div>
+                    <div class="history-info">
+                        <div class="history-title">Điểm danh lớp Võ Cơ Bản</div>
+                        <div class="history-date">Hôm nay, 10:30</div>
+                    </div>
+                    <div class="history-points">+10</div>
+                </div>
+
+                <div class="history-item earn">
+                    <div class="history-icon">
+                        <i class="fas fa-plus-circle"></i>
+                    </div>
+                    <div class="history-info">
+                        <div class="history-title">Tham gia sự kiện Giao lưu võ thuật</div>
+                        <div class="history-date">Hôm qua, 14:00</div>
+                    </div>
+                    <div class="history-points">+20</div>
+                </div>
+
+                <div class="history-item spend">
+                    <div class="history-icon">
+                        <i class="fas fa-minus-circle"></i>
+                    </div>
+                    <div class="history-info">
+                        <div class="history-title">Đổi Bình nước CLB</div>
+                        <div class="history-date">3 ngày trước</div>
+                    </div>
+                    <div class="history-points">-15</div>
+                </div>
+
+                <div class="history-item earn">
+                    <div class="history-icon">
+                        <i class="fas fa-plus-circle"></i>
+                    </div>
+                    <div class="history-info">
+                        <div class="history-title">Hoàn thành bài tập tuần 1</div>
+                        <div class="history-date">5 ngày trước</div>
+                    </div>
+                    <div class="history-points">+15</div>
+                </div>
+
+                <div class="history-item earn bonus">
+                    <div class="history-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="history-info">
+                        <div class="history-title">Đạt thành tích Streak 7 ngày</div>
+                        <div class="history-date">1 tuần trước</div>
+                    </div>
+                    <div class="history-points">+15</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Leaderboard Tab -->
+        <section id="leaderboard-tab" class="tab-content">
+            <h2><i class="fas fa-trophy"></i> Bảng xếp hạng</h2>
+            <div class="leaderboard-list">
+                <div class="leaderboard-item rank-1">
+                    <div class="rank-number">1</div>
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-name">Trần Văn B</div>
+                        <div class="user-rank">� Kim Cương</div>
+                    </div>
+                    <div class="user-points">100 điểm</div>
+                </div>
+
+                <div class="leaderboard-item rank-2">
+                    <div class="rank-number">2</div>
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-name">Lê Thị C</div>
+                        <div class="user-rank">💎 Kim Cương</div>
+                    </div>
+                    <div class="user-points">95 điểm</div>
+                </div>
+
+                <div class="leaderboard-item rank-3">
+                    <div class="rank-number">3</div>
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-name">Phạm Văn D</div>
+                        <div class="user-rank">💎 Kim Cương</div>
+                    </div>
+                    <div class="user-points">92 điểm</div>
+                </div>
+
+                <div class="leaderboard-item current-user">
+                    <div class="rank-number">7</div>
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-name">Nguyễn Văn A (Bạn)</div>
+                        <div class="user-rank">🥇 Vàng</div>
+                    </div>
+                    <div class="user-points">75 điểm</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Achievements Tab -->
+        <section id="achievements-tab" class="tab-content">
+            <h2><i class="fas fa-award"></i> Thành tích</h2>
+            <div class="achievements-grid">
+                <div class="achievement-card earned">
+                    <div class="achievement-icon">🎯</div>
+                    <div class="achievement-info">
+                        <h3>Người mới bắt đầu</h3>
+                        <p>Hoàn thành buổi tập đầu tiên</p>
+                        <div class="achievement-points">+5 điểm</div>
+                    </div>
+                    <div class="achievement-badge">✓</div>
+                </div>
+
+                <div class="achievement-card earned">
+                    <div class="achievement-icon">🔥</div>
+                    <div class="achievement-info">
+                        <h3>Streak 7 ngày</h3>
+                        <p>Điểm danh liên tục 7 ngày</p>
+                        <div class="achievement-points">+15 điểm</div>
+                    </div>
+                    <div class="achievement-badge">✓</div>
+                </div>
+
+                <div class="achievement-card in-progress">
+                    <div class="achievement-icon">⚡</div>
+                    <div class="achievement-info">
+                        <h3>Streak 30 ngày</h3>
+                        <p>Điểm danh liên tục 30 ngày</p>
+                        <div class="achievement-points">+30 điểm</div>
+                        <div class="achievement-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 40%"></div>
+                            </div>
+                            <span>12/30 ngày</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="achievement-card earned">
+                    <div class="achievement-icon">💪</div>
+                    <div class="achievement-info">
+                        <h3>Siêng năng</h3>
+                        <p>Tham gia 50 buổi tập</p>
+                        <div class="achievement-points">+25 điểm</div>
+                    </div>
+                    <div class="achievement-badge">✓</div>
+                </div>
+
+                <div class="achievement-card locked">
+                    <div class="achievement-icon">🏆</div>
+                    <div class="achievement-info">
+                        <h3>Chuyên cần</h3>
+                        <p>Tham gia 100 buổi tập</p>
+                        <div class="achievement-points">+40 điểm</div>
+                    </div>
+                    <div class="achievement-lock">🔒</div>
+                </div>
+
+                <div class="achievement-card locked">
+                    <div class="achievement-icon">🥇</div>
+                    <div class="achievement-info">
+                        <h3>Top 10 tháng</h3>
+                        <p>Lọt top 10 bảng xếp hạng</p>
+                        <div class="achievement-points">+50 điểm</div>
+                    </div>
+                    <div class="achievement-lock">🔒</div>
+                </div>
+
+                <div class="achievement-card locked">
+                    <div class="achievement-icon">⭐</div>
+                    <div class="achievement-info">
+                        <h3>Thành viên xuất sắc</h3>
+                        <p>Được bình chọn xuất sắc</p>
+                        <div class="achievement-points">+50 điểm</div>
+                    </div>
+                    <div class="achievement-lock">🔒</div>
+                </div>
+
+                <div class="achievement-card locked">
+                    <div class="achievement-icon">💎</div>
+                    <div class="achievement-info">
+                        <h3>Võ sĩ Kim Cương</h3>
+                        <p>Đạt 100 điểm tích lũy</p>
+                        <div class="achievement-points">+10 điểm</div>
+                    </div>
+                    <div class="achievement-lock">🔒</div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="js/points-dashboard.js"></script>
+</body>
+</html>

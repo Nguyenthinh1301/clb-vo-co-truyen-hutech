@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - CLB Võ Cổ Truyền HUTECH</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Only load user-dashboard.css to avoid conflicts -->
+    <link rel="stylesheet" href="css/user-dashboard.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-fist-raised"></i>
+                    <span>VCT HUTECH</span>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-tab active" onclick="UserDashboard_showSection('overview', event)" data-tooltip="Tổng quan">
+                    <i class="fas fa-home"></i>
+                    <span>Tổng quan</span>
+                </a>
+                <a href="#" class="nav-tab" onclick="UserDashboard_showSection('profile', event)" data-tooltip="Thông tin cá nhân">
+                    <i class="fas fa-user"></i>
+                    <span>Thông tin cá nhân</span>
+                </a>
+                <a href="user-classes.html" class="nav-tab" data-tooltip="Lớp học của tôi">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Lớp học của tôi</span>
+                </a>
+                <a href="#" class="nav-tab" onclick="UserDashboard_showSection('events', event)" data-tooltip="Sự kiện">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Sự kiện</span>
+                </a>
+                <a href="#" class="nav-tab" onclick="UserDashboard_showSection('schedule', event)" data-tooltip="Lịch tập">
+                    <i class="fas fa-clock"></i>
+                    <span>Lịch tập</span>
+                </a>
+                <a href="#" class="nav-tab" onclick="UserDashboard_showSection('points', event)" data-tooltip="Tích điểm">
+                    <i class="fas fa-star"></i>
+                    <span>Tích điểm</span>
+                </a>
+                <a href="#" class="nav-tab" onclick="UserDashboard_showSection('notifications', event)" data-tooltip="Thông báo">
+                    <i class="fas fa-bell"></i>
+                    <span>Thông báo</span>
+                    <span class="badge" id="notificationBadge" style="display: none;">0</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <a href="#" class="nav-tab" onclick="Auth.logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Đăng xuất</span>
+                </a>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="dashboard-header">
+                <div class="header-left">
+                    <h1>Xin chào, <span id="userName">Thành viên</span>!</h1>
+                </div>
+                <div class="header-right">
+                    <div class="user-info">
+                        <div class="user-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="user-details">
+                            <div class="user-name" id="userFullName">Loading...</div>
+                            <div class="user-role">Thành viên</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Overview Section -->
+            <div id="overview-section" class="content-section active">
+                <!-- Content will be loaded by JavaScript -->
+            </div>
+            
+            <!-- Profile Section -->
+            <div id="profile-section" class="content-section">
+                <div id="profile-content">
+                    <!-- Content will be loaded here -->
+                </div>
+            </div>
+            
+            <!-- Classes Section -->
+            <div id="classes-section" class="content-section">
+                <div id="classes-content">
+                    <!-- Content will be loaded here -->
+                </div>
+            </div>
+            
+            <!-- Events Section -->
+            <div id="events-section" class="content-section">
+                <div id="events-content">
+                    <!-- Content will be loaded here -->
+                </div>
+            </div>
+            
+            <!-- Schedule Section -->
+            <div id="schedule-section" class="content-section">
+                <div id="schedule-content">
+                    <!-- Content will be loaded here -->
+                </div>
+            </div>
+            
+            <!-- Points Section -->
+            <div id="points-section" class="content-section">
+                <div id="points-content">
+                    <div class="loading">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <div>Đang tải hệ thống tích điểm...</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Notifications Section -->
+            <div id="notifications-section" class="content-section">
+                <div id="notifications-content">
+                    <!-- Content will be loaded here -->
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle" onclick="UserDashboard_toggleMobileMenu()">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" onclick="UserDashboard_toggleMobileMenu()"></div>
+    
+    <!-- Scripts -->
+    <script src="../website/config/config.js"></script>
+    <script src="../website/config/api-config.js"></script>
+    <script src="../website/config/api-client.js"></script>
+    <script src="../website/config/backend-checker.js"></script>
+    <script src="../website/config/auth.js"></script>
+    <script src="js/dashboard-points.js"></script>
+    <script src="js/user-dashboard.js"></script>
+    <script>
+        // Initialize dashboard when page loads
+        // Only run once after all scripts are loaded
+        let dashboardInitialized = false;
+        
+        window.addEventListener('load', async () => {
+            if (dashboardInitialized) {
+                console.log('Dashboard already initialized');
+                return;
+            }
+            
+            if (Auth.isAuthenticated()) {
+                console.log('Initializing dashboard from window.load...');
+                dashboardInitialized = true;
+            }
+        });
+    </script>
+</body>
+</html>

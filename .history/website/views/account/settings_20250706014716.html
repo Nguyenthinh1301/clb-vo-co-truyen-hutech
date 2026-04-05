@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cài đặt - CLB Võ Cổ Truyền HUTECH</title>
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .settings-page {
+            margin-top: 100px;
+            min-height: calc(100vh - 100px);
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 40px 20px;
+        }
+
+        .settings-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .settings-header {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .settings-header h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .settings-header p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 30px;
+        }
+
+        .settings-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e9ecef;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f8f9fa;
+        }
+
+        .card-header h3 {
+            color: #2c3e50;
+            margin: 0;
+            font-size: 1.3rem;
+        }
+
+        .card-header i {
+            font-size: 1.5rem;
+            color: #3498db;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .setting-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid #f8f9fa;
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-info {
+            flex: 1;
+        }
+
+        .setting-title {
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .setting-desc {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        /* Switch Toggle */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.3s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #3498db;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db, #2ecc71);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #3498db;
+            color: #3498db;
+        }
+
+        .btn-outline:hover {
+            background: #3498db;
+            color: white;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .danger-zone {
+            background: #fff5f5;
+            border: 2px solid #fed7d7;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .danger-zone h4 {
+            color: #e74c3c;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .danger-zone p {
+            color: #7f8c8d;
+            margin-bottom: 15px;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border-left: 4px solid #3498db;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(100px);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 300px;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            border-left-color: #27ae60;
+        }
+
+        .notification.error {
+            border-left-color: #e74c3c;
+        }
+
+        .notification i {
+            font-size: 1.2rem;
+            color: #3498db;
+        }
+
+        .notification.success i {
+            color: #27ae60;
+        }
+
+        .notification.error i {
+            color: #e74c3c;
+        }
+
+        @media (max-width: 768px) {
+            .settings-page {
+                padding: 20px 10px;
+            }
+
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .settings-card {
+                padding: 20px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                justify-content: center;
+            }
+
+            .notification {
+                right: 10px;
+                left: 10px;
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div id="header-placeholder"></div>
+
+    <div class="settings-page">
+        <div class="settings-container">
+            <!-- Header Section -->
+            <div class="settings-header">
+                <h1>
+                    <i class="fas fa-cog"></i>
+                    Cài đặt tài khoản
+                </h1>
+                <p>Quản lý tài khoản và tùy chọn cá nhân của bạn</p>
+            </div>
+
+            <!-- Settings Grid -->
+            <div class="settings-grid">
+                <!-- Account Settings -->
+                <div class="settings-card">
+                    <div class="card-header">
+                        <i class="fas fa-user-cog"></i>
+                        <h3>Cài đặt tài khoản</h3>
+                    </div>
+                    
+                    <form id="accountForm">
+                        <div class="form-group">
+                            <label for="displayName">Tên hiển thị</label>
+                            <input type="text" id="displayName" name="displayName" value="anh voi">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" value="123@gmail.com" readonly>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="language">Ngôn ngữ</label>
+                            <select id="language" name="language">
+                                <option value="vi" selected>Tiếng Việt</option>
+                                <option value="en">English</option>
+                            </select>
+                        </div>
+                        
+                        <div class="action-buttons">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i>
+                                Lưu thay đổi
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Privacy Settings -->
+                <div class="settings-card">
+                    <div class="card-header">
+                        <i class="fas fa-shield-alt"></i>
+                        <h3>Quyền riêng tư</h3>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-title">Hiển thị thông tin công khai</div>
+                            <div class="setting-desc">Cho phép thành viên khác xem thông tin cơ bản của bạn</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-title">Hiển thị thành tích</div>
+                            <div class="setting-desc">Cho phép hiển thị thành tích trong danh sách công khai</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-title">Cho phép liên hệ</div>
+                            <div class="setting-desc">Cho phép thành viên khác gửi tin nhắn cho bạn</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Notification Settings -->
+                <div class="settings-card">
+                    <div class="card-header">
+                        <i class="fas fa-bell"></i>
+                        <h3>Thông báo</h3>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-title">Email thông báo</div>
+                            <div class="setting-desc">Nhận thông báo qua email về hoạt động quan trọng</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-title">Thông báo lịch tập</div>
+                            <div class="setting-desc">Nhận nhắc nhở về lịch tập luyện sắp tới</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-title">Thông báo sự kiện</div>
+                            <div class="setting-desc">Nhận thông báo về các sự kiện và giải đấu mới</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-title">Thông báo thành tích</div>
+                            <div class="setting-desc">Nhận thông báo khi có thành tích mới</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Security Settings -->
+                <div class="settings-card">
+                    <div class="card-header">
+                        <i class="fas fa-lock"></i>
+                        <h3>Bảo mật</h3>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-title">Xác thực hai bước</div>
+                            <div class="setting-desc">Tăng cường bảo mật cho tài khoản của bạn</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <div class="setting-title">Đăng xuất tự động</div>
+                            <div class="setting-desc">Tự động đăng xuất sau 30 phút không hoạt động</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button type="button" class="btn btn-outline" onclick="changePassword()">
+                            <i class="fas fa-key"></i>
+                            Đổi mật khẩu
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="viewLoginHistory()">
+                            <i class="fas fa-history"></i>
+                            Lịch sử đăng nhập
+                        </button>
+                    </div>
+                    
+                    <!-- Danger Zone -->
+                    <div class="danger-zone">
+                        <h4>
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Khu vực nguy hiểm
+                        </h4>
+                        <p>Các hành động sau đây không thể hoàn tác. Vui lòng cân nhắc kỹ trước khi thực hiện.</p>
+                        <div class="action-buttons">
+                            <button type="button" class="btn btn-danger" onclick="deactivateAccount()">
+                                <i class="fas fa-user-slash"></i>
+                                Vô hiệu hóa tài khoản
+                            </button>
+                            <button type="button" class="btn btn-danger" onclick="deleteAccount()">
+                                <i class="fas fa-trash"></i>
+                                Xóa tài khoản
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div id="footer-placeholder"></div>
+
+    <script>
+        // Load header and footer
+        async function loadComponent(elementId, componentPath) {
+            try {
+                const response = await fetch(componentPath);
+                const html = await response.text();
+                document.getElementById(elementId).innerHTML = html;
+            } catch (error) {
+                console.error(`Error loading component ${componentPath}:`, error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadComponent('header-placeholder', '../../components/header.html');
+            await loadComponent('footer-placeholder', '../../components/footer.html');
+            
+            // Initialize settings page
+            initializeSettingsPage();
+        });
+
+        function initializeSettingsPage() {
+            // Load user settings
+            loadUserSettings();
+            
+            // Setup form handlers
+            setupFormHandlers();
+        }
+
+        function loadUserSettings() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            
+            // Update form with current user data
+            if (currentUser.firstName && currentUser.lastName) {
+                document.getElementById('displayName').value = `${currentUser.firstName} ${currentUser.lastName}`;
+            }
+            if (currentUser.email) {
+                document.getElementById('email').value = currentUser.email;
+            }
+        }
+
+        function setupFormHandlers() {
+            // Account form
+            const accountForm = document.getElementById('accountForm');
+            accountForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveAccountSettings();
+            });
+        }
+
+        function saveAccountSettings() {
+            const formData = new FormData(document.getElementById('accountForm'));
+            const settings = {};
+            
+            for (let [key, value] of formData.entries()) {
+                settings[key] = value;
+            }
+            
+            // Save to localStorage
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            const updatedUser = { ...currentUser, ...settings };
+            localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+            
+            showNotification('Cài đặt đã được lưu thành công!', 'success');
+        }
+
+        function changePassword() {
+            const newPassword = prompt('Nhập mật khẩu mới:');
+            if (newPassword && newPassword.length >= 6) {
+                // In a real app, this would call an API
+                showNotification('Mật khẩu đã được thay đổi thành công!', 'success');
+            } else if (newPassword !== null) {
+                showNotification('Mật khẩu phải có ít nhất 6 ký tự!', 'error');
+            }
+        }
+
+        function viewLoginHistory() {
+            alert('Tính năng lịch sử đăng nhập sẽ được phát triển trong phiên bản tiếp theo.');
+        }
+
+        function deactivateAccount() {
+            if (confirm('Bạn có chắc chắn muốn vô hiệu hóa tài khoản? Bạn có thể kích hoạt lại bất cứ lúc nào.')) {
+                showNotification('Tài khoản đã được vô hiệu hóa!', 'success');
+            }
+        }
+
+        function deleteAccount() {
+            const confirmation = prompt('Để xóa tài khoản, vui lòng nhập "XOA TAI KHOAN":');
+            if (confirmation === 'XOA TAI KHOAN') {
+                alert('Tài khoản đã được đánh dấu để xóa. Bạn có 30 ngày để hủy bỏ quyết định này.');
+                // In a real app, this would redirect to login page
+            } else if (confirmation !== null) {
+                showNotification('Xác nhận không chính xác!', 'error');
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check' : 'info'}-circle"></i>
+                <span>${message}</span>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
