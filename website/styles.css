@@ -2638,7 +2638,6 @@ section {
     position: absolute;
     top: 16px;
     right: 16px;
-    background: #c41e3a;
     color: white;
     font-size: 11px;
     font-weight: 700;
@@ -2646,6 +2645,84 @@ section {
     border-radius: 20px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+}
+
+/* Badge tự động theo trạng thái */
+.event-badge-auto {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: white;
+}
+
+.event-card.status-upcoming .event-badge-auto {
+    background: #c41e3a;
+}
+
+.event-card.status-ongoing .event-badge-auto {
+    background: #27ae60;
+    animation: pulse-badge 1.5s infinite;
+}
+
+.event-card.status-ended .event-badge-auto {
+    background: #7f8c8d;
+}
+
+@keyframes pulse-badge {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.6; }
+}
+
+/* Bộ đếm ngược */
+.event-countdown {
+    margin-top: 12px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.event-countdown.hidden {
+    display: none;
+}
+
+.countdown-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px;
+    padding: 6px 10px;
+    min-width: 48px;
+}
+
+.countdown-num {
+    font-size: 18px;
+    font-weight: 800;
+    color: #ffd700;
+    line-height: 1;
+}
+
+.countdown-label {
+    font-size: 9px;
+    color: rgba(255,255,255,0.45);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 3px;
+}
+
+.event-card.status-ongoing .countdown-num {
+    color: #2ecc71;
+}
+
+.event-card.status-ended .countdown-num {
+    color: #95a5a6;
 }
 
 .past-badge {

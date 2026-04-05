@@ -18,32 +18,16 @@
     <div id="header-placeholder"></div>
 
     <main>
-        <!-- Hero Section -->
         <div id="hero-placeholder"></div>
-        
-        <!-- About Section --->
         <div id="about-placeholder"></div>
-        
-        <!-- Schedule Section -->
         <div id="schedule-placeholder"></div>
-        
-        <!-- Coaches Section -->
         <div id="coaches-placeholder"></div>
-        
-        <!-- Gallery Section -->
         <div id="gallery-placeholder"></div>
-        
-        <!-- Events Section -->
         <div id="events-placeholder"></div>
-        
-        <!-- Services Section -->
         <div id="services-placeholder"></div>
-        
-        <!-- Contact Section -->
         <div id="contact-placeholder"></div>
     </main>
 
-    <!-- Footer -->
     <div id="footer-placeholder"></div>
 
     <!-- Coach Detail Modal -->
@@ -51,12 +35,9 @@
         <div class="coach-modal-box">
             <button class="coach-modal-close" onclick="closeCoachModal()">&times;</button>
             <div class="coach-modal-header">
-                <!-- SVG hoa văn trống đồng -->
                 <svg class="coach-modal-dong-son" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Ngôi sao trung tâm -->
                     <circle cx="100" cy="100" r="12" fill="#c49e28"/>
                     <polygon points="100,78 105,95 122,95 109,105 114,122 100,112 86,122 91,105 78,95 95,95" fill="#c49e28"/>
-                    <!-- Vòng tròn đồng tâm -->
                     <circle cx="100" cy="100" r="20" fill="none" stroke="#c49e28" stroke-width="1.5"/>
                     <circle cx="100" cy="100" r="30" fill="none" stroke="#c49e28" stroke-width="1"/>
                     <circle cx="100" cy="100" r="42" fill="none" stroke="#c49e28" stroke-width="1.5"/>
@@ -64,20 +45,18 @@
                     <circle cx="100" cy="100" r="68" fill="none" stroke="#c49e28" stroke-width="1.5"/>
                     <circle cx="100" cy="100" r="82" fill="none" stroke="#c49e28" stroke-width="1"/>
                     <circle cx="100" cy="100" r="95" fill="none" stroke="#c49e28" stroke-width="1.5"/>
-                    <!-- Tia hoa văn -->
                     <g stroke="#c49e28" stroke-width="0.8" opacity="0.7">
                         <line x1="100" y1="5"  x2="100" y2="195"/>
                         <line x1="5"   y1="100" x2="195" y2="100"/>
                         <line x1="29"  y1="29"  x2="171" y2="171"/>
                         <line x1="171" y1="29"  x2="29"  y2="171"/>
-                        <line x1="100" y1="5"   x2="100" y2="195" transform="rotate(22.5,100,100)"/>
-                        <line x1="100" y1="5"   x2="100" y2="195" transform="rotate(45,100,100)"/>
-                        <line x1="100" y1="5"   x2="100" y2="195" transform="rotate(67.5,100,100)"/>
-                        <line x1="100" y1="5"   x2="100" y2="195" transform="rotate(112.5,100,100)"/>
-                        <line x1="100" y1="5"   x2="100" y2="195" transform="rotate(135,100,100)"/>
-                        <line x1="100" y1="5"   x2="100" y2="195" transform="rotate(157.5,100,100)"/>
+                        <line x1="100" y1="5" x2="100" y2="195" transform="rotate(22.5,100,100)"/>
+                        <line x1="100" y1="5" x2="100" y2="195" transform="rotate(45,100,100)"/>
+                        <line x1="100" y1="5" x2="100" y2="195" transform="rotate(67.5,100,100)"/>
+                        <line x1="100" y1="5" x2="100" y2="195" transform="rotate(112.5,100,100)"/>
+                        <line x1="100" y1="5" x2="100" y2="195" transform="rotate(135,100,100)"/>
+                        <line x1="100" y1="5" x2="100" y2="195" transform="rotate(157.5,100,100)"/>
                     </g>
-                    <!-- Hình chim lạc cách điệu (vòng ngoài) -->
                     <g fill="#c49e28" opacity="0.6" transform="translate(100,100)">
                         <path d="M0,-68 Q8,-60 4,-52 Q0,-58 -4,-52 Q-8,-60 0,-68Z" transform="rotate(0)"/>
                         <path d="M0,-68 Q8,-60 4,-52 Q0,-58 -4,-52 Q-8,-60 0,-68Z" transform="rotate(45)"/>
@@ -111,11 +90,10 @@
 
     <script src="script.js"></script>
     <script>
+        // ===== COACH MODAL =====
         const coachData = {
             coach1: {
-                name: 'Trương Ngọc Lĩnh',
-                title: 'Phó Chủ Nhiệm',
-                belt: 'Cấp 14 - 2 đẳng',
+                name: 'Trương Ngọc Lĩnh', title: 'Phó Chủ Nhiệm', belt: 'Cấp 14 - 2 đẳng',
                 avatar: 'assets/images_Avatar/Avatar_Anh_Linh.jpg',
                 details: [
                     { label: 'Chức vụ', value: 'Phó Chủ Nhiệm CLB' },
@@ -128,9 +106,7 @@
                 ]
             },
             coach2: {
-                name: 'Trần Võ Minh Ngọc',
-                title: 'Chủ nhiệm CLB',
-                belt: 'Cấp 16 - 4 đẳng',
+                name: 'Trần Võ Minh Ngọc', title: 'Chủ nhiệm CLB', belt: 'Cấp 16 - 4 đẳng',
                 avatar: 'assets/images_Avatar/Avatar_Anh_Ngoc.jpg',
                 details: [
                     { label: 'Chức vụ', value: 'Chủ nhiệm CLB Võ Cổ Truyền HUTECH' },
@@ -143,9 +119,7 @@
                 ]
             },
             coach3: {
-                name: 'Nguyễn Quốc An',
-                title: 'Phó Chủ Nhiệm CLB',
-                belt: 'Cấp 15 - 3 đẳng',
+                name: 'Nguyễn Quốc An', title: 'Phó Chủ Nhiệm CLB', belt: 'Cấp 15 - 3 đẳng',
                 avatar: 'assets/images_Avatar/Avatar_An_2.jpg',
                 details: [
                     { label: 'Chức vụ', value: 'Phó Chủ Nhiệm CLB' },
@@ -158,10 +132,7 @@
                 ]
             },
             coach4: {
-                name: 'Hoàng Văn B',
-                title: 'Huấn Luyện Viên',
-                belt: 'Cấp 0 - 0 đẳng',
-                avatar: '',
+                name: 'Hoàng Văn B', title: 'Huấn Luyện Viên', belt: 'Cấp 0 - 0 đẳng', avatar: '',
                 details: [
                     { label: 'Chức vụ', value: 'Huấn Luyện Viên' },
                     { label: 'Cấp bậc', value: 'Cấp 0 - 0 đẳng' },
@@ -172,10 +143,7 @@
                 ]
             },
             coach5: {
-                name: 'Trần Quốc Huy',
-                title: 'Huấn Luyện Viên Quyền Thuật',
-                belt: 'Cấp 0 - 0 đẳng',
-                avatar: '',
+                name: 'Trần Quốc Huy', title: 'Huấn Luyện Viên Quyền Thuật', belt: 'Cấp 0 - 0 đẳng', avatar: '',
                 details: [
                     { label: 'Chức vụ', value: 'Huấn Luyện Viên Quyền Thuật' },
                     { label: 'Cấp bậc', value: 'Cấp 0 - 0 đẳng' },
@@ -187,10 +155,7 @@
                 ]
             },
             coach6: {
-                name: 'Nguyễn Thị Lan',
-                title: 'Huấn Luyện Viên',
-                belt: 'Cấp 0 - Sơ đẳng',
-                avatar: '',
+                name: 'Nguyễn Thị Lan', title: 'Huấn Luyện Viên', belt: 'Cấp 0 - Sơ đẳng', avatar: '',
                 details: [
                     { label: 'Chức vụ', value: 'Huấn Luyện Viên' },
                     { label: 'Cấp bậc', value: 'Cấp 0 - Sơ đẳng' },
@@ -213,12 +178,9 @@
             img.src = data.avatar || '';
             img.alt = data.name;
             img.style.display = data.avatar ? 'block' : 'none';
-            document.getElementById('modalTableBody').innerHTML = data.details.map(row => `
-                <tr>
-                    <td class="detail-label"><i class="fas fa-chevron-right"></i> ${row.label}</td>
-                    <td class="detail-value">${row.value}</td>
-                </tr>
-            `).join('');
+            document.getElementById('modalTableBody').innerHTML = data.details.map(row =>
+                `<tr><td class="detail-label"><i class="fas fa-chevron-right"></i> ${row.label}</td><td class="detail-value">${row.value}</td></tr>`
+            ).join('');
             document.getElementById('coachModal').classList.add('active');
             document.body.style.overflow = 'hidden';
         }
@@ -235,105 +197,129 @@
                 document.body.style.overflow = '';
             }
         });
-    </script>
-    <script>
-        // Load components
+
+        // ===== BỘ ĐẾM SỰ KIỆN =====
+        function initEventCountdowns() {
+            const cards = document.querySelectorAll('.event-card[data-start]');
+            if (!cards.length) return;
+
+            function renderCountdown(el, diff) {
+                el.classList.remove('hidden');
+                const days    = Math.floor(diff / 86400000);
+                const hours   = Math.floor((diff % 86400000) / 3600000);
+                const minutes = Math.floor((diff % 3600000) / 60000);
+                const seconds = Math.floor((diff % 60000) / 1000);
+                el.innerHTML = `
+                    <div class="countdown-unit"><span class="countdown-num">${String(days).padStart(2,'0')}</span><span class="countdown-label">Ngày</span></div>
+                    <div class="countdown-unit"><span class="countdown-num">${String(hours).padStart(2,'0')}</span><span class="countdown-label">Giờ</span></div>
+                    <div class="countdown-unit"><span class="countdown-num">${String(minutes).padStart(2,'0')}</span><span class="countdown-label">Phút</span></div>
+                    <div class="countdown-unit"><span class="countdown-num">${String(seconds).padStart(2,'0')}</span><span class="countdown-label">Giây</span></div>
+                `;
+            }
+
+            function update() {
+                const now = new Date();
+                cards.forEach(function(card) {
+                    const startDate = new Date(card.dataset.start + 'T00:00:00');
+                    const endDate   = new Date(card.dataset.end   + 'T23:59:59');
+                    const badge     = card.querySelector('.event-badge-auto');
+                    const countdown = card.querySelector('.event-countdown');
+                    if (!badge || !countdown) return;
+
+                    card.classList.remove('status-upcoming', 'status-ongoing', 'status-ended');
+
+                    if (now < startDate) {
+                        card.classList.add('status-upcoming');
+                        badge.textContent = 'Sắp diễn ra';
+                        renderCountdown(countdown, startDate - now);
+                    } else if (now <= endDate) {
+                        card.classList.add('status-ongoing');
+                        badge.textContent = '🟢 Đang diễn ra';
+                        renderCountdown(countdown, endDate - now);
+                    } else {
+                        card.classList.add('status-ended');
+                        badge.textContent = 'Đã kết thúc';
+                        countdown.classList.add('hidden');
+                    }
+                });
+            }
+
+            update();
+            setInterval(update, 1000);
+        }
+
+        // ===== LOAD COMPONENTS =====
         async function loadComponent(elementId, componentPath) {
             try {
                 const response = await fetch(componentPath);
                 const html = await response.text();
                 document.getElementById(elementId).innerHTML = html;
             } catch (error) {
-                console.error(`Error loading component ${componentPath}:`, error);
-                // Show error in UI
-                document.getElementById(elementId).innerHTML = `
-                    <div style="padding: 40px; text-align: center; color: #999;">
-                        <i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 20px;"></i>
-                        <p>Không thể tải nội dung. Vui lòng thử lại sau.</p>
-                    </div>
-                `;
+                console.error('Error loading component ' + componentPath + ':', error);
+                document.getElementById(elementId).innerHTML =
+                    '<div style="padding:40px;text-align:center;color:#999;"><i class="fas fa-exclamation-triangle" style="font-size:48px;margin-bottom:20px;"></i><p>Không thể tải nội dung. Vui lòng thử lại sau.</p></div>';
             }
         }
 
-        // Load all components
         document.addEventListener('DOMContentLoaded', async function() {
-            await loadComponent('header-placeholder', 'components/header.html');
-            await loadComponent('hero-placeholder', 'components/hero-section.html');
-            await loadComponent('about-placeholder', 'components/about-section.html');
+            await loadComponent('header-placeholder',   'components/header.html');
+            await loadComponent('hero-placeholder',     'components/hero-section.html');
+            await loadComponent('about-placeholder',    'components/about-section.html');
             await loadComponent('schedule-placeholder', 'components/schedule-section.html');
-            await loadComponent('coaches-placeholder', 'components/coaches-section.html');
-            await loadComponent('gallery-placeholder', 'components/gallery-section.html');
-            await loadComponent('events-placeholder', 'components/events-section.html');
+            await loadComponent('coaches-placeholder',  'components/coaches-section.html');
+            await loadComponent('gallery-placeholder',  'components/gallery-section.html');
+            await loadComponent('events-placeholder',   'components/events-section.html');
             await loadComponent('services-placeholder', 'components/services-section.html');
-            await loadComponent('contact-placeholder', 'components/contact-section.html');
-            await loadComponent('footer-placeholder', 'components/footer.html');
-            
-            // Hide loading overlay
-            setTimeout(() => {
+            await loadComponent('contact-placeholder',  'components/contact-section.html');
+            await loadComponent('footer-placeholder',   'components/footer.html');
+
+            setTimeout(function() {
                 document.getElementById('loading-overlay').classList.add('hidden');
             }, 1000);
-            
-            // Initialize components
+
             setTimeout(initializeComponents, 200);
+            setTimeout(initEventCountdowns, 300);
         });
 
         function initializeComponents() {
-            // Initialize contact form
             const contactForm = document.getElementById('contactForm');
-            if (contactForm) {
-                contactForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    
-                    // Get form data
-                    const formData = {
-                        name: document.getElementById('name').value,
-                        email: document.getElementById('email').value,
-                        phone: document.getElementById('phone').value,
-                        message: document.getElementById('message').value
-                    };
-                    
-                    // Validate
-                    if (!formData.name || !formData.email || !formData.phone) {
-                        showNotification('Vui lòng điền đầy đủ thông tin bắt buộc!', 'error');
-                        return;
+            if (!contactForm) return;
+            contactForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = {
+                    name:    document.getElementById('name').value,
+                    email:   document.getElementById('email').value,
+                    phone:   document.getElementById('phone').value,
+                    message: document.getElementById('message').value
+                };
+                if (!formData.name || !formData.email || !formData.phone) {
+                    showNotification('Vui lòng điền đầy đủ thông tin bắt buộc!', 'error'); return;
+                }
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+                    showNotification('Email không hợp lệ!', 'error'); return;
+                }
+                if (!/^[0-9]{10,11}$/.test(formData.phone.replace(/\D/g, ''))) {
+                    showNotification('Số điện thoại không hợp lệ!', 'error'); return;
+                }
+                showNotification('Đang gửi...', 'info');
+                fetch('http://localhost:3001/api/contact', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                })
+                .then(function(res) { return res.json(); })
+                .then(function(data) {
+                    if (data.success) {
+                        showNotification('Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi trong thời gian sớm nhất.', 'success');
+                        contactForm.reset();
+                    } else {
+                        showNotification(data.message || 'Gửi thất bại, vui lòng thử lại.', 'error');
                     }
-                    
-                    // Email validation
-                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                    if (!emailRegex.test(formData.email)) {
-                        showNotification('Email không hợp lệ!', 'error');
-                        return;
-                    }
-                    
-                    // Phone validation
-                    const phoneRegex = /^[0-9]{10,11}$/;
-                    const cleanPhone = formData.phone.replace(/\D/g, '');
-                    if (!phoneRegex.test(cleanPhone)) {
-                        showNotification('Số điện thoại không hợp lệ!', 'error');
-                        return;
-                    }
-                    
-                    showNotification('Đang gửi...', 'info');
-
-                    fetch('http://localhost:3001/api/contact', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(formData)
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.success) {
-                            showNotification('Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi trong thời gian sớm nhất.', 'success');
-                            contactForm.reset();
-                        } else {
-                            showNotification(data.message || 'Gửi thất bại, vui lòng thử lại.', 'error');
-                        }
-                    })
-                    .catch(() => {
-                        showNotification('⚠️ Server chưa khởi động. Vui lòng chạy lệnh: cd backend && npm start', 'error');
-                    });
+                })
+                .catch(function() {
+                    showNotification('⚠️ Server chưa khởi động. Vui lòng chạy lệnh: cd backend && npm start', 'error');
                 });
-            }
+            });
         }
     </script>
 </body>
