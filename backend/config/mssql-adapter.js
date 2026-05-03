@@ -67,7 +67,8 @@ const adapter = {
     // 2. Convert MySQL functions
     mssqlQuery = mssqlQuery.replace(/NOW\(\)/gi, 'GETDATE()');
     mssqlQuery = mssqlQuery.replace(/UNIX_TIMESTAMP\(\)/gi, 'DATEDIFF(SECOND, \'1970-01-01\', GETDATE())');
-    mssqlQuery = mssqlQuery.replace(/DATE\(/gi, 'CAST(');
+    // Convert DATE(expr) → CAST(expr AS DATE) — chỉ match DATE( không phải GETDATE(
+    mssqlQuery = mssqlQuery.replace(/\bDATE\(/gi, 'CAST(');
     
     // 3. Convert AUTO_INCREMENT to IDENTITY
     mssqlQuery = mssqlQuery.replace(/AUTO_INCREMENT/gi, 'IDENTITY(1,1)');
@@ -226,16 +227,28 @@ const adapter = {
     }
   },
 
-  // Delete record
-  async delete(table, conditions) {
+  // Delete record - supports both object conditions and SQL WHERE clause
+  async delete(table, conditionsOrWhere, conditionValues = []) {
     try {
-      const keys = Object.keys(conditions);
-      const whereClause = keys.map((key, index) => `${key} = @param${index}`).join(' AND ');
-      const values = Object.values(conditions);
-      
-      const sql = `DELETE FROM ${table} WHERE ${whereClause}`;
+      let sql;
+      let values;
+
+      if (typeof conditionsOrWhere === 'string') {
+        // SQL WHERE clause: delete('table', 'id = ?', [1])
+        let whereClause = conditionsOrWhere;
+        let paramIndex = 0;
+        whereClause = whereClause.replace(/\?/g, () => `@param${paramIndex++}`);
+        sql = `DELETE FROM ${table} WHERE ${whereClause}`;
+        values = conditionValues;
+      } else {
+        // Object conditions: delete('table', { id: 1 })
+        const keys = Object.keys(conditionsOrWhere);
+        const whereClause = keys.map((key, index) => `${key} = @param${index}`).join(' AND ');
+        values = Object.values(conditionsOrWhere);
+        sql = `DELETE FROM ${table} WHERE ${whereClause}`;
+      }
+
       await mssqlDb.query(sql, values);
-      
       return { affectedRows: 1 };
     } catch (error) {
       throw error;

@@ -1,5 +1,26 @@
 const { body, param, query, validationResult } = require('express-validator');
 
+/**
+ * Parse và validate pagination params từ query string
+ * Ngăn chặn ?limit=999999 làm quá tải DB
+ * @param {object} queryParams - req.query
+ * @param {number} defaultLimit - giới hạn mặc định
+ * @param {number} maxLimit - giới hạn tối đa cho phép
+ * @returns {{ page, limit, offset }}
+ */
+function parsePagination(queryParams, defaultLimit = 20, maxLimit = 100) {
+    let page  = parseInt(queryParams.page)  || 1;
+    let limit = parseInt(queryParams.limit) || defaultLimit;
+
+    // Đảm bảo giá trị hợp lệ
+    if (page  < 1)        page  = 1;
+    if (limit < 1)        limit = 1;
+    if (limit > maxLimit) limit = maxLimit;  // Giới hạn tối đa
+
+    const offset = (page - 1) * limit;
+    return { page, limit, offset };
+}
+
 // Validation error handler
 const handleValidationErrors = (req, res, next) => {
     const errors = validationResult(req);
@@ -7,7 +28,7 @@ const handleValidationErrors = (req, res, next) => {
     if (!errors.isEmpty()) {
         return res.status(400).json({
             success: false,
-            message: 'Validation failed',
+            message: 'Dữ liệu không hợp lệ',
             errors: errors.array().map(error => ({
                 field: error.path,
                 message: error.msg,
@@ -41,8 +62,8 @@ const ValidationRules = {
             .withMessage('Tên phải từ 1-100 ký tự'),
         body('last_name')
             .trim()
-            .isLength({ min: 1, max: 100 })
-            .withMessage('Họ phải từ 1-100 ký tự'),
+            .isLength({ min: 0, max: 100 })
+            .withMessage('Họ không được quá 100 ký tự'),
         body('phone_number')
             .optional()
             .matches(/^(0|\+84)[0-9]{9,10}$/)
@@ -400,5 +421,6 @@ const customValidations = {
 module.exports = {
     ValidationRules,
     handleValidationErrors,
-    customValidations
+    customValidations,
+    parsePagination
 };

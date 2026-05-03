@@ -62,7 +62,7 @@ const authenticate = async (req, res, next) => {
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
             return res.status(401).json({
                 success: false,
-                message: 'Access token required'
+                message: 'Yêu cầu token xác thực'
             });
         }
 
@@ -79,6 +79,7 @@ const authenticate = async (req, res, next) => {
             dateCheck = 'expires_at > NOW()';
         }
         
+        // Support both 'token' (MySQL schema) and 'token_hash' (MSSQL schema)
         const session = await db.findOne(
             `SELECT * FROM user_sessions WHERE user_id = ? AND token = ? AND is_active = 1 AND ${dateCheck}`,
             [decoded.userId, token]
@@ -87,7 +88,7 @@ const authenticate = async (req, res, next) => {
         if (!session) {
             return res.status(401).json({
                 success: false,
-                message: 'Invalid or expired session'
+                message: 'Phiên đăng nhập không hợp lệ hoặc đã hết hạn'
             });
         }
 
@@ -100,7 +101,7 @@ const authenticate = async (req, res, next) => {
         if (!user) {
             return res.status(401).json({
                 success: false,
-                message: 'User not found or inactive'
+                message: 'Tài khoản không tồn tại hoặc đã bị khóa'
             });
         }
 
@@ -110,10 +111,10 @@ const authenticate = async (req, res, next) => {
         
         next();
     } catch (error) {
-        console.error('Authentication error:', error);
+        console.error('Authentication error detail:', error.message, error.stack?.split('\n')[1]);
         return res.status(401).json({
             success: false,
-            message: 'Invalid token'
+            message: 'Token không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại.'
         });
     }
 };
@@ -124,14 +125,14 @@ const authorize = (...roles) => {
         if (!req.user) {
             return res.status(401).json({
                 success: false,
-                message: 'Authentication required'
+                message: 'Yêu cầu xác thực'
             });
         }
 
         if (!roles.includes(req.user.role)) {
             return res.status(403).json({
                 success: false,
-                message: 'Insufficient permissions'
+                message: 'Bạn không có quyền thực hiện thao tác này'
             });
         }
 
@@ -176,8 +177,8 @@ class SessionManager {
         expiresAt.setDate(expiresAt.getDate() + 7); // 7 days
 
         try {
-            // Try to insert new session
-            const sessionId = await db.insert('user_sessions', {
+            // Insert session - DB thực tế dùng cột 'token' và 'refresh_token'
+            const sessionData = {
                 user_id: userId,
                 token: token,
                 refresh_token: refreshToken,
@@ -185,7 +186,9 @@ class SessionManager {
                 ip_address: deviceInfo.ip,
                 user_agent: deviceInfo.userAgent,
                 expires_at: expiresAt
-            });
+            };
+
+            const sessionId = await db.insert('user_sessions', sessionData);
 
             return {
                 sessionId,
@@ -198,19 +201,10 @@ class SessionManager {
             if (error.number === 2627 || error.code === 'ER_DUP_ENTRY') {
                 console.log('Duplicate token detected, cleaning up old session...');
                 
-                // Delete existing session with same token
                 await db.delete('user_sessions', 'token = ?', [token]);
                 
                 // Retry insert
-                const sessionId = await db.insert('user_sessions', {
-                    user_id: userId,
-                    token: token,
-                    refresh_token: refreshToken,
-                    device_info: JSON.stringify(deviceInfo),
-                    ip_address: deviceInfo.ip,
-                    user_agent: deviceInfo.userAgent,
-                    expires_at: expiresAt
-                });
+                const sessionId = await db.insert('user_sessions', sessionData);
 
                 return {
                     sessionId,
@@ -249,11 +243,7 @@ class SessionManager {
             // Update session
             await db.update(
                 'user_sessions',
-                {
-                    token: newToken,
-                    refresh_token: newRefreshToken,
-                    expires_at: expiresAt
-                },
+                { token: newToken, refresh_token: newRefreshToken, expires_at: expiresAt },
                 'id = ?',
                 [session.id]
             );
@@ -290,10 +280,12 @@ class SessionManager {
 
     // Clean expired sessions
     static async cleanExpiredSessions() {
-        // Use GETDATE() for MSSQL instead of NOW()
+        const dbType = process.env.DB_TYPE || 'mysql';
+        const dateFunc = dbType === 'mssql' ? 'GETDATE()' : 'NOW()';
         return await db.delete(
             'user_sessions',
-            'expires_at < GETDATE() OR is_active = 0'
+            `expires_at < ${dateFunc} OR is_active = 0`,
+            []
         );
     }
 
@@ -313,7 +305,7 @@ const requireAdmin = (req, res, next) => {
     if (!req.user) {
         return res.status(401).json({
             success: false,
-            message: 'Unauthorized'
+            message: 'Yêu cầu xác thực'
         });
     }
     
@@ -332,10 +324,52 @@ const requireAdmin = (req, res, next) => {
  */
 const authenticateToken = authenticate;
 
+/**
+ * Middleware: Chỉ verify JWT token, KHÔNG check DB session
+ * Dùng cho các endpoint ít nhạy cảm như upload ảnh
+ */
+const authenticateJwt = async (req, res, next) => {
+    try {
+        const authHeader = req.headers.authorization;
+
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return res.status(401).json({
+                success: false,
+                message: 'Yêu cầu token xác thực'
+            });
+        }
+
+        const token = authHeader.substring(7);
+        const decoded = AuthUtils.verifyToken(token);
+
+        // Chỉ lấy user từ DB, không check session
+        const user = await db.findOne(
+            'SELECT id, email, username, first_name, last_name, role, membership_status, is_active FROM users WHERE id = ? AND is_active = 1',
+            [decoded.userId]
+        );
+
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                message: 'Tài khoản không tồn tại hoặc đã bị khóa'
+            });
+        }
+
+        req.user = user;
+        next();
+    } catch (error) {
+        return res.status(401).json({
+            success: false,
+            message: 'Token không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại.'
+        });
+    }
+};
+
 module.exports = {
     AuthUtils,
     authenticate,
     authenticateToken,
+    authenticateJwt,
     authorize,
     optionalAuth,
     requireAdmin,

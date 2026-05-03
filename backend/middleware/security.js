@@ -30,7 +30,7 @@ const ipWhitelist = (allowedIPs = []) => {
     return res.status(403).json({
       success: false,
       error: {
-        message: 'Access denied: IP not whitelisted',
+        message: 'Truy cập bị từ chối: IP không được phép',
         code: 'IP_NOT_WHITELISTED'
       }
     });
@@ -49,7 +49,7 @@ const verifySignature = (req, res, next) => {
     return res.status(401).json({
       success: false,
       error: {
-        message: 'Missing security headers',
+        message: 'Thiếu security headers',
         code: 'MISSING_SECURITY_HEADERS'
       }
     });
@@ -64,7 +64,7 @@ const verifySignature = (req, res, next) => {
     return res.status(401).json({
       success: false,
       error: {
-        message: 'Request expired',
+        message: 'Yêu cầu đã hết hạn',
         code: 'REQUEST_EXPIRED'
       }
     });
@@ -82,7 +82,7 @@ const verifySignature = (req, res, next) => {
     return res.status(401).json({
       success: false,
       error: {
-        message: 'Invalid signature',
+        message: 'Chữ ký không hợp lệ',
         code: 'INVALID_SIGNATURE'
       }
     });
@@ -179,7 +179,7 @@ const require2FA = async (req, res, next) => {
     return res.status(401).json({
       success: false,
       error: {
-        message: 'Invalid 2FA token',
+        message: 'Mã xác thực 2FA không hợp lệ',
         code: 'INVALID_2FA_TOKEN'
       }
     });
@@ -225,7 +225,7 @@ class AdvancedRateLimiter {
         return res.status(429).json({
           success: false,
           error: {
-            message: 'Too many requests, please try again later',
+            message: 'Quá nhiều yêu cầu, vui lòng thử lại sau.',
             code: 'RATE_LIMIT_EXCEEDED',
             retryAfter: Math.ceil(windowMs / 1000)
           }
@@ -288,7 +288,7 @@ class AdvancedRateLimiter {
         return res.status(429).json({
           success: false,
           error: {
-            message: 'Too many requests, please try again later',
+            message: 'Quá nhiều yêu cầu, vui lòng thử lại sau.',
             code: 'RATE_LIMIT_EXCEEDED'
           }
         });
@@ -316,7 +316,7 @@ const csrfProtection = (req, res, next) => {
     return res.status(403).json({
       success: false,
       error: {
-        message: 'Invalid CSRF token',
+        message: 'CSRF token không hợp lệ',
         code: 'INVALID_CSRF_TOKEN'
       }
     });

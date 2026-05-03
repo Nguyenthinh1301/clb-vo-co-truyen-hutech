@@ -27,17 +27,14 @@ app.use(helmet({
 // CORS configuration - Allow all origins in development
 const corsOptions = {
     origin: function (origin, callback) {
-        // Allow requests with no origin (like mobile apps or curl requests)
-        if (!origin) return callback(null, true);
-        
-        // In development, allow all origins
-        if (process.env.NODE_ENV === 'development') {
+        // Always allow: no origin (file://, curl, mobile), or development mode
+        if (!origin || process.env.NODE_ENV === 'development') {
             return callback(null, true);
         }
-        
-        // In production, check allowed origins
-        const allowedOrigins = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : ['http://localhost:3000'];
-        if (allowedOrigins.indexOf(origin) !== -1) {
+        // Production: check whitelist
+        const allowed = (process.env.CORS_ORIGIN || '')
+            .split(',').map(o => o.trim()).filter(Boolean);
+        if (allowed.includes(origin)) {
             callback(null, true);
         } else {
             callback(new Error('Not allowed by CORS'));
@@ -52,15 +49,14 @@ app.use(cors(corsOptions));
 
 // General API rate limiting
 const generalLimiter = rateLimit({
-    windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
-    max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100, // limit each IP to 100 requests per windowMs
+    windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000,
+    max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || (process.env.NODE_ENV === 'production' ? 50 : 100),
     message: {
         success: false,
         message: 'Quá nhiều yêu cầu từ IP này, vui lòng thử lại sau.'
     },
     standardHeaders: true,
     legacyHeaders: false,
-    // Skip rate limiting for localhost in development
     skip: (req) => {
         if (process.env.NODE_ENV === 'development') {
             const ip = req.ip || req.connection.remoteAddress;
@@ -70,19 +66,18 @@ const generalLimiter = rateLimit({
     }
 });
 
-// Strict rate limiting for login endpoint (nới lỏng cho development)
+// Strict rate limiting for login endpoint
 const loginLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: process.env.NODE_ENV === 'development' ? 10000 : 10, // 10000 cho dev, 10 cho production
-    skipSuccessfulRequests: true, // Don't count successful requests
+    windowMs: 15 * 60 * 1000,
+    max: process.env.NODE_ENV === 'production' ? 5 : 10000,
+    skipSuccessfulRequests: true,
     message: {
         success: false,
         message: 'Quá nhiều lần đăng nhập thất bại. Vui lòng thử lại sau 15 phút.',
-        retryAfter: 15 * 60 // seconds
+        retryAfter: 15 * 60
     },
     standardHeaders: true,
     legacyHeaders: false,
-    // Skip rate limiting for localhost in development
     skip: (req) => {
         if (process.env.NODE_ENV === 'development') {
             const ip = req.ip || req.connection.remoteAddress;
@@ -90,10 +85,7 @@ const loginLimiter = rateLimit({
         }
         return false;
     },
-    // Sử dụng chỉ IP để tránh phức tạp
-    keyGenerator: (req) => {
-        return req.ip;
-    }
+    keyGenerator: (req) => req.ip
 });
 
 // Password reset rate limiting
@@ -111,8 +103,8 @@ app.use('/api/auth/login', loginLimiter);
 app.use('/api/auth/forgot-password', passwordResetLimiter);
 
 // Body parsing middleware
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(express.json({ limit: '15mb' }));
+app.use(express.urlencoded({ extended: true, limit: '15mb' }));
 
 // Compression middleware
 app.use(compression());
@@ -172,9 +164,10 @@ app.get('/health', async (req, res) => {
             timestamp: new Date().toISOString(),
             environment: process.env.NODE_ENV || 'development',
             database: dbStatus,
-            connections: dbStats,
-            cache: cacheStats,
-            scheduler: schedulerStatus,
+            // Ẩn thông tin chi tiết trong production
+            connections: process.env.NODE_ENV !== 'production' ? dbStats : undefined,
+            cache: process.env.NODE_ENV !== 'production' ? cacheStats : undefined,
+            scheduler: process.env.NODE_ENV !== 'production' ? schedulerStatus : undefined,
             uptime: process.uptime()
         });
     } catch (error) {
@@ -186,11 +179,15 @@ app.get('/health', async (req, res) => {
     }
 });
 
-// API Documentation
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
-    customCss: '.swagger-ui .topbar { display: none }',
-    customSiteTitle: 'CLB Võ Cổ Truyền HUTECH API Docs'
-}));
+// API Documentation — chỉ bật trong development
+if (process.env.NODE_ENV !== 'production') {
+    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+        customCss: '.swagger-ui .topbar { display: none }',
+        customSiteTitle: 'CLB Võ Cổ Truyền HUTECH API Docs'
+    }));
+} else {
+    app.get('/api-docs', (req, res) => res.status(404).json({ success: false, message: 'Not found' }));
+}
 
 // API Routes
 app.use('/health', require('./routes/health'));
@@ -206,19 +203,25 @@ app.use('/api/events', require('./routes/events'));
 app.use('/api/attendance', require('./routes/attendance'));
 app.use('/api/notifications', require('./routes/notifications'));
 app.use('/api/contact', require('./routes/contact'));
-app.use('/api/admin', require('./routes/admin'));
-app.use('/api/admin/stats', require('./routes/admin-stats'));
-app.use('/api/admin/members', require('./routes/members'));
-app.use('/api/admin/content', require('./routes/admin-content'));
-app.use('/api/admin/notifications', require('./routes/admin-notifications'));
-app.use('/api/admin/class-management', require('./routes/admin-class-management'));
-app.use('/api/admin/points', require('./routes/admin-points'));
 app.use('/api/user', require('./routes/user-dashboard'));
 app.use('/api/user/content', require('./routes/user-content'));
-app.use('/api/points', require('./routes/points'));
+app.use('/api/public', require('./routes/public-content'));
+app.use('/api/cms', require('./routes/admin-cms'));
+app.use('/api/upload', require('./routes/upload'));
+app.use('/api/gallery', require('./routes/gallery'));
 
-// Serve static files (uploads)
-app.use('/uploads', express.static('uploads'));
+// Serve static files (uploads) — dùng absolute path để tránh lỗi khi chạy từ thư mục khác
+// Thêm security headers để ngăn browser thực thi file HTML/SVG được upload
+const path = require('path');
+app.use('/uploads', (req, res, next) => {
+    // Ngăn browser render HTML/SVG như trang web — chỉ download
+    res.setHeader('Content-Security-Policy', "default-src 'none'");
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('Content-Disposition', 'inline');
+    // Cache ảnh 7 ngày — ảnh upload không thay đổi (tên file là hash)
+    res.setHeader('Cache-Control', 'public, max-age=604800, immutable');
+    next();
+}, express.static(path.join(__dirname, 'uploads')));
 
 // 404 handler - must be after all routes
 app.use(notFound);
@@ -264,8 +267,10 @@ process.on('SIGINT', async () => {
 });
 
 // Start server
-const PORT = process.env.PORT || 3000;
-const HOST = process.env.HOST || 'localhost';
+const PORT = process.env.PORT || 3001;
+// Production: listen 0.0.0.0 để nhận kết nối từ bên ngoài
+// Development: listen localhost để bảo mật hơn
+const HOST = process.env.HOST || (process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost');
 
 const server = app.listen(PORT, HOST, () => {
     console.log(`
