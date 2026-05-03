@@ -10,7 +10,7 @@
     // ── Điền URL API production của bạn vào đây ──────────────
     // Ví dụ: 'https://api.vocotruyenhutech.edu.vn/api'
     //        'https://vocotruyenhutech.edu.vn/api'   (nếu cùng domain)
-    var PRODUCTION_API_BASE = 'https://api.vocotruyenhutech.edu.vn/api';
+    var PRODUCTION_API_BASE = 'https://clb-vo-co-truyen-hutech.onrender.com/api';
     // ─────────────────────────────────────────────────────────
 
     var h       = window.location.hostname;
