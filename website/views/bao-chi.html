@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="../">
+    <title>Báo chí - CLB Võ Cổ Truyền HUTECH</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="assets/css/tin-tuc-base.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <div class="page-hero">
+        <div class="breadcrumb"><a href="index.html">Trang chủ</a> &rsaquo; Tin tức &rsaquo; Báo chí</div>
+        <h1>Báo Chí Về HUTECH – Võ Cổ Truyền</h1>
+        <p>Những bài viết và đưa tin của báo chí về CLB</p>
+    </div>
+    <div class="page-body">
+        <div class="tn-coming-soon">
+            <i class="fas fa-newspaper"></i>
+            <h3>Đang cập nhật nội dung</h3>
+            <p>Chúng tôi đang tổng hợp các bài viết báo chí về CLB. Nội dung sẽ được cập nhật sớm nhất.</p>
+        </div>
+        <div class="tn-section-title"><i class="fas fa-bullhorn"></i> Truyền thông & Mạng xã hội</div>
+        <div class="tn-grid">
+            <div class="tn-card">
+                <img class="tn-card-img" src="assets/images_Dien_Show/Show_Quoc_Te_2.jpg" alt="Truyền thông">
+                <div class="tn-card-body">
+                    <span class="tn-card-tag">Mạng xã hội</span>
+                    <h4>Fanpage Facebook CLB Võ Cổ Truyền HUTECH</h4>
+                    <p>Theo dõi fanpage để cập nhật tin tức, hình ảnh và video mới nhất từ CLB.</p>
+                    <div class="tn-card-date"><i class="fab fa-facebook"></i> <a href="https://www.facebook.com/vocotruyenhutech" target="_blank" style="color:#c41e3a;">vocotruyenhutech</a></div>
+                </div>
+            </div>
+            <div class="tn-card">
+                <img class="tn-card-img" src="assets/images_Dien_Show/Show_Quoc_Te_3.jpg" alt="TikTok">
+                <div class="tn-card-body">
+                    <span class="tn-card-tag">Video</span>
+                    <h4>Kênh TikTok CLB Võ Cổ Truyền HUTECH</h4>
+                    <p>Xem các video tập luyện, thi đấu và hoạt động của CLB trên TikTok.</p>
+                    <div class="tn-card-date"><i class="fab fa-tiktok"></i> <a href="https://www.tiktok.com/@1209vcthutech2018" target="_blank" style="color:#c41e3a;">@1209vcthutech2018</a></div>
+                </div>
+            </div>
+            <div class="tn-card">
+                <div class="tn-card-img-placeholder"><i class="fas fa-plus"></i></div>
+                <div class="tn-card-body">
+                    <span class="tn-card-tag">Sắp có</span>
+                    <h4>Bài viết báo chí sẽ được cập nhật</h4>
+                    <p>Nếu bạn có bài viết về CLB, hãy liên hệ với chúng tôi để được đăng tải.</p>
+                    <div class="tn-card-date"><i class="fas fa-envelope"></i> vctht2026@gmail.com</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="footer-placeholder"></div>
+    <script src="assets/js/dropdown.js"></script>
+    <script>
+        async function load(id, path) { try { document.getElementById(id).innerHTML = await (await fetch(path)).text(); } catch(e) {} }
+        document.addEventListener('DOMContentLoaded', async () => {
+            await load('header-placeholder', 'components/header.html');
+            await load('footer-placeholder', 'components/footer.html');
+            initDropdown();
+        });
+    </script>
+</body>
+</html>

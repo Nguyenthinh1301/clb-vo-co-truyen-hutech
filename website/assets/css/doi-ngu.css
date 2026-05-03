@@ -1,0 +1,198 @@
+/* =============================================
+   Trang: Đội ngũ CLB
+   File: views/doi-ngu.html
+   ============================================= */
+
+body {
+    font-family: "Open Sans", sans-serif;
+}
+
+body,
+.page-hero h1,
+.page-hero p,
+.page-body,
+.section-title,
+.member-body h4,
+.member-badge,
+.member-details {
+    font-family: "Open Sans", sans-serif;
+}
+
+.page-hero {
+    background: linear-gradient(135deg, #0d1117 0%, #1a1a2e 50%, #c41e3a 100%);
+    color: white;
+    padding: 110px 20px 60px;
+    text-align: center;
+}
+
+.page-hero h1 {
+    font-size: 38px;
+    font-weight: 800;
+    margin-bottom: 12px;
+}
+
+.page-hero p {
+    font-size: 16px;
+    opacity: 0.8;
+}
+
+.breadcrumb {
+    font-size: 13px;
+    opacity: 0.6;
+    margin-bottom: 16px;
+}
+
+.breadcrumb a {
+    color: #ffd700;
+    text-decoration: none;
+}
+
+.page-body {
+    max-width: 1040px;
+    margin: 64px auto;
+    padding: 0 24px 80px;
+}
+
+/* --- Section title --- */
+.section-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1a252f;
+    margin-bottom: 28px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #c41e3a;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.section-title i {
+    color: #c41e3a;
+}
+
+/* --- Member grid --- */
+.member-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-bottom: 52px;
+}
+
+.member-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.member-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.12);
+}
+
+.member-photo {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+}
+
+.member-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.member-photo-placeholder {
+    width: 100%;
+    height: 220px;
+    background: linear-gradient(135deg, #1a252f, #c41e3a);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255,255,255,0.4);
+    font-size: 52px;
+}
+
+.member-body {
+    padding: 22px;
+}
+
+.member-body h4 {
+    font-size: 17px;
+    font-weight: 700;
+    color: #1a252f;
+    margin-bottom: 6px;
+}
+
+.member-badge {
+    display: inline-block;
+    background: #fff0f2;
+    color: #c41e3a;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 20px;
+    border: 1px solid rgba(196,30,58,0.2);
+    margin-bottom: 12px;
+}
+
+.member-details {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.member-details li {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    padding: 7px 0;
+    border-bottom: 1px solid #f0f0f0;
+    color: #555;
+}
+
+.member-details li:last-child {
+    border-bottom: none;
+}
+
+.member-details .dl {
+    color: #999;
+}
+
+.member-details .dv {
+    font-weight: 600;
+    color: #1a252f;
+    text-align: right;
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+    .member-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 480px) {
+    .member-grid { grid-template-columns: 1fr; }
+}
+
+/* --- Button xem chi tiết --- */
+.member-detail-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 14px;
+    padding: 8px 18px;
+    background: #c41e3a;
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.member-detail-btn:hover {
+    background: #a01830;
+    transform: translateY(-1px);
+}

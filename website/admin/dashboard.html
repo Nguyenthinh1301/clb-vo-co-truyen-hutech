@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Admin CLB Võ Cổ Truyền HUTECH</title>
+    <link rel="stylesheet" href="shared/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .stat-change {
+            font-size: 0.75rem;
+            margin-top: 4px;
+            color: #a0aec0;
+        }
+        .stat-change.up   { color: #38a169; }
+        .stat-change.down { color: #e53e3e; }
+        .stat { cursor: default; }
+        .stat:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
+        .stat { transition: transform 0.2s, box-shadow 0.2s; }
+        .quick-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+    </style>
+</head>
+<body>
+<div class="layout" id="app"></div>
+
+<script src="../assets/js/config.js"></script>
+<script src="shared/auth.js"></script>
+<script src="shared/api.js"></script>
+<script src="shared/ui.js"></script>
+<script>
+'use strict';
+
+var page = initLayout('<i class="fas fa-tachometer-alt"></i> Dashboard', 'dashboard.html');
+if (page) load();
+
+async function load() {
+    page.innerHTML = `
+        <!-- Stats -->
+        <div class="stats">
+            <div class="stat" onclick="location.href='tin-tuc.html'" style="cursor:pointer;" title="Quản lý tin tức">
+                <div class="stat-icon si-red"><i class="fas fa-newspaper"></i></div>
+                <div>
+                    <div class="stat-val" id="s-news"><i class="fas fa-spinner fa-spin" style="font-size:1rem;color:#cbd5e0;"></i></div>
+                    <div class="stat-lbl">Tin tức</div>
+                    <div class="stat-change" id="s-news-sub"></div>
+                </div>
+            </div>
+            <div class="stat" onclick="location.href='su-kien.html'" style="cursor:pointer;" title="Quản lý sự kiện">
+                <div class="stat-icon si-blue"><i class="fas fa-calendar-alt"></i></div>
+                <div>
+                    <div class="stat-val" id="s-ev"><i class="fas fa-spinner fa-spin" style="font-size:1rem;color:#cbd5e0;"></i></div>
+                    <div class="stat-lbl">Sự kiện</div>
+                    <div class="stat-change" id="s-ev-sub"></div>
+                </div>
+            </div>
+            <div class="stat" title="Tổng thành viên đang hoạt động">
+                <div class="stat-icon si-green"><i class="fas fa-users"></i></div>
+                <div>
+                    <div class="stat-val" id="s-usr"><i class="fas fa-spinner fa-spin" style="font-size:1rem;color:#cbd5e0;"></i></div>
+                    <div class="stat-lbl">Thành viên</div>
+                    <div class="stat-change" id="s-usr-sub"></div>
+                </div>
+            </div>
+            <div class="stat" onclick="location.href='thong-bao.html'" style="cursor:pointer;" title="Quản lý thông báo">
+                <div class="stat-icon si-orange"><i class="fas fa-bell"></i></div>
+                <div>
+                    <div class="stat-val" id="s-ann"><i class="fas fa-spinner fa-spin" style="font-size:1rem;color:#cbd5e0;"></i></div>
+                    <div class="stat-lbl">Thông báo</div>
+                    <div class="stat-change" id="s-ann-sub"></div>
+                </div>
+            </div>
+            <div class="stat" onclick="location.href='cam-nhan.html'" style="cursor:pointer;" title="Quản lý cảm nhận sinh viên">
+                <div class="stat-icon si-green"><i class="fas fa-heart"></i></div>
+                <div>
+                    <div class="stat-val" id="s-rv"><i class="fas fa-spinner fa-spin" style="font-size:1rem;color:#cbd5e0;"></i></div>
+                    <div class="stat-lbl">Cảm nhận SV</div>
+                    <div class="stat-change" id="s-rv-sub"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thao tác nhanh -->
+        <div class="card">
+            <div class="card-head"><h3><i class="fas fa-bolt"></i> Thao tác nhanh</h3></div>
+            <div class="card-body quick-btns">
+                <a href="tin-tuc.html" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Đăng tin tức
+                </a>
+                <a href="su-kien.html" class="btn btn-success">
+                    <i class="fas fa-plus"></i> Thêm sự kiện
+                </a>
+                <a href="thong-bao.html" class="btn btn-outline">
+                    <i class="fas fa-plus"></i> Thêm thông báo
+                </a>
+                <a href="lien-he.html" class="btn btn-outline">
+                    <i class="fas fa-envelope"></i> Xem liên hệ
+                </a>
+            </div>
+        </div>
+
+        <!-- Tin tức & Sự kiện gần đây -->
+        <div class="stats" style="align-items:flex-start;">
+            <div class="card" style="flex:1;min-width:0;">
+                <div class="card-head">
+                    <h3><i class="fas fa-newspaper"></i> Tin tức gần đây</h3>
+                    <a href="tin-tuc.html" class="btn btn-sm btn-outline">Xem tất cả</a>
+                </div>
+                <div id="news-list"></div>
+            </div>
+            <div class="card" style="flex:1;min-width:0;">
+                <div class="card-head">
+                    <h3><i class="fas fa-calendar-alt"></i> Sự kiện gần đây</h3>
+                    <a href="su-kien.html" class="btn btn-sm btn-outline">Xem tất cả</a>
+                </div>
+                <div id="ev-list"></div>
+            </div>
+        </div>`;
+
+    // Load tất cả stats song song
+    await Promise.allSettled([
+        loadNewsStats(),
+        loadEventStats(),
+        loadUserStats(),
+        loadAnnouncementStats(),
+        loadReviewStats()
+    ]);
+}
+
+// ── Tin tức ──
+async function loadNewsStats() {
+    try {
+        var r    = await API.news.list(1, 5, '', '');
+        var list = (r.data && r.data.news) || [];
+        var total = (r.data && r.data.total) || list.length;
+
+        setHTML('s-news', total);
+
+        // Đếm bài đã đăng trong list
+        var published = list.filter(function (n) { return n.status === 'published'; }).length;
+        var drafts    = list.filter(function (n) { return n.status === 'draft'; }).length;
+        setHTML('s-news-sub',
+            published + ' đã đăng' + (drafts ? ' · ' + drafts + ' nháp' : '')
+        );
+
+        if (list.length) {
+            setHTML('news-list',
+                '<div class="tbl"><table>' +
+                '<thead><tr><th>Tiêu đề</th><th style="width:90px;">Danh mục</th><th style="width:80px;">Trạng thái</th><th style="width:85px;">Ngày</th></tr></thead>' +
+                '<tbody>' +
+                list.map(function (n) {
+                    var statusCls = n.status === 'published' ? 'b-success' : 'b-warning';
+                    var statusLbl = n.status === 'published' ? 'Đã đăng' : 'Nháp';
+                    return '<tr>' +
+                        '<td><b style="color:#1a252f;">' + safe(n.title, 40) + '</b></td>' +
+                        '<td style="font-size:0.8rem;color:#4a5568;">' + escapeHtml(n.category || '—') + '</td>' +
+                        '<td><span class="badge ' + statusCls + '">' + statusLbl + '</span></td>' +
+                        '<td style="font-size:0.8rem;color:#718096;">' + fmtDate(n.created_at) + '</td>' +
+                        '</tr>';
+                }).join('') +
+                '</tbody></table></div>'
+            );
+        } else {
+            empty('news-list', 'newspaper', 'Chưa có tin tức nào');
+        }
+    } catch (e) {
+        setHTML('s-news', '<span style="color:#e74c3c;font-size:0.9rem;">Lỗi</span>');
+        empty('news-list', 'exclamation-circle', 'Không thể tải: ' + e.message);
+    }
+}
+
+// ── Sự kiện ──
+async function loadEventStats() {
+    try {
+        var r    = await API.events.list(1, 5, '', '', '');
+        var list = (r.data && r.data.events) || [];
+        var total = (r.data && r.data.total) || list.length;
+
+        setHTML('s-ev', total);
+
+        var upcoming = list.filter(function (ev) { return ev.status === 'upcoming'; }).length;
+        var ongoing  = list.filter(function (ev) { return ev.status === 'ongoing';  }).length;
+        var subParts = [];
+        if (ongoing)  subParts.push('<span style="color:#38a169;">' + ongoing  + ' đang diễn ra</span>');
+        if (upcoming) subParts.push(upcoming + ' sắp tới');
+        setHTML('s-ev-sub', subParts.join(' · ') || '&nbsp;');
+
+        if (list.length) {
+            setHTML('ev-list',
+                '<div class="tbl"><table>' +
+                '<thead><tr><th>Tên sự kiện</th><th style="width:85px;">Ngày</th><th style="width:100px;">Trạng thái</th></tr></thead>' +
+                '<tbody>' +
+                list.map(function (ev) {
+                    var stCls = { upcoming:'b-info', ongoing:'b-success', completed:'b-secondary', cancelled:'b-danger' };
+                    var stLbl = { upcoming:'Sắp tới', ongoing:'Đang diễn', completed:'Kết thúc', cancelled:'Đã hủy' };
+                    return '<tr>' +
+                        '<td><b style="color:#1a252f;">' + safe(ev.name, 38) + '</b>' +
+                            (ev.location ? '<br><span style="color:#718096;font-size:0.75rem;"><i class="fas fa-map-marker-alt"></i> ' + safe(ev.location, 28) + '</span>' : '') +
+                        '</td>' +
+                        '<td style="font-size:0.8rem;color:#718096;">' + fmtDate(ev.date) + '</td>' +
+                        '<td><span class="badge ' + (stCls[ev.status] || 'b-secondary') + '">' + (stLbl[ev.status] || ev.status) + '</span></td>' +
+                        '</tr>';
+                }).join('') +
+                '</tbody></table></div>'
+            );
+        } else {
+            empty('ev-list', 'calendar-alt', 'Chưa có sự kiện nào');
+        }
+    } catch (e) {
+        setHTML('s-ev', '<span style="color:#e74c3c;font-size:0.9rem;">Lỗi</span>');
+        empty('ev-list', 'exclamation-circle', 'Không thể tải: ' + e.message);
+    }
+}
+
+// ── Thành viên ──
+async function loadUserStats() {
+    try {
+        var r     = await API.users.total();
+        var total = (r.pagination && r.pagination.total) || 0;
+        setHTML('s-usr', total);
+        setHTML('s-usr-sub', 'đang hoạt động');
+    } catch (e) {
+        setHTML('s-usr', '<span style="color:#e74c3c;font-size:0.9rem;" title="' + e.message + '">Lỗi</span>');
+        setHTML('s-usr-sub', '');
+    }
+}
+
+// ── Thông báo ──
+async function loadAnnouncementStats() {
+    try {
+        var r    = await API.announcements.list();
+        var all  = r.data || [];
+        var active = all.filter(function (a) { return a.status === 'active'; }).length;
+        setHTML('s-ann', all.length);
+        setHTML('s-ann-sub',
+            active + ' đang hiển thị' +
+            (all.length - active ? ' · ' + (all.length - active) + ' đã ẩn' : '')
+        );
+    } catch (e) {
+        setHTML('s-ann', '<span style="color:#e74c3c;font-size:0.9rem;">Lỗi</span>');
+        setHTML('s-ann-sub', '');
+    }
+}
+
+// ── Cảm nhận sinh viên ──
+async function loadReviewStats() {
+    try {
+        var r    = await API.reviews.list();
+        var all  = r.data || [];
+        var active = all.filter(function (rv) { return rv.status === 'active'; }).length;
+        // Tính điểm trung bình
+        var avg = all.length
+            ? (all.reduce(function (s, rv) { return s + (parseInt(rv.rating) || 5); }, 0) / all.length).toFixed(1)
+            : null;
+        setHTML('s-rv', all.length);
+        setHTML('s-rv-sub',
+            active + ' đang hiển thị' +
+            (avg ? ' · ⭐ ' + avg : '')
+        );
+    } catch (e) {
+        setHTML('s-rv', '<span style="color:#e74c3c;font-size:0.9rem;">Lỗi</span>');
+        setHTML('s-rv-sub', '');
+    }
+}</script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+/* =============================================
+   Trang: Cảm nhận sinh viên
+   File: views/cam-nhan.html
+   ============================================= */
+
+.cn-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-bottom: 52px;
+}
+
+.cn-card {
+    background: white;
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    position: relative;
+}
+
+.cn-card::before {
+    content: '\201C';
+    position: absolute;
+    top: 16px;
+    left: 20px;
+    font-size: 60px;
+    color: #f0f0f0;
+    font-family: Georgia, serif;
+    line-height: 1;
+}
+
+.cn-quote {
+    font-size: 14px;
+    color: #444;
+    line-height: 1.8;
+    font-style: italic;
+    margin-bottom: 20px;
+    padding-top: 20px;
+}
+
+.cn-author {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.cn-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1a252f, #c41e3a);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 18px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.cn-author-info h5 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1a252f;
+    margin: 0 0 3px;
+}
+
+.cn-author-info span {
+    font-size: 12px;
+    color: #888;
+}
+
+.cn-stars {
+    color: #ffd700;
+    font-size: 13px;
+    margin-bottom: 4px;
+}
+
+@media (max-width: 768px) {
+    .cn-grid { grid-template-columns: 1fr; }
+}

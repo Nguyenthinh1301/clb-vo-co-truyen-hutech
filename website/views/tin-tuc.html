@@ -1,0 +1,647 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="../">
+    <title>Tin tức - CLB Võ Cổ Truyền HUTECH</title>
+    <meta name="description" content="Tin tức mới nhất từ CLB Võ Cổ Truyền HUTECH - Cập nhật hoạt động, thành tích và sự kiện của câu lạc bộ.">
+    <meta property="og:title" content="Tin tức - CLB Võ Cổ Truyền HUTECH">
+    <meta property="og:description" content="Tin tức mới nhất từ CLB Võ Cổ Truyền HUTECH.">
+    <meta property="og:image" content="assets/images_Logo/Logo.jpg">
+    <link rel="icon" type="image/jpeg" href="assets/images_Logo/Logo.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <script src="assets/js/config.js"></script>
+    <link rel="stylesheet" href="assets/css/tin-tuc-base.css">
+    <style>
+        /* Filter bar */
+        .tn-filter-bar {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 32px;
+            align-items: center;
+        }
+        .tn-filter-btn {
+            padding: 7px 18px;
+            border-radius: 24px;
+            border: 1.5px solid #e2e8f0;
+            background: #fff;
+            color: #4a5568;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: "Open Sans", sans-serif;
+        }
+        .tn-filter-btn:hover,
+        .tn-filter-btn.active {
+            background: #c41e3a;
+            border-color: #c41e3a;
+            color: #fff;
+        }
+        /* Skeleton loading */
+        .tn-skeleton {
+            background: #f0f2f5;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+        }
+        .tn-skeleton-img {
+            width: 100%; height: 180px;
+            background: linear-gradient(90deg, #e8eaed 25%, #f5f5f5 50%, #e8eaed 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.4s infinite;
+        }
+        .tn-skeleton-body { padding: 18px 20px; }
+        .tn-skeleton-line {
+            height: 12px; border-radius: 6px; margin-bottom: 10px;
+            background: linear-gradient(90deg, #e8eaed 25%, #f5f5f5 50%, #e8eaed 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.4s infinite;
+        }
+        .tn-skeleton-line.short { width: 40%; }
+        .tn-skeleton-line.medium { width: 70%; }
+        @keyframes shimmer {
+            0%   { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        /* Card clickable */
+        .tn-card { cursor: pointer; text-decoration: none; color: inherit; }
+        .tn-card:hover h4 { color: #c41e3a; }
+
+        /* ── Grid animation ── */
+        #news-grid {
+            transition: opacity 0.2s ease;
+        }
+        #news-grid.fading {
+            opacity: 0;
+            pointer-events: none;
+        }
+        /* Card xuất hiện lần lượt */
+        .tn-card {
+            opacity: 0;
+            transform: translateY(18px);
+            animation: cardIn 0.35s ease forwards;
+        }
+        @keyframes cardIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Delay stagger cho từng card */
+        .tn-card:nth-child(1) { animation-delay: 0.04s; }
+        .tn-card:nth-child(2) { animation-delay: 0.09s; }
+        .tn-card:nth-child(3) { animation-delay: 0.14s; }
+        .tn-card:nth-child(4) { animation-delay: 0.19s; }
+        .tn-card:nth-child(5) { animation-delay: 0.24s; }
+        .tn-card:nth-child(6) { animation-delay: 0.29s; }
+        .tn-card:nth-child(7) { animation-delay: 0.34s; }
+        .tn-card:nth-child(8) { animation-delay: 0.39s; }
+        .tn-card:nth-child(9) { animation-delay: 0.44s; }
+
+        /* ── Filter button ripple ── */
+        .tn-filter-btn {
+            position: relative;
+            overflow: hidden;
+        }
+        .tn-filter-btn .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.45);
+            transform: scale(0);
+            animation: ripple 0.5s linear;
+            pointer-events: none;
+        }
+        @keyframes ripple {
+            to { transform: scale(4); opacity: 0; }
+        }
+
+        /* ── Pagination button ── */
+        .tn-page-btn {
+            transition: all 0.18s ease, transform 0.12s ease;
+        }
+        .tn-page-btn:hover:not(.active):not(:disabled) {
+            transform: translateY(-2px);
+        }
+        .tn-page-btn:active { transform: scale(0.92); }
+
+        /* ── Modal overlay transition ── */
+        .tn-modal-overlay {
+            opacity: 0;
+            transition: opacity 0.25s ease;
+            pointer-events: none;
+        }
+        .tn-modal-overlay.open {
+            display: flex;
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .tn-modal {
+            transform: translateY(24px) scale(0.97);
+            transition: transform 0.28s cubic-bezier(0.34,1.56,0.64,1), opacity 0.25s ease;
+            opacity: 0;
+        }
+        .tn-modal-overlay.open .tn-modal {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+
+        /* ── Result info slide in ── */
+        #result-info {
+            transition: opacity 0.2s ease;
+        }
+        /* Pagination */
+        .tn-pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+        .tn-page-btn {
+            width: 38px; height: 38px;
+            border-radius: 8px;
+            border: 1.5px solid #e2e8f0;
+            background: #fff;
+            color: #4a5568;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+            font-family: "Open Sans", sans-serif;
+        }
+        .tn-page-btn:hover,
+        .tn-page-btn.active {
+            background: #c41e3a;
+            border-color: #c41e3a;
+            color: #fff;
+        }
+        .tn-page-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        .tn-result-info {
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 20px;
+        }
+        /* Modal chi tiết bài viết */
+        .tn-modal-overlay {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .tn-modal-overlay.open { display: flex; }
+        .tn-modal {
+            background: #fff;
+            border-radius: 16px;
+            max-width: 720px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 24px 64px rgba(0,0,0,0.25);
+        }
+        .tn-modal-img {
+            width: 100%; height: 280px;
+            object-fit: cover;
+            border-radius: 16px 16px 0 0;
+            display: block;
+        }
+        .tn-modal-body { padding: 28px 32px 32px; }
+        .tn-modal-meta {
+            display: flex; gap: 12px; align-items: center;
+            margin-bottom: 14px; flex-wrap: wrap;
+        }
+        .tn-modal-body h2 {
+            font-size: 22px; font-weight: 800;
+            color: #1a252f; margin-bottom: 16px; line-height: 1.4;
+        }
+        .tn-modal-content {
+            font-size: 15px; color: #444;
+            line-height: 1.8; white-space: pre-wrap;
+        }
+        .tn-modal-close {
+            position: sticky; top: 16px; float: right;
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(0,0,0,0.08);
+            color: #333;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            margin: 16px 16px 0 0;
+            transition: background 0.2s;
+        }
+        .tn-modal-close:hover { background: #c41e3a; color: #fff; }
+    </style>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <div class="page-hero">
+        <div class="breadcrumb">
+            <a href="index.html">Trang chủ</a> &rsaquo; Tin tức &rsaquo; Tin tức
+        </div>
+        <h1>Tin Tức CLB</h1>
+        <p>Cập nhật những thông tin mới nhất từ CLB Võ Cổ Truyền HUTECH</p>
+    </div>
+
+    <div class="page-body">
+        <div class="tn-section-title">
+            <i class="fas fa-newspaper"></i> Tin tức mới nhất
+        </div>
+
+        <!-- Filter danh mục -->
+        <div class="tn-filter-bar" id="filter-bar">
+            <button class="tn-filter-btn active" data-cat="">Tất cả</button>
+            <button class="tn-filter-btn" data-cat="general">Chung</button>
+            <button class="tn-filter-btn" data-cat="training">Tập luyện</button>
+            <button class="tn-filter-btn" data-cat="competition">Thi đấu</button>
+            <button class="tn-filter-btn" data-cat="event">Sự kiện</button>
+            <button class="tn-filter-btn" data-cat="achievement">Thành tích</button>
+            <button class="tn-filter-btn" data-cat="announcement">Thông báo</button>
+        </div>
+
+        <div class="tn-result-info" id="result-info"></div>
+
+        <!-- Grid tin tức -->
+        <div class="tn-grid" id="news-grid"></div>
+
+        <!-- Pagination -->
+        <div class="tn-pagination" id="pagination"></div>
+    </div>
+
+    <!-- Modal chi tiết -->
+    <div class="tn-modal-overlay" id="news-modal" onclick="closeModal(event)">
+        <div class="tn-modal" id="modal-inner">
+            <button class="tn-modal-close" onclick="closeModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            <div id="modal-content"></div>
+        </div>
+    </div>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="assets/js/dropdown.js"></script>
+    <script>
+    'use strict';
+
+    var API_BASE   = (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || 'http://localhost:3001/api';
+    var PAGE_SIZE  = 9;
+    var currentPage = 1;
+    var currentCat  = '';
+
+    var CAT_LABELS = {
+        general: 'Chung', training: 'Tập luyện', competition: 'Thi đấu',
+        event: 'Sự kiện', achievement: 'Thành tích', announcement: 'Thông báo'
+    };
+
+    // Dữ liệu fallback khi API không có bài nào
+    var FALLBACK = [
+        {
+            id: null,
+            title: 'CLB Võ Cổ Truyền HUTECH mở chiêu sinh năm 2026',
+            excerpt: 'CLB chính thức mở đăng ký thành viên mới cho năm học 2025–2026. Tham gia ngay để theo đuổi đam mê võ thuật!',
+            category: 'announcement',
+            featured_image: 'assets/images_CLB/Hinh_CLB_1.jpg',
+            created_at: '2026-01-01'
+        },
+        {
+            id: null,
+            title: 'CLB đạt Giải III Toàn Đoàn tại VLU TP.HCM 2024',
+            excerpt: 'Với sự nỗ lực của toàn thể học viên, CLB đã xuất sắc giành Giải III Toàn Đoàn tại giải đấu sinh viên TP.HCM.',
+            category: 'achievement',
+            featured_image: 'assets/images_Thi_dau_vo/Hinh_Nhan_Thuong_2.jpg',
+            created_at: '2024-11-01'
+        },
+        {
+            id: null,
+            title: 'Team Building 2025 — Gắn kết yêu thương',
+            excerpt: 'Chuyến team building năm 2025 đã để lại nhiều kỷ niệm đẹp, tăng cường tinh thần đoàn kết giữa các thành viên.',
+            category: 'event',
+            featured_image: 'assets/images_Team_Building/Hinh_Team_BuilDing_1.jpg',
+            created_at: '2025-06-01'
+        },
+        {
+            id: null,
+            title: 'Hoạt động thiện nguyện — Lan tỏa yêu thương',
+            excerpt: 'CLB tổ chức chương trình thiện nguyện hỗ trợ cộng đồng, thể hiện tinh thần trách nhiệm xã hội của võ sinh.',
+            category: 'event',
+            featured_image: 'assets/images_Thien_Nguyen/HD_Thien_Nguyen.jpg',
+            created_at: '2024-01-01'
+        },
+        {
+            id: null,
+            title: 'Giải nhất biểu diễn tại HUTECH Global Festival',
+            excerpt: 'CLB xuất sắc giành giải nhất biểu diễn tại sự kiện quốc tế lớn nhất của trường HUTECH.',
+            category: 'achievement',
+            featured_image: 'assets/images_Dien_Show/Show_Quoc_Te.jpg',
+            created_at: '2023-01-01'
+        },
+        {
+            id: null,
+            title: 'Khai giảng khóa học võ cổ truyền học kỳ mới',
+            excerpt: 'CLB chính thức khai giảng khóa học mới với chương trình đào tạo được nâng cấp toàn diện.',
+            category: 'training',
+            featured_image: 'assets/images_Tap_Luyen/Hinh_Tap_Luyen_1.jpg',
+            created_at: '2025-09-01'
+        }
+    ];
+
+    // ── Helpers ──
+    function fmtDate(s) {
+        if (!s) return '';
+        try {
+            return new Date(s).toLocaleDateString('vi-VN', { day:'2-digit', month:'2-digit', year:'numeric' });
+        } catch { return ''; }
+    }
+
+    function resolveImg(url) {
+        if (!url) return null;
+        if (url.startsWith('http://') || url.startsWith('https://')) return url;
+        var base = (window.APP_CONFIG && window.APP_CONFIG.API_BASE) ? window.APP_CONFIG.API_BASE.replace('/api','') : 'http://localhost:3001';
+        return base + (url.startsWith('/') ? url : '/' + url);
+    }
+
+    function trunc(s, n) {
+        if (!s) return '';
+        return s.length > n ? s.slice(0, n) + '…' : s;
+    }
+
+    // ── Skeleton ──
+    function showSkeleton() {
+        var grid = document.getElementById('news-grid');
+        grid.classList.add('fading');
+        setTimeout(function() {
+            var html = '';
+            for (var i = 0; i < 6; i++) {
+                html += '<div class="tn-skeleton">' +
+                    '<div class="tn-skeleton-img"></div>' +
+                    '<div class="tn-skeleton-body">' +
+                        '<div class="tn-skeleton-line short"></div>' +
+                        '<div class="tn-skeleton-line"></div>' +
+                        '<div class="tn-skeleton-line medium"></div>' +
+                        '<div class="tn-skeleton-line short"></div>' +
+                    '</div></div>';
+            }
+            grid.innerHTML = html;
+            grid.classList.remove('fading');
+        }, 180);
+        document.getElementById('result-info').style.opacity = '0';
+        document.getElementById('pagination').innerHTML = '';
+    }
+
+    // ── Render card ──
+    function renderCard(n) {
+        var imgHtml = n.featured_image
+            ? '<img class="tn-card-img" src="' + (resolveImg(n.featured_image) || n.featured_image) + '" alt="" onerror="this.style.display=\'none\'">' +
+              '<div class="tn-card-img-placeholder" style="display:none;"><i class="fas fa-image"></i></div>'
+            : '<div class="tn-card-img-placeholder"><i class="fas fa-image"></i></div>';
+
+        var catLabel = CAT_LABELS[n.category] || n.category || 'Tin tức';
+        var dateStr  = fmtDate(n.published_at || n.created_at);
+        var clickAttr = n.id ? 'onclick="openModal(' + n.id + ')"' : '';
+
+        // Render tags
+        var tagsHtml = '';
+        if (n.tags) {
+            var tagList = n.tags.split(',').map(function(t) { return t.trim(); }).filter(Boolean);
+            if (tagList.length) {
+                tagsHtml = '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;">' +
+                    tagList.map(function(t) {
+                        return '<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:12px;background:#f0f4f8;color:#4a5568;font-size:11px;font-weight:600;">' +
+                            '<i class="fas fa-tag" style="color:#c41e3a;font-size:9px;"></i>' + t +
+                            '</span>';
+                    }).join('') +
+                '</div>';
+            }
+        }
+
+        return '<div class="tn-card" ' + clickAttr + ' role="article">' +
+            imgHtml +
+            '<div class="tn-card-body">' +
+                '<span class="tn-card-tag">' + catLabel + '</span>' +
+                '<h4>' + trunc(n.title, 80) + '</h4>' +
+                '<p>' + trunc(n.excerpt || n.content || '', 120) + '</p>' +
+                tagsHtml +
+                (dateStr ? '<div class="tn-card-date"><i class="fas fa-calendar"></i> ' + dateStr + '</div>' : '') +
+            '</div>' +
+        '</div>';
+    }
+
+    // ── Load từ API ──
+    async function loadNews() {
+        showSkeleton();
+        try {
+            var url = API_BASE + '/cms/news?page=' + currentPage +
+                '&limit=' + PAGE_SIZE +
+                '&status=published' +
+                (currentCat ? '&category=' + currentCat : '');
+
+            var res  = await fetch(url);
+            var data = await res.json();
+
+            if (!data.success) throw new Error(data.message);
+
+            var list  = (data.data && data.data.news)  || [];
+            var total = (data.data && data.data.total) || 0;
+
+            // API kết nối được → hiển thị đúng dữ liệu thực (kể cả khi rỗng)
+            renderList(list, total, false);
+
+        } catch (e) {
+            // Chỉ dùng fallback khi API lỗi hoàn toàn (network, server down)
+            console.warn('[Tin tức] Không thể tải từ API:', e.message);
+            renderFallback();
+        }
+    }
+
+    function renderFallback() {
+        var list = currentCat
+            ? FALLBACK.filter(function(n) { return n.category === currentCat; })
+            : FALLBACK;
+
+        renderList(list, list.length, true);
+    }
+
+    function renderList(list, total, isFallback) {
+        var grid  = document.getElementById('news-grid');
+        var info  = document.getElementById('result-info');
+        var pager = document.getElementById('pagination');
+
+        if (!list.length) {
+            grid.classList.add('fading');
+            setTimeout(function() {
+                grid.innerHTML = '<div class="tn-empty" style="grid-column:1/-1;">' +
+                    '<i class="fas fa-newspaper"></i>' +
+                    '<h3>Chưa có tin tức</h3>' +
+                    '<p>Danh mục này chưa có bài viết nào.</p>' +
+                    '</div>';
+                grid.classList.remove('fading');
+            }, 180);
+            info.textContent = '';
+            pager.innerHTML = '';
+            return;
+        }
+
+        // Fade out → swap content → fade in
+        grid.classList.add('fading');
+        setTimeout(function() {
+            grid.innerHTML = list.map(renderCard).join('');
+            grid.classList.remove('fading');
+        }, 180);
+
+        // Result info
+        setTimeout(function() {
+            if (isFallback) {
+                info.textContent = '';
+            } else {
+                var from = (currentPage - 1) * PAGE_SIZE + 1;
+                var to   = Math.min(currentPage * PAGE_SIZE, total);
+                info.textContent = 'Hiển thị ' + from + '–' + to + ' trong tổng số ' + total + ' bài viết';
+            }
+            info.style.opacity = '1';
+        }, 220);
+
+        // Pagination
+        if (!isFallback) {
+            var pages = Math.ceil(total / PAGE_SIZE);
+            renderPagination(pages);
+        } else {
+            pager.innerHTML = '';
+        }
+    }
+
+    function renderPagination(pages) {
+        if (pages <= 1) { document.getElementById('pagination').innerHTML = ''; return; }
+        var html = '';
+        if (currentPage > 1)
+            html += '<button class="tn-page-btn" onclick="goPage(' + (currentPage-1) + ')"><i class="fas fa-chevron-left"></i></button>';
+        for (var i = 1; i <= pages; i++) {
+            html += '<button class="tn-page-btn' + (i === currentPage ? ' active' : '') + '" onclick="goPage(' + i + ')">' + i + '</button>';
+        }
+        if (currentPage < pages)
+            html += '<button class="tn-page-btn" onclick="goPage(' + (currentPage+1) + ')"><i class="fas fa-chevron-right"></i></button>';
+        document.getElementById('pagination').innerHTML = html;
+    }
+
+    function goPage(p) {
+        currentPage = p;
+        loadNews();
+        window.scrollTo({ top: document.querySelector('.page-body').offsetTop - 80, behavior: 'smooth' });
+    }
+
+    // ── Filter ──
+    document.getElementById('filter-bar').addEventListener('click', function(e) {
+        var btn = e.target.closest('.tn-filter-btn');
+        if (!btn) return;
+
+        // Ripple effect
+        var ripple = document.createElement('span');
+        ripple.className = 'ripple';
+        var rect = btn.getBoundingClientRect();
+        var size = Math.max(rect.width, rect.height);
+        ripple.style.cssText = 'width:' + size + 'px;height:' + size + 'px;' +
+            'left:' + (e.clientX - rect.left - size/2) + 'px;' +
+            'top:'  + (e.clientY - rect.top  - size/2) + 'px;';
+        btn.appendChild(ripple);
+        setTimeout(function() { ripple.remove(); }, 500);
+
+        document.querySelectorAll('.tn-filter-btn').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        currentCat  = btn.dataset.cat;
+        currentPage = 1;
+        loadNews();
+    });
+
+    // ── Modal chi tiết ──
+    async function openModal(id) {
+        var overlay = document.getElementById('news-modal');
+        var content = document.getElementById('modal-content');
+
+        // Hiện overlay trước (display:flex), rồi trigger transition
+        overlay.style.display = 'flex';
+        requestAnimationFrame(function() {
+            requestAnimationFrame(function() {
+                overlay.classList.add('open');
+            });
+        });
+        document.body.style.overflow = 'hidden';
+
+        content.innerHTML = '<div style="padding:40px;text-align:center;color:#aaa;">' +
+            '<i class="fas fa-spinner fa-spin" style="font-size:28px;"></i>' +
+            '</div>';
+
+        try {
+            var res  = await fetch(API_BASE + '/cms/news/' + id);
+            var data = await res.json();
+            if (!data.success) throw new Error(data.message);
+            var n = data.data;
+
+            var imgHtml = n.featured_image
+                ? '<img class="tn-modal-img" src="' + (resolveImg(n.featured_image) || n.featured_image) + '" alt="" onerror="this.style.display=\'none\'">'
+                : '';
+
+            content.innerHTML = imgHtml +
+                '<div class="tn-modal-body">' +
+                    '<div class="tn-modal-meta">' +
+                        '<span class="tn-card-tag">' + (CAT_LABELS[n.category] || n.category || 'Tin tức') + '</span>' +
+                        '<span style="font-size:13px;color:#aaa;"><i class="fas fa-calendar"></i> ' + fmtDate(n.published_at || n.created_at) + '</span>' +
+                    '</div>' +
+                    '<h2>' + n.title + '</h2>' +
+                    (n.tags ? '<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px;">' +
+                        n.tags.split(',').map(function(t) { return t.trim(); }).filter(Boolean).map(function(t) {
+                            return '<span style="display:inline-flex;align-items:center;gap:3px;padding:3px 10px;border-radius:14px;background:#f0f4f8;color:#4a5568;font-size:12px;font-weight:600;">' +
+                                '<i class="fas fa-tag" style="color:#c41e3a;font-size:10px;"></i>' + t + '</span>';
+                        }).join('') + '</div>' : '') +
+                    '<div class="tn-modal-content">' + (n.content || n.excerpt || '') + '</div>' +
+                '</div>';
+        } catch (e) {
+            content.innerHTML = '<div style="padding:40px;text-align:center;color:#e74c3c;">' +
+                '<i class="fas fa-exclamation-circle" style="font-size:28px;margin-bottom:12px;display:block;"></i>' +
+                'Không thể tải nội dung bài viết.' +
+                '</div>';
+        }
+    }
+
+    function closeModal(e) {
+        if (e && e.target !== document.getElementById('news-modal') && !e.target.closest('.tn-modal-close')) return;
+        var overlay = document.getElementById('news-modal');
+        overlay.classList.remove('open');
+        document.body.style.overflow = '';
+        // Ẩn hẳn sau khi transition xong
+        setTimeout(function() {
+            if (!overlay.classList.contains('open')) overlay.style.display = 'none';
+        }, 280);
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeModal({ target: document.getElementById('news-modal') });
+    });
+
+    // ── Init ──
+    async function load(id, path) {
+        try { document.getElementById(id).innerHTML = await (await fetch(path)).text(); } catch(e) {}
+    }
+
+    document.addEventListener('DOMContentLoaded', async function() {
+        await Promise.all([
+            load('header-placeholder', 'components/header.html'),
+            load('footer-placeholder', 'components/footer.html')
+        ]);
+        if (typeof initDropdown === 'function') initDropdown();
+        loadNews();
+    });
+    </script>
+</body>
+</html>

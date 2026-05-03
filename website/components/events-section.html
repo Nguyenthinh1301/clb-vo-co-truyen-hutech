@@ -1,67 +1,207 @@
 <section id="events" class="events-section">
     <div class="container">
         <div class="section-header">
-            <h2>Sự Kiện CLB</h2>
+            <h2>Tin Tức - Sự Kiện CLB</h2>
             <p>Các hoạt động và sự kiện sắp diễn ra</p>
         </div>
-        <div class="events-grid">
 
-            <!-- Sự kiện 1 -->
-            <div class="event-card" data-start="2026-03-27" data-end="2026-03-27">
-                <div class="event-badge-auto"></div>
-                <div class="event-date">
-                    <span class="event-day">27</span>
-                    <span class="event-month">Tháng 3</span>
-                    <span class="event-year">2026</span>
-                </div>
-                <div class="event-info">
-                    <h3>Cuộc thi chung kết Got Talent 2026</h3>
-                    <p>Cuộc thi Got Talent nhằm mang màu sắc mới giữa võ thuật và âm nhạc hiện đại thời nay.</p>
-                    <div class="event-meta">
-                        <span><i class="fas fa-map-marker-alt"></i> Sân E4 - Thủ Đức Campus</span>
-                        <span><i class="fas fa-clock"></i> Đang cập nhật</span>
-                    </div>
-                    <div class="event-countdown"></div>
-                </div>
-            </div>
+        <!-- Tab switcher -->
+        <div class="ev-tabs" id="ev-tabs">
+            <button class="ev-tab active" data-tab="events">
+                <i class="fas fa-calendar-alt"></i> Sự kiện
+            </button>
+            <button class="ev-tab" data-tab="news">
+                <i class="fas fa-newspaper"></i> Tin tức
+            </button>
+        </div>
 
-            <!-- Sự kiện 2 -->
-            <div class="event-card" data-start="2026-03-22" data-end="2026-03-22">
-                <div class="event-badge-auto"></div>
-                <div class="event-date">
-                    <span class="event-day">22</span>
-                    <span class="event-month">Tháng 3</span>
-                    <span class="event-year">2026</span>
-                </div>
-                <div class="event-info">
-                    <h3>BIỂU DIỄN VÕ NHẠC HUTECH GAME</h3>
-                    <p>Chương trình giao lưu, khai mạc sự kiện HUTECH Game cùng với các sinh viên.</p>
-                    <div class="event-meta">
-                        <span><i class="fas fa-map-marker-alt"></i> Sân E4 - Thủ Đức Campus</span>
-                        <span><i class="fas fa-clock"></i> Đang cập nhật</span>
-                    </div>
-                    <div class="event-countdown"></div>
-                </div>
-            </div>
+        <!-- Grid -->
+        <div class="events-grid" id="ev-grid">
+            <!-- Skeleton -->
+            <div class="ev-skeleton"></div>
+            <div class="ev-skeleton"></div>
+            <div class="ev-skeleton"></div>
+            <div class="ev-skeleton"></div>
+        </div>
 
-            <!-- Sự kiện 3 (đã qua) -->
-            <div class="event-card" data-start="2025-03-22" data-end="2025-03-22">
-                <div class="event-badge-auto"></div>
-                <div class="event-date">
-                    <span class="event-day">22</span>
-                    <span class="event-month">Tháng 3</span>
-                    <span class="event-year">2025</span>
-                </div>
-                <div class="event-info">
-                    <h3>Team Building CLB 2025</h3>
-                    <p>Hoạt động ngoại khóa gắn kết thành viên, tổ chức trò chơi và chia sẻ kinh nghiệm luyện tập.</p>
-                    <div class="event-meta">
-                        <span><i class="fas fa-map-marker-alt"></i> TP. Hồ Chí Minh</span>
-                        <span><i class="fas fa-users"></i> 30+ thành viên</span>
-                    </div>
-                    <div class="event-countdown"></div>
-                </div>
-            </div>
+        <!-- View all -->
+        <div style="text-align:center; margin-top:36px;">
+            <a id="ev-viewall" href="views/su-kien.html" class="ev-viewall-btn">
+                Xem tất cả <i class="fas fa-arrow-right"></i>
+            </a>
         </div>
     </div>
 </section>
+
+<style>
+/* ── Tabs ── */
+.ev-tabs {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 36px;
+}
+.ev-tab {
+    padding: 9px 24px;
+    border-radius: 24px;
+    border: 1.5px solid rgba(255,255,255,0.2);
+    background: transparent;
+    color: rgba(255,255,255,0.6);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.22s ease;
+    font-family: "Open Sans", sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+.ev-tab:hover {
+    border-color: rgba(255,255,255,0.4);
+    color: rgba(255,255,255,0.9);
+}
+.ev-tab.active {
+    background: #c41e3a;
+    border-color: #c41e3a;
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(196,30,58,0.35);
+}
+
+/* ── Skeleton ── */
+.ev-skeleton {
+    border-radius: 16px;
+    height: 200px;
+    background: linear-gradient(90deg,
+        rgba(255,255,255,0.05) 25%,
+        rgba(255,255,255,0.1)  50%,
+        rgba(255,255,255,0.05) 75%);
+    background-size: 200% 100%;
+    animation: evSkShimmer 1.5s infinite;
+}
+@keyframes evSkShimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* ── News card (dùng trong tab Tin tức) ── */
+.ev-news-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+.ev-news-card:hover {
+    background: rgba(255,255,255,0.09);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+}
+.ev-news-img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    display: block;
+}
+.ev-news-img-placeholder {
+    width: 100%;
+    height: 160px;
+    background: rgba(255,255,255,0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255,255,255,0.2);
+    font-size: 2rem;
+}
+.ev-news-body {
+    padding: 18px 20px 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+.ev-news-cat {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #c41e3a;
+    background: rgba(196,30,58,0.15);
+    padding: 3px 9px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    width: fit-content;
+}
+.ev-news-body h3 {
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 700;
+    line-height: 1.45;
+    margin: 0 0 8px;
+}
+.ev-news-body p {
+    color: rgba(255,255,255,0.6);
+    font-size: 0.82rem;
+    line-height: 1.6;
+    margin: 0;
+    flex: 1;
+}
+.ev-news-date {
+    font-size: 11px;
+    color: rgba(255,255,255,0.35);
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* ── Empty state ── */
+.ev-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+    color: rgba(255,255,255,0.3);
+}
+.ev-empty i { font-size: 2.5rem; margin-bottom: 14px; display: block; }
+.ev-empty p { font-size: 14px; }
+
+/* ── View all button ── */
+.ev-viewall-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 28px;
+    border-radius: 28px;
+    border: 1.5px solid rgba(255,255,255,0.25);
+    color: rgba(255,255,255,0.75);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.22s ease;
+}
+.ev-viewall-btn:hover {
+    background: #c41e3a;
+    border-color: #c41e3a;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(196,30,58,0.35);
+}
+
+/* ── Card fade-in ── */
+.event-card, .ev-news-card {
+    opacity: 0;
+    animation: evCardIn 0.35s ease forwards;
+}
+@keyframes evCardIn { to { opacity: 1; } }
+.event-card:nth-child(1), .ev-news-card:nth-child(1) { animation-delay: 0.04s; }
+.event-card:nth-child(2), .ev-news-card:nth-child(2) { animation-delay: 0.10s; }
+.event-card:nth-child(3), .ev-news-card:nth-child(3) { animation-delay: 0.16s; }
+.event-card:nth-child(4), .ev-news-card:nth-child(4) { animation-delay: 0.22s; }
+</style>
+<!-- Script được gọi từ index.html sau khi component inject xong -->
+<!-- Xem hàm loadEventsSection() trong index.html -->

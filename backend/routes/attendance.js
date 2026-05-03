@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
+const auditLog = require('../utils/auditLog');
 const { authenticate, authorize } = require('../middleware/auth');
 const { ValidationRules, handleValidationErrors } = require('../middleware/validation');
 
@@ -93,15 +94,17 @@ router.post('/', authenticate, authorize('instructor', 'admin'), ValidationRules
             );
 
             // Log attendance record
-            await db.insert('audit_logs', {
-                user_id: req.user.id,
-                action: 'attendance_recorded',
-                table_name: 'attendance',
-                record_id: attendanceId,
-                new_values: JSON.stringify(newAttendance),
-                ip_address: req.ip,
-                user_agent: req.get('User-Agent')
-            });
+            try {
+                await auditLog({
+                    user_id: req.user.id,
+                    action: 'attendance_recorded',
+                    table_name: 'attendance',
+                    record_id: attendanceId,
+                    new_values: JSON.stringify(newAttendance),
+                    ip_address: req.ip,
+                    user_agent: req.get('User-Agent')
+                });
+            } catch (logErr) { console.warn('Audit log warning:', logErr.message); }
 
             res.status(201).json({
                 success: true,
@@ -120,13 +123,16 @@ router.post('/', authenticate, authorize('instructor', 'admin'), ValidationRules
 });
 
 // Get attendance for a class (instructor/admin only)
-router.get('/class/:classId', authenticate, authorize('instructor', 'admin'), ValidationRules.idParam, handleValidationErrors, async (req, res) => {
+router.get('/class/:classId', authenticate, authorize('instructor', 'admin'), async (req, res) => {
     try {
         const { classId } = req.params;
+        const numClassId = parseInt(classId);
+        if (!numClassId || numClassId < 1) return res.status(400).json({ success: false, message: 'ID lớp học không hợp lệ' });
+
         const { date, page = 1, limit = 50 } = req.query;
 
         // Check if class exists and user has permission
-        const classInfo = await db.findOne('SELECT * FROM classes WHERE id = ?', [classId]);
+        const classInfo = await db.findOne('SELECT * FROM classes WHERE id = ?', [numClassId]);
         if (!classInfo) {
             return res.status(404).json({
                 success: false,
@@ -142,7 +148,7 @@ router.get('/class/:classId', authenticate, authorize('instructor', 'admin'), Va
         }
 
         let whereClause = 'a.class_id = ?';
-        let params = [classId];
+        let params = [numClassId];
 
         if (date) {
             whereClause += ' AND a.date = ?';
@@ -176,13 +182,16 @@ router.get('/class/:classId', authenticate, authorize('instructor', 'admin'), Va
 });
 
 // Get attendance statistics for a class (instructor/admin only)
-router.get('/class/:classId/stats', authenticate, authorize('instructor', 'admin'), ValidationRules.idParam, handleValidationErrors, async (req, res) => {
+router.get('/class/:classId/stats', authenticate, authorize('instructor', 'admin'), async (req, res) => {
     try {
         const { classId } = req.params;
+        const numClassId = parseInt(classId);
+        if (!numClassId || numClassId < 1) return res.status(400).json({ success: false, message: 'ID lớp học không hợp lệ' });
+
         const { start_date, end_date } = req.query;
 
         // Check if class exists and user has permission
-        const classInfo = await db.findOne('SELECT * FROM classes WHERE id = ?', [classId]);
+        const classInfo = await db.findOne('SELECT * FROM classes WHERE id = ?', [numClassId]);
         if (!classInfo) {
             return res.status(404).json({
                 success: false,
@@ -198,7 +207,7 @@ router.get('/class/:classId/stats', authenticate, authorize('instructor', 'admin
         }
 
         let whereClause = 'a.class_id = ?';
-        let params = [classId];
+        let params = [numClassId];
 
         if (start_date) {
             whereClause += ' AND a.date >= ?';
@@ -358,14 +367,16 @@ router.post('/bulk', authenticate, authorize('instructor', 'admin'), async (req,
         }
 
         // Log bulk attendance
-        await db.insert('audit_logs', {
-            user_id: req.user.id,
-            action: 'bulk_attendance_recorded',
-            table_name: 'attendance',
-            new_values: JSON.stringify({ class_id, date, records_count: operations.length }),
-            ip_address: req.ip,
-            user_agent: req.get('User-Agent')
-        });
+        try {
+            await auditLog({
+                user_id: req.user.id,
+                action: 'bulk_attendance_recorded',
+                table_name: 'attendance',
+                new_values: JSON.stringify({ class_id, date, records_count: operations.length }),
+                ip_address: req.ip,
+                user_agent: req.get('User-Agent')
+            });
+        } catch (logErr) { console.warn('Audit log warning:', logErr.message); }
 
         res.json({
             success: true,

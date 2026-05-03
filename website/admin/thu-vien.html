@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thư viện ảnh - Admin CLB Võ Cổ Truyền HUTECH</title>
+    <link rel="stylesheet" href="shared/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* ── Album grid ── */
+        .album-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 18px;
+            padding: 16px;
+        }
+        .album-card {
+            background: #fff;
+            border: 1.5px solid #edf0f4;
+            border-radius: 14px;
+            overflow: hidden;
+            transition: all 0.22s ease;
+            cursor: pointer;
+        }
+        .album-card:hover {
+            border-color: #c41e3a;
+            box-shadow: 0 8px 24px rgba(196,30,58,0.12);
+            transform: translateY(-3px);
+        }
+        .album-cover {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            background: #f0f2f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #cbd5e0;
+            font-size: 2.5rem;
+        }
+        .album-cover img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            display: block;
+        }
+        .album-info {
+            padding: 12px 14px;
+        }
+        .album-name {
+            font-weight: 700;
+            color: #1a252f;
+            font-size: 14px;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .album-meta {
+            font-size: 12px;
+            color: #9ca3af;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .album-actions {
+            display: flex;
+            gap: 6px;
+            padding: 0 14px 12px;
+        }
+
+        /* ── Photo grid trong album ── */
+        .photo-grid-admin {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 12px;
+            padding: 16px;
+        }
+        .photo-item-admin {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #f0f2f5;
+            aspect-ratio: 1;
+        }
+        .photo-item-admin img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.2s;
+        }
+        .photo-item-admin:hover img { transform: scale(1.05); }
+        .photo-overlay-admin {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .photo-item-admin:hover .photo-overlay-admin { opacity: 1; }
+        .photo-overlay-admin button {
+            background: rgba(255,255,255,0.9);
+            border: none;
+            border-radius: 6px;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: background 0.15s;
+        }
+        .photo-overlay-admin button:hover { background: #fff; }
+        .photo-overlay-admin .btn-del-photo { color: #e74c3c; }
+
+        /* ── Upload zone ── */
+        .upload-zone {
+            border: 2px dashed #e2e8f0;
+            border-radius: 12px;
+            padding: 32px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin: 16px;
+            background: #fafbfc;
+        }
+        .upload-zone:hover, .upload-zone.drag-over {
+            border-color: #c41e3a;
+            background: #fff5f5;
+        }
+        .upload-zone i { font-size: 2rem; color: #c41e3a; margin-bottom: 10px; display: block; }
+        .upload-zone p { color: #718096; font-size: 14px; margin: 0; }
+        .upload-zone small { color: #a0aec0; font-size: 12px; }
+
+        /* ── Breadcrumb ── */
+        .gallery-breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0 16px 12px;
+            font-size: 13px;
+            color: #718096;
+        }
+        .gallery-breadcrumb a {
+            color: #c41e3a;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .gallery-breadcrumb a:hover { text-decoration: underline; }
+
+        /* ── Upload preview list ── */
+        .upload-preview-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 0 16px 12px;
+        }
+        .upload-preview-item {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1.5px solid #e2e8f0;
+        }
+        .upload-preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .upload-preview-item .remove-preview {
+            position: absolute;
+            top: 2px; right: 2px;
+            background: rgba(231,76,60,0.9);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 18px; height: 18px;
+            font-size: 10px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+    </style>
+</head>
+<body>
+<div class="layout" id="app"></div>
+
+<!-- ===== MODAL ALBUM ===== -->
+<div class="overlay" id="album-modal">
+    <div class="modal modal-sm" onclick="event.stopPropagation()">
+        <div class="modal-head">
+            <h3 id="album-modal-title"><i class="fas fa-folder-plus" style="color:#c41e3a;margin-right:8px;"></i>Tạo album mới</h3>
+            <button class="modal-close" onclick="closeAlbumModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="am-id">
+            <div class="form-group">
+                <label class="form-label" for="am-name">Tên album <span class="req" aria-hidden="true">*</span></label>
+                <input class="form-control" id="am-name" aria-label="Tên album" aria-required="true" placeholder="VD: Tập luyện 2026, Giải đấu tháng 5...">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="am-desc">Mô tả</label>
+                <textarea class="form-control" id="am-desc" rows="2" aria-label="Mô tả album" placeholder="Mô tả ngắn về album..."></textarea>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="am-sort">Thứ tự hiển thị</label>
+                    <input class="form-control" id="am-sort" type="number" min="0" value="0" aria-label="Thứ tự hiển thị">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="am-status">Trạng thái</label>
+                    <select class="form-control" id="am-status" aria-label="Trạng thái album">
+                        <option value="active">👁️ Hiển thị</option>
+                        <option value="inactive">🙈 Ẩn</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="modal-foot">
+            <button class="btn btn-outline" onclick="closeAlbumModal()"><i class="fas fa-times"></i> Hủy</button>
+            <button class="btn btn-primary" id="am-save-btn" onclick="saveAlbum()"><i class="fas fa-save"></i> Lưu album</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== MODAL XÓA ===== -->
+<div class="overlay" id="del-modal">
+    <div class="modal modal-sm" onclick="event.stopPropagation()">
+        <div class="modal-head">
+            <h3><i class="fas fa-exclamation-triangle" style="color:#e74c3c"></i> Xác nhận xóa</h3>
+            <button class="modal-close" onclick="closeDel()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <p id="del-msg">Bạn có chắc muốn xóa?</p>
+            <p style="color:#e74c3c;font-size:0.82rem;margin-top:10px;">
+                <i class="fas fa-exclamation-triangle"></i> Hành động này không thể hoàn tác.
+            </p>
+        </div>
+        <div class="modal-foot">
+            <button class="btn btn-outline" onclick="closeDel()"><i class="fas fa-arrow-left"></i> Hủy</button>
+            <button class="btn btn-danger" id="del-btn" onclick="confirmDel()"><i class="fas fa-trash"></i> Xóa</button>
+        </div>
+    </div>
+</div>
+
+<script src="../assets/js/config.js"></script>
+<script src="shared/auth.js"></script>
+<script src="shared/api.js"></script>
+<script src="shared/ui.js"></script>
+<script>
+'use strict';
+
+var page = initLayout('<i class="fas fa-images"></i> Quản lý Thư viện', 'thu-vien.html');
+if (!page) throw new Error('Auth failed');
+
+// ── State ──
+var currentAlbum = null; // null = đang xem danh sách albums
+var delTarget    = null; // { type: 'album'|'photo', id, name }
+var pendingFiles = [];   // files chờ upload
+
+// ── Render trang ──
+page.innerHTML =
+    '<div class="gallery-breadcrumb" id="breadcrumb"></div>' +
+    '<div class="card">' +
+    '  <div class="card-head">' +
+    '    <h3 id="page-title"><i class="fas fa-folder"></i> Danh sách album</h3>' +
+    '    <div style="display:flex;gap:8px;" id="header-actions"></div>' +
+    '  </div>' +
+    '  <div id="gallery-content"></div>' +
+    '</div>';
+
+loadAlbums();
+
+// ════════════════════════════════════════
+// DANH SÁCH ALBUMS
+// ════════════════════════════════════════
+async function loadAlbums() {
+    currentAlbum = null;
+    updateBreadcrumb();
+    setHTML('page-title', '<i class="fas fa-folder"></i> Danh sách album');
+    setHTML('header-actions',
+        '<button class="btn btn-primary" onclick="openAlbumModal()">' +
+        '<i class="fas fa-plus"></i> Tạo album mới</button>'
+    );
+    loading('gallery-content');
+
+    try {
+        var r = await API.gallery.albums(true); // all=1 để admin thấy cả ẩn
+        var albums = r.data || [];
+
+        if (!albums.length) {
+            empty('gallery-content', 'images', 'Chưa có album nào. Hãy tạo album đầu tiên!');
+            return;
+        }
+
+        var html = '<div class="album-grid">';
+        albums.forEach(function(a) {
+            var coverHtml = a.cover_image
+                ? '<img src="' + resolveImgUrl(a.cover_image) + '" alt="' + escapeHtml(a.name) + '" onerror="this.parentElement.innerHTML=\'<div class=album-cover><i class=fas fa-images></i></div>\'">'
+                : '<div class="album-cover"><i class="fas fa-images"></i></div>';
+
+            var statusBadge = a.status === 'active'
+                ? '<span class="badge b-success" style="font-size:10px;">Hiển thị</span>'
+                : '<span class="badge b-secondary" style="font-size:10px;">Ẩn</span>';
+
+            html +=
+                '<div class="album-card">' +
+                '  <div onclick="openAlbum(' + a.id + ')">' +
+                '    <div class="album-cover">' + coverHtml + '</div>' +
+                '    <div class="album-info">' +
+                '      <div class="album-name">' + escapeHtml(a.name) + '</div>' +
+                '      <div class="album-meta">' +
+                '        <i class="fas fa-image"></i> ' + (a.photo_count || 0) + ' ảnh' +
+                '        &nbsp;' + statusBadge +
+                '      </div>' +
+                '    </div>' +
+                '  </div>' +
+                '  <div class="album-actions">' +
+                '    <button class="btn btn-sm btn-outline" onclick="openAlbumModal(' + a.id + ')" title="Sửa album">' +
+                '      <i class="fas fa-edit"></i> Sửa' +
+                '    </button>' +
+                '    <button class="btn btn-sm btn-danger" onclick="openDel(\'album\',' + a.id + ',\'' + escapeHtml(a.name).replace(/'/g,'\\\'') + '\')" title="Xóa album">' +
+                '      <i class="fas fa-trash"></i>' +
+                '    </button>' +
+                '  </div>' +
+                '</div>';
+        });
+        html += '</div>';
+        setHTML('gallery-content', html);
+    } catch(e) {
+        empty('gallery-content', 'exclamation-circle', 'Lỗi tải dữ liệu: ' + e.message);
+    }
+}
+
+// ════════════════════════════════════════
+// XEM ẢNH TRONG ALBUM
+// ════════════════════════════════════════
+async function openAlbum(id) {
+    loading('gallery-content');
+    try {
+        var r = await API.gallery.album(id);
+        currentAlbum = r.data.album;
+        var photos   = r.data.photos || [];
+
+        updateBreadcrumb();
+        setHTML('page-title', '<i class="fas fa-folder-open"></i> ' + escapeHtml(currentAlbum.name));
+        setHTML('header-actions',
+            '<button class="btn btn-outline" onclick="openAlbumModal(' + currentAlbum.id + ')">' +
+            '<i class="fas fa-edit"></i> Sửa album</button>' +
+            '<button class="btn btn-primary" onclick="showUploadZone()">' +
+            '<i class="fas fa-upload"></i> Thêm ảnh</button>'
+        );
+
+        var html =
+            // Upload zone (ẩn mặc định)
+            '<div id="upload-section" style="display:none;">' +
+            '  <div class="upload-zone" id="upload-zone" onclick="triggerFileInput()" ' +
+            '       ondragover="event.preventDefault();this.classList.add(\'drag-over\')" ' +
+            '       ondragleave="this.classList.remove(\'drag-over\')" ' +
+            '       ondrop="handleDrop(event)">' +
+            '    <i class="fas fa-cloud-upload-alt"></i>' +
+            '    <p>Kéo thả ảnh vào đây hoặc <b>click để chọn</b></p>' +
+            '    <small>JPG · PNG · GIF · WEBP · tối đa 10MB/ảnh · nhiều ảnh cùng lúc</small>' +
+            '  </div>' +
+            '  <input type="file" id="photo-file-input" multiple accept="image/*" style="display:none;" onchange="handleFileSelect(this.files)">' +
+            '  <div class="upload-preview-list" id="upload-preview-list"></div>' +
+            '  <div style="display:flex;gap:8px;padding:0 16px 16px;" id="upload-actions" style="display:none;">' +
+            '    <button class="btn btn-outline" onclick="cancelUpload()"><i class="fas fa-times"></i> Hủy</button>' +
+            '    <button class="btn btn-primary" id="do-upload-btn" onclick="doUpload()" disabled>' +
+            '      <i class="fas fa-upload"></i> Upload <span id="upload-count"></span>' +
+            '    </button>' +
+            '  </div>' +
+            '</div>';
+
+        if (!photos.length) {
+            html += '<div class="empty" style="padding:40px;"><i class="fas fa-images"></i><p>Album chưa có ảnh nào. Nhấn "Thêm ảnh" để upload.</p></div>';
+        } else {
+            html += '<div class="photo-grid-admin" id="photo-grid">';
+            photos.forEach(function(p) {
+                html +=
+                    '<div class="photo-item-admin" id="photo-' + p.id + '">' +
+                    '  <img src="' + resolveImgUrl(p.image_url) + '" alt="' + escapeHtml(p.caption || '') + '" loading="lazy">' +
+                    '  <div class="photo-overlay-admin">' +
+                    '    <button class="btn-del-photo" onclick="openDel(\'photo\',' + p.id + ',\'ảnh này\')" title="Xóa ảnh">' +
+                    '      <i class="fas fa-trash"></i>' +
+                    '    </button>' +
+                    '  </div>' +
+                    '</div>';
+            });
+            html += '</div>';
+        }
+
+        setHTML('gallery-content', html);
+    } catch(e) {
+        empty('gallery-content', 'exclamation-circle', 'Lỗi tải album: ' + e.message);
+    }
+}
+
+// ── Breadcrumb ──
+function updateBreadcrumb() {
+    if (!currentAlbum) {
+        setHTML('breadcrumb', '');
+        return;
+    }
+    setHTML('breadcrumb',
+        '<a onclick="loadAlbums()"><i class="fas fa-images"></i> Thư viện</a>' +
+        ' <i class="fas fa-chevron-right" style="font-size:10px;"></i> ' +
+        '<span>' + escapeHtml(currentAlbum.name) + '</span>'
+    );
+}
+
+// ════════════════════════════════════════
+// UPLOAD ẢNH
+// ════════════════════════════════════════
+function showUploadZone() {
+    var sec = $('upload-section');
+    if (sec) { sec.style.display = 'block'; sec.scrollIntoView({ behavior: 'smooth' }); }
+}
+
+function triggerFileInput() {
+    var fi = $('photo-file-input');
+    if (fi) fi.click();
+}
+
+function handleDrop(e) {
+    e.preventDefault();
+    $('upload-zone').classList.remove('drag-over');
+    handleFileSelect(e.dataTransfer.files);
+}
+
+function handleFileSelect(files) {
+    for (var i = 0; i < files.length; i++) {
+        var f = files[i];
+        if (!f.type.startsWith('image/')) continue;
+        if (f.size > 10 * 1024 * 1024) { toast('File "' + f.name + '" quá lớn (max 10MB)', 'danger'); continue; }
+        pendingFiles.push(f);
+    }
+    renderUploadPreviews();
+}
+
+function renderUploadPreviews() {
+    var list = $('upload-preview-list');
+    var btn  = $('do-upload-btn');
+    var cnt  = $('upload-count');
+    var acts = $('upload-actions');
+    if (!list) return;
+
+    if (!pendingFiles.length) {
+        list.innerHTML = '';
+        if (btn) btn.disabled = true;
+        if (acts) acts.style.display = 'none';
+        return;
+    }
+
+    if (acts) acts.style.display = 'flex';
+    if (btn) btn.disabled = false;
+    if (cnt) cnt.textContent = '(' + pendingFiles.length + ' ảnh)';
+
+    list.innerHTML = pendingFiles.map(function(f, i) {
+        var url = URL.createObjectURL(f);
+        return '<div class="upload-preview-item">' +
+            '<img src="' + url + '" alt="">' +
+            '<button class="remove-preview" onclick="removePreview(' + i + ')" title="Bỏ ảnh này">&times;</button>' +
+            '</div>';
+    }).join('');
+}
+
+function removePreview(idx) {
+    pendingFiles.splice(idx, 1);
+    renderUploadPreviews();
+}
+
+function cancelUpload() {
+    pendingFiles = [];
+    renderUploadPreviews();
+    var sec = $('upload-section');
+    if (sec) sec.style.display = 'none';
+}
+
+async function doUpload() {
+    if (!pendingFiles.length || !currentAlbum) return;
+
+    var btn = $('do-upload-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang upload...';
+
+    var uploaded = [];
+    var failed   = 0;
+
+    for (var i = 0; i < pendingFiles.length; i++) {
+        var f  = pendingFiles[i];
+        var fd = new FormData();
+        fd.append('image', f);
+        try {
+            var res  = await fetch(((window.APP_CONFIG && window.APP_CONFIG.API_BASE) || (function(){var h=window.location.hostname;return(h==='localhost'||h==='127.0.0.1'||h==='')?'http://localhost:3001/api':'https://api.'+h+'/api';})()) + '/upload/image', {
+                method: 'POST',
+                headers: { 'Authorization': 'Bearer ' + Auth.getToken() },
+                body: fd
+            });
+            var json = await res.json();
+            if (json.success) {
+                uploaded.push({ image_url: json.data.url, caption: '' });
+            } else { failed++; }
+        } catch(e) { failed++; }
+
+        // Cập nhật progress
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + (i+1) + '/' + pendingFiles.length + '...';
+    }
+
+    // Lưu vào DB
+    if (uploaded.length) {
+        try {
+            await API.gallery.addPhotos(currentAlbum.id, uploaded);
+            toast('✅ Đã upload ' + uploaded.length + ' ảnh' + (failed ? ' (' + failed + ' lỗi)' : ''));
+        } catch(e) {
+            toast('Lỗi lưu ảnh: ' + e.message, 'danger');
+        }
+    }
+    if (failed) toast(failed + ' ảnh upload thất bại', 'danger');
+
+    pendingFiles = [];
+    cancelUpload();
+    openAlbum(currentAlbum.id); // reload
+}
+
+// ════════════════════════════════════════
+// MODAL ALBUM (TẠO / SỬA)
+// ════════════════════════════════════════
+async function openAlbumModal(id) {
+    $('am-id').value     = '';
+    $('am-name').value   = '';
+    $('am-desc').value   = '';
+    $('am-sort').value   = '0';
+    $('am-status').value = 'active';
+    setHTML('album-modal-title', '<i class="fas fa-folder-plus" style="color:#c41e3a;margin-right:8px;"></i>Tạo album mới');
+
+    if (id) {
+        try {
+            var r = await API.gallery.album(id);
+            var a = r.data.album;
+            $('am-id').value     = a.id;
+            $('am-name').value   = a.name        || '';
+            $('am-desc').value   = a.description || '';
+            $('am-sort').value   = a.sort_order  || 0;
+            $('am-status').value = a.status      || 'active';
+            setHTML('album-modal-title', '<i class="fas fa-edit" style="color:#c41e3a;margin-right:8px;"></i>Chỉnh sửa album');
+        } catch(e) { toast('Lỗi tải album: ' + e.message, 'danger'); return; }
+    }
+
+    $('album-modal').classList.add('open');
+    setTimeout(function() { $('am-name').focus(); }, 100);
+}
+
+function closeAlbumModal() { $('album-modal').classList.remove('open'); }
+
+async function saveAlbum() {
+    var id   = $('am-id').value.trim();
+    var name = $('am-name').value.trim();
+    if (!name) { toast('Vui lòng nhập tên album', 'danger'); $('am-name').focus(); return; }
+
+    var body = {
+        name:        name,
+        description: $('am-desc').value.trim() || null,
+        sort_order:  parseInt($('am-sort').value) || 0,
+        status:      $('am-status').value
+    };
+
+    var btn = $('am-save-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang lưu...';
+
+    try {
+        if (id) {
+            await API.gallery.updateAlbum(id, body);
+            toast('✅ Cập nhật album thành công!');
+        } else {
+            await API.gallery.createAlbum(body);
+            toast('✅ Tạo album thành công!');
+        }
+        closeAlbumModal();
+        if (currentAlbum && id) openAlbum(currentAlbum.id);
+        else loadAlbums();
+    } catch(e) {
+        toast('Lỗi: ' + e.message, 'danger');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-save"></i> Lưu album';
+    }
+}
+
+// ════════════════════════════════════════
+// XÓA
+// ════════════════════════════════════════
+function openDel(type, id, name) {
+    delTarget = { type: type, id: id };
+    setHTML('del-msg',
+        'Bạn có chắc muốn xóa ' +
+        (type === 'album' ? 'album <b>' + escapeHtml(name) + '</b> và toàn bộ ảnh bên trong?' : escapeHtml(name) + '?')
+    );
+    $('del-modal').classList.add('open');
+}
+
+function closeDel() { $('del-modal').classList.remove('open'); delTarget = null; }
+
+async function confirmDel() {
+    if (!delTarget) return;
+    var btn = $('del-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xóa...';
+
+    try {
+        if (delTarget.type === 'album') {
+            await API.gallery.deleteAlbum(delTarget.id);
+            toast('🗑️ Đã xóa album');
+            closeDel();
+            loadAlbums();
+        } else {
+            await API.gallery.deletePhoto(delTarget.id);
+            toast('🗑️ Đã xóa ảnh');
+            closeDel();
+            // Xóa khỏi DOM ngay không cần reload
+            var el = $('photo-' + delTarget.id);
+            if (el) el.remove();
+        }
+    } catch(e) {
+        toast('Lỗi xóa: ' + e.message, 'danger');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-trash"></i> Xóa';
+    }
+}
+
+// ── Đóng modal khi click backdrop ──
+['album-modal', 'del-modal'].forEach(function(id) {
+    $(id).addEventListener('click', function(e) {
+        if (e.target === this) {
+            if (id === 'album-modal') closeAlbumModal();
+            if (id === 'del-modal')   closeDel();
+        }
+    });
+});
+</script>
+</body>
+</html>

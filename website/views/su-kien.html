@@ -1,0 +1,461 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="../">
+    <title>Sự kiện - CLB Võ Cổ Truyền HUTECH</title>
+    <meta name="description" content="Các sự kiện, giải đấu và hoạt động sắp diễn ra của CLB Võ Cổ Truyền HUTECH.">
+    <meta property="og:title" content="Sự kiện - CLB Võ Cổ Truyền HUTECH">
+    <meta property="og:description" content="Các sự kiện, giải đấu và hoạt động sắp diễn ra của CLB Võ Cổ Truyền HUTECH.">
+    <meta property="og:image" content="assets/images_Logo/Logo.jpg">
+    <link rel="icon" type="image/jpeg" href="assets/images_Logo/Logo.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <script src="assets/js/config.js"></script>
+    <link rel="stylesheet" href="assets/css/tin-tuc-base.css">
+    <style>
+        /* Filter bar */
+        .tn-filter-bar {
+            display: flex; gap: 10px; flex-wrap: wrap;
+            margin-bottom: 32px; align-items: center;
+        }
+        .tn-filter-btn {
+            padding: 7px 18px; border-radius: 24px;
+            border: 1.5px solid #e2e8f0; background: #fff;
+            color: #4a5568; font-size: 13px; font-weight: 600;
+            cursor: pointer; transition: all 0.2s;
+            font-family: "Open Sans", sans-serif;
+            position: relative; overflow: hidden;
+        }
+        .tn-filter-btn:hover, .tn-filter-btn.active {
+            background: #c41e3a; border-color: #c41e3a; color: #fff;
+        }
+        /* Ripple */
+        .tn-filter-btn .ripple {
+            position: absolute; border-radius: 50%;
+            background: rgba(255,255,255,0.45);
+            transform: scale(0);
+            animation: ripple 0.5s linear;
+            pointer-events: none;
+        }
+        @keyframes ripple { to { transform: scale(4); opacity: 0; } }
+
+        /* Skeleton */
+        .tn-skeleton { background: #f0f2f5; border-radius: 14px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.05); }
+        .tn-skeleton-img { width: 100%; height: 180px; background: linear-gradient(90deg,#e8eaed 25%,#f5f5f5 50%,#e8eaed 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; }
+        .tn-skeleton-body { padding: 18px 20px; }
+        .tn-skeleton-line { height: 12px; border-radius: 6px; margin-bottom: 10px; background: linear-gradient(90deg,#e8eaed 25%,#f5f5f5 50%,#e8eaed 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; }
+        .tn-skeleton-line.short { width: 40%; }
+        .tn-skeleton-line.medium { width: 70%; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+        /* ── Grid animation ── */
+        #events-grid { transition: opacity 0.2s ease; }
+        #events-grid.fading { opacity: 0; pointer-events: none; }
+
+        /* Card stagger */
+        .tn-card {
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(18px);
+            animation: cardIn 0.35s ease forwards;
+        }
+        .tn-card:hover h4 { color: #c41e3a; }
+        @keyframes cardIn { to { opacity: 1; transform: translateY(0); } }
+        .tn-card:nth-child(1) { animation-delay: 0.04s; }
+        .tn-card:nth-child(2) { animation-delay: 0.09s; }
+        .tn-card:nth-child(3) { animation-delay: 0.14s; }
+        .tn-card:nth-child(4) { animation-delay: 0.19s; }
+        .tn-card:nth-child(5) { animation-delay: 0.24s; }
+        .tn-card:nth-child(6) { animation-delay: 0.29s; }
+        .tn-card:nth-child(7) { animation-delay: 0.34s; }
+        .tn-card:nth-child(8) { animation-delay: 0.39s; }
+        .tn-card:nth-child(9) { animation-delay: 0.44s; }
+
+        /* Pagination */
+        .tn-page-btn { transition: all 0.18s ease, transform 0.12s ease; }
+        .tn-page-btn:hover:not(.active):not(:disabled) { transform: translateY(-2px); }
+        .tn-page-btn:active { transform: scale(0.92); }
+
+        /* Result info */
+        #result-info { transition: opacity 0.2s ease; }
+
+        /* Status badge trên card */
+        .ev-status {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 11px; font-weight: 700; padding: 3px 10px;
+            border-radius: 20px; margin-bottom: 10px;
+            text-transform: uppercase; letter-spacing: 0.4px;
+        }
+        .ev-status.upcoming  { background: #e8f4fd; color: #2980b9; }
+        .ev-status.ongoing   { background: #eafaf1; color: #27ae60; }
+        .ev-status.completed { background: #f0f0f0; color: #888; }
+        .ev-status.cancelled { background: #fdf0f0; color: #c41e3a; }
+
+        /* Card meta info */
+        .ev-meta { display: flex; flex-direction: column; gap: 5px; margin-top: 10px; }
+        .ev-meta-row { font-size: 12px; color: #888; display: flex; align-items: center; gap: 6px; }
+        .ev-meta-row i { width: 14px; color: #c41e3a; }
+
+        /* ── Modal overlay transition ── */
+        .tn-modal-overlay {
+            opacity: 0;
+            transition: opacity 0.25s ease;
+            pointer-events: none;
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 9999;
+            align-items: center; justify-content: center; padding: 20px;
+        }
+        .tn-modal-overlay.open { display: flex; opacity: 1; pointer-events: auto; }
+        .tn-modal {
+            background: #fff; border-radius: 16px;
+            max-width: 680px; width: 100%; max-height: 85vh; overflow-y: auto;
+            box-shadow: 0 24px 64px rgba(0,0,0,0.25);
+            transform: translateY(24px) scale(0.97);
+            transition: transform 0.28s cubic-bezier(0.34,1.56,0.64,1), opacity 0.25s ease;
+            opacity: 0;
+        }
+        .tn-modal-overlay.open .tn-modal { transform: translateY(0) scale(1); opacity: 1; }
+        .tn-modal-img { width: 100%; height: 260px; object-fit: cover; border-radius: 16px 16px 0 0; display: block; }
+        .tn-modal-body { padding: 24px 28px 28px; }
+        .tn-modal-body h2 { font-size: 22px; font-weight: 800; color: #1a252f; margin-bottom: 16px; line-height: 1.4; }
+        .tn-modal-desc { font-size: 15px; color: #444; line-height: 1.8; white-space: pre-wrap; margin-top: 16px; }
+        .tn-modal-close { position: sticky; top: 16px; float: right; width: 36px; height: 36px; border-radius: 50%; border: none; background: rgba(0,0,0,0.08); color: #333; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; margin: 16px 16px 0 0; transition: background 0.2s; }
+        .tn-modal-close:hover { background: #c41e3a; color: #fff; }
+        .ev-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+        .ev-detail-item { background: #f8fafc; border-radius: 10px; padding: 12px 16px; }
+        .ev-detail-item label { font-size: 11px; font-weight: 700; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px; }
+        .ev-detail-item span { font-size: 14px; color: #1a252f; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <div class="page-hero">
+        <div class="breadcrumb">
+            <a href="index.html">Trang chủ</a> &rsaquo; Tin tức &rsaquo; Sự kiện
+        </div>
+        <h1>Sự Kiện</h1>
+        <p>Các sự kiện nổi bật và sắp diễn ra của CLB</p>
+    </div>
+
+    <div class="page-body">
+        <div class="tn-section-title">
+            <i class="fas fa-calendar-alt"></i> Sự kiện nổi bật
+        </div>
+
+        <!-- Filter trạng thái -->
+        <div class="tn-filter-bar" id="filter-bar">
+            <button class="tn-filter-btn active" data-status="">Tất cả</button>
+            <button class="tn-filter-btn" data-status="upcoming">🔜 Sắp diễn ra</button>
+            <button class="tn-filter-btn" data-status="ongoing">🟢 Đang diễn ra</button>
+            <button class="tn-filter-btn" data-status="completed">✅ Đã kết thúc</button>
+        </div>
+
+        <div class="tn-result-info" id="result-info" style="font-size:13px;color:#999;margin-bottom:20px;"></div>
+
+        <!-- Grid sự kiện -->
+        <div class="tn-grid" id="events-grid"></div>
+
+        <!-- Pagination -->
+        <div class="tn-pagination" id="pagination" style="display:flex;justify-content:center;gap:8px;margin-top:40px;flex-wrap:wrap;"></div>
+    </div>
+
+    <!-- Modal chi tiết -->
+    <div class="tn-modal-overlay" id="ev-modal" onclick="closeModal(event)">
+        <div class="tn-modal">
+            <button class="tn-modal-close" onclick="closeModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            <div id="modal-content"></div>
+        </div>
+    </div>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="assets/js/dropdown.js"></script>
+    <script>
+    'use strict';
+
+    var API_BASE    = (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || 'http://localhost:3001/api';
+    var PAGE_SIZE   = 9;
+    var currentPage = 1;
+    var currentStatus = '';
+
+    var TYPE_LBL = {
+        tournament: '🏆 Thi đấu', demonstration: '🎭 Biểu diễn',
+        workshop: '📚 Workshop', seminar: '🎤 Hội thảo', other: '📌 Khác'
+    };
+    var ST_LBL = { upcoming: 'Sắp diễn ra', ongoing: 'Đang diễn ra', completed: 'Đã kết thúc', cancelled: 'Đã hủy' };
+
+    // Fallback data
+    var FALLBACK = [
+        { id: null, name: 'Giải Võ cổ truyền Đại hội TP.HCM 2026', description: 'CLB tham gia đấu trường lớn nhất thành phố — cơ hội học hỏi và khẳng định bản thân.', type: 'tournament', status: 'upcoming', date: '2026-01-01', location: 'TP. Hồ Chí Minh', image: 'assets/images_Thi_dau_vo/Hinh_Thi_Dau.jpg' },
+        { id: null, name: 'HUTECH Global Festival 2023', description: 'Sự kiện quốc tế lớn nhất của trường — CLB biểu diễn và đạt giải nhất.', type: 'demonstration', status: 'completed', date: '2023-11-01', location: 'HUTECH, 475A Điện Biên Phủ', image: 'assets/images_Dien_Show/Show_Quoc_Te.jpg' },
+        { id: null, name: 'Giải Liên hoan Võ cổ truyền Quốc tế TP.HCM 2024', description: 'CLB tham gia và đạt HCV, HCB tại giải đấu quốc tế uy tín.', type: 'tournament', status: 'completed', date: '2024-05-01', location: 'TP. Hồ Chí Minh', image: 'assets/images_Thi_dau_vo/Hinh_Nhan_thuong.jpg' },
+        { id: null, name: 'Thi đấu Võ nhạc — Got Talent HUTECH 2022', description: 'Cuộc thi tìm kiếm tài năng cấp trường — màn trình diễn võ nhạc ấn tượng của CLB.', type: 'demonstration', status: 'completed', date: '2022-10-01', location: 'HUTECH', image: 'assets/images_Thi_dau_vo/Thi_Vo_Nhac.jpg' },
+        { id: null, name: 'Biểu diễn chào đón tân sinh viên', description: 'Hoạt động thường niên — CLB biểu diễn và giới thiệu đến tân sinh viên mỗi đầu năm học.', type: 'demonstration', status: 'upcoming', date: '2026-09-01', location: 'HUTECH', image: 'assets/images_Dien_Show/Show.jpg' },
+        { id: null, name: 'Team Building thường niên', description: 'Hoạt động ngoại khóa gắn kết thành viên, tổ chức mỗi năm một lần.', type: 'other', status: 'upcoming', date: '2026-06-01', location: 'Ngoại thành TP.HCM', image: 'assets/images_Team_Building/Hinh_Team_BuilDing_2.jpg' }
+    ];
+
+    function fmtDate(s) {
+        if (!s) return '';
+        try { return new Date(s).toLocaleDateString('vi-VN', { day:'2-digit', month:'2-digit', year:'numeric' }); }
+        catch { return ''; }
+    }
+
+    function resolveImg(url) {
+        if (!url) return null;
+        if (url.startsWith('http://') || url.startsWith('https://')) return url;
+        var base = (window.APP_CONFIG && window.APP_CONFIG.API_BASE) ? window.APP_CONFIG.API_BASE.replace('/api','') : 'http://localhost:3001';
+        return base + (url.startsWith('/') ? url : '/' + url);
+    }
+
+    function trunc(s, n) { if (!s) return ''; return s.length > n ? s.slice(0, n) + '…' : s; }
+
+    // Extract HH:MM từ ISO datetime hoặc time string — MSSQL lưu time dạng UTC ISO
+    function extractTime(s) {
+        if (!s) return null;
+        if (s.indexOf('T') !== -1) {
+            var t = new Date(s);
+            return t.getHours().toString().padStart(2, '0') + ':' + t.getMinutes().toString().padStart(2, '0');
+        }
+        return s.substring(0, 5);
+    }
+
+    function showSkeleton() {
+        var grid = document.getElementById('events-grid');
+        grid.classList.add('fading');
+        setTimeout(function() {
+            var html = '';
+            for (var i = 0; i < 6; i++) {
+                html += '<div class="tn-skeleton"><div class="tn-skeleton-img"></div><div class="tn-skeleton-body"><div class="tn-skeleton-line short"></div><div class="tn-skeleton-line"></div><div class="tn-skeleton-line medium"></div><div class="tn-skeleton-line short"></div></div></div>';
+            }
+            grid.innerHTML = html;
+            grid.classList.remove('fading');
+        }, 180);
+        document.getElementById('result-info').style.opacity = '0';
+        document.getElementById('pagination').innerHTML = '';
+    }
+
+    function renderCard(ev) {
+        var imgSrc = ev.image ? (resolveImg(ev.image) || ev.image) : null;
+        var imgHtml = imgSrc
+            ? '<img class="tn-card-img" src="' + imgSrc + '" alt="' + ev.name + '" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">' +
+              '<div class="tn-card-img-placeholder" style="display:none;"><i class="fas fa-calendar-alt"></i></div>'
+            : '<div class="tn-card-img-placeholder"><i class="fas fa-calendar-alt"></i></div>';
+
+        var stCls = ev.status || 'upcoming';
+        var stLbl = ST_LBL[ev.status] || ev.status || '';
+        var typeLbl = TYPE_LBL[ev.type] || ev.type || '';
+        var clickAttr = ev.id ? 'onclick="openModal(' + ev.id + ')"' : '';
+
+        var timeStr = '';
+        if (ev.start_time) {
+            var st = extractTime(ev.start_time);
+            var et = extractTime(ev.end_time);
+            timeStr = st + (et ? ' – ' + et : '');
+        }
+
+        return '<div class="tn-card" ' + clickAttr + ' role="article">' +
+            imgHtml +
+            '<div class="tn-card-body">' +
+                '<span class="ev-status ' + stCls + '">' + stLbl + '</span>' +
+                '<h4>' + trunc(ev.name, 75) + '</h4>' +
+                '<p>' + trunc(ev.description, 100) + '</p>' +
+                '<div class="ev-meta">' +
+                    '<div class="ev-meta-row"><i class="fas fa-calendar"></i>' + fmtDate(ev.date) + (timeStr ? ' · ' + timeStr : '') + '</div>' +
+                    (ev.location ? '<div class="ev-meta-row"><i class="fas fa-map-marker-alt"></i>' + trunc(ev.location, 40) + '</div>' : '') +
+                    (typeLbl ? '<div class="ev-meta-row"><i class="fas fa-tag"></i>' + typeLbl + '</div>' : '') +
+                '</div>' +
+            '</div>' +
+        '</div>';
+    }
+
+    async function loadEvents() {
+        showSkeleton();
+        try {
+            var url = API_BASE + '/cms/events?page=' + currentPage + '&limit=' + PAGE_SIZE +
+                (currentStatus ? '&status=' + currentStatus : '');
+            var res  = await fetch(url);
+            var data = await res.json();
+            if (!data.success) throw new Error(data.message);
+
+            var list  = (data.data && data.data.events) || [];
+            var total = (data.data && data.data.total)  || 0;
+
+            // API kết nối được → hiển thị đúng dữ liệu thực (kể cả khi rỗng)
+            renderList(list, total, false);
+        } catch (e) {
+            // Chỉ dùng fallback khi API lỗi hoàn toàn (network, server down)
+            console.warn('[Sự kiện] Không thể tải từ API:', e.message);
+            renderFallback();
+        }
+    }
+
+    function renderFallback() {
+        var list = currentStatus
+            ? FALLBACK.filter(function(ev) { return ev.status === currentStatus; })
+            : FALLBACK;
+        renderList(list, list.length, true);
+    }
+
+    function renderList(list, total, isFallback) {
+        var grid  = document.getElementById('events-grid');
+        var info  = document.getElementById('result-info');
+        var pager = document.getElementById('pagination');
+
+        if (!list.length) {
+            grid.classList.add('fading');
+            setTimeout(function() {
+                grid.innerHTML = '<div class="tn-empty" style="grid-column:1/-1;"><i class="fas fa-calendar-alt"></i><h3>Chưa có sự kiện</h3><p>Không có sự kiện nào phù hợp.</p></div>';
+                grid.classList.remove('fading');
+            }, 180);
+            info.textContent = ''; pager.innerHTML = ''; return;
+        }
+
+        // Fade out → swap → fade in với stagger
+        grid.classList.add('fading');
+        setTimeout(function() {
+            grid.innerHTML = list.map(renderCard).join('');
+            grid.classList.remove('fading');
+        }, 180);
+
+        setTimeout(function() {
+            if (!isFallback) {
+                var from = (currentPage - 1) * PAGE_SIZE + 1;
+                var to   = Math.min(currentPage * PAGE_SIZE, total);
+                info.textContent = 'Hiển thị ' + from + '–' + to + ' trong tổng số ' + total + ' sự kiện';
+            } else {
+                info.textContent = '';
+            }
+            info.style.opacity = '1';
+        }, 220);
+
+        if (!isFallback) {
+            var pages = Math.ceil(total / PAGE_SIZE);
+            renderPagination(pages);
+        } else {
+            pager.innerHTML = '';
+        }
+    }
+
+    function renderPagination(pages) {
+        if (pages <= 1) { document.getElementById('pagination').innerHTML = ''; return; }
+        var html = '';
+        if (currentPage > 1) html += '<button class="tn-page-btn" onclick="goPage(' + (currentPage-1) + ')"><i class="fas fa-chevron-left"></i></button>';
+        for (var i = 1; i <= pages; i++) html += '<button class="tn-page-btn' + (i===currentPage?' active':'') + '" onclick="goPage(' + i + ')">' + i + '</button>';
+        if (currentPage < pages) html += '<button class="tn-page-btn" onclick="goPage(' + (currentPage+1) + ')"><i class="fas fa-chevron-right"></i></button>';
+        document.getElementById('pagination').innerHTML = html;
+    }
+
+    function goPage(p) {
+        currentPage = p; loadEvents();
+        window.scrollTo({ top: document.querySelector('.page-body').offsetTop - 80, behavior: 'smooth' });
+    }
+
+    // Filter
+    document.getElementById('filter-bar').addEventListener('click', function(e) {
+        var btn = e.target.closest('.tn-filter-btn');
+        if (!btn) return;
+
+        // Ripple effect
+        var ripple = document.createElement('span');
+        ripple.className = 'ripple';
+        var rect = btn.getBoundingClientRect();
+        var size = Math.max(rect.width, rect.height);
+        ripple.style.cssText = 'width:' + size + 'px;height:' + size + 'px;' +
+            'left:' + (e.clientX - rect.left - size/2) + 'px;' +
+            'top:'  + (e.clientY - rect.top  - size/2) + 'px;';
+        btn.appendChild(ripple);
+        setTimeout(function() { ripple.remove(); }, 500);
+
+        document.querySelectorAll('.tn-filter-btn').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        currentStatus = btn.dataset.status;
+        currentPage   = 1;
+        loadEvents();
+    });
+
+    // Modal
+    async function openModal(id) {
+        var overlay = document.getElementById('ev-modal');
+        var content = document.getElementById('modal-content');
+
+        overlay.style.display = 'flex';
+        requestAnimationFrame(function() {
+            requestAnimationFrame(function() {
+                overlay.classList.add('open');
+            });
+        });
+        document.body.style.overflow = 'hidden';
+        content.innerHTML = '<div style="padding:40px;text-align:center;color:#aaa;"><i class="fas fa-spinner fa-spin" style="font-size:28px;"></i></div>';
+
+        try {
+            var res  = await fetch(API_BASE + '/cms/events/' + id);
+            var data = await res.json();
+            if (!data.success) throw new Error(data.message);
+            var ev = data.data;
+
+            var imgHtml = ev.image
+                ? '<img class="tn-modal-img" src="' + (resolveImg(ev.image) || ev.image) + '" alt="" onerror="this.style.display=\'none\'">'
+                : '';
+
+            var stCls = ev.status || 'upcoming';
+            var timeStr = ev.start_time
+                ? (extractTime(ev.start_time) + (ev.end_time ? ' – ' + extractTime(ev.end_time) : ''))
+                : '—';
+
+            content.innerHTML = imgHtml +
+                '<div class="tn-modal-body">' +
+                    '<span class="ev-status ' + stCls + '">' + (ST_LBL[ev.status] || ev.status) + '</span>' +
+                    '<h2>' + ev.name + '</h2>' +
+                    '<div class="ev-detail-grid">' +
+                        '<div class="ev-detail-item"><label>Ngày tổ chức</label><span>' + (fmtDate(ev.date) || '—') + '</span></div>' +
+                        '<div class="ev-detail-item"><label>Giờ</label><span>' + timeStr + '</span></div>' +
+                        '<div class="ev-detail-item"><label>Địa điểm</label><span>' + (ev.location || '—') + '</span></div>' +
+                        '<div class="ev-detail-item"><label>Loại</label><span>' + (TYPE_LBL[ev.type] || ev.type || '—') + '</span></div>' +
+                        (ev.max_participants ? '<div class="ev-detail-item"><label>Số người tối đa</label><span>' + ev.max_participants + '</span></div>' : '') +
+                    '</div>' +
+                    (ev.description ? '<div class="tn-modal-desc">' + ev.description + '</div>' : '') +
+                '</div>';
+        } catch (e) {
+            content.innerHTML = '<div style="padding:40px;text-align:center;color:#e74c3c;"><i class="fas fa-exclamation-circle" style="font-size:28px;margin-bottom:12px;display:block;"></i>Không thể tải thông tin sự kiện.</div>';
+        }
+    }
+
+    function closeModal(e) {
+        if (e && e.target !== document.getElementById('ev-modal') && !e.target.closest('.tn-modal-close')) return;
+        var overlay = document.getElementById('ev-modal');
+        overlay.classList.remove('open');
+        document.body.style.overflow = '';
+        setTimeout(function() {
+            if (!overlay.classList.contains('open')) overlay.style.display = 'none';
+        }, 280);
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeModal({ target: document.getElementById('ev-modal') });
+    });
+
+    // Init
+    async function load(id, path) {
+        try { document.getElementById(id).innerHTML = await (await fetch(path)).text(); } catch(e) {}
+    }
+
+    document.addEventListener('DOMContentLoaded', async function() {
+        await Promise.all([
+            load('header-placeholder', 'components/header.html'),
+            load('footer-placeholder', 'components/footer.html')
+        ]);
+        if (typeof initDropdown === 'function') initDropdown();
+        loadEvents();
+    });
+    </script>
+</body>
+</html>

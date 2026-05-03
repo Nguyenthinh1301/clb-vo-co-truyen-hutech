@@ -1,13 +1,26 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
+const auditLog = require('../utils/auditLog');
 const { authenticate, authorize } = require('../middleware/auth');
 const { ValidationRules, handleValidationErrors } = require('../middleware/validation');
+const { cacheService } = require('../services/cacheService');
+const logger = require('../services/loggerService');
+
+const CLASS_CACHE_TTL = 60; // 60 giây
+
+function invalidateClassCache() {
+    cacheService.deletePattern('^classes:list');
+}
 
 // Get all classes (public)
 router.get('/', async (req, res) => {
     try {
         const { page = 1, limit = 10, level, status = 'active' } = req.query;
+
+        const cacheKey = `classes:list:${page}:${limit}:${level||''}:${status}`;
+        const cached = cacheService.get(cacheKey);
+        if (cached) return res.json(cached);
 
         let whereClause = 'c.status = ?';
         let params = [status];
@@ -29,14 +42,13 @@ router.get('/', async (req, res) => {
         `;
 
         const classes = await db.find(sql, params);
-
-        res.json({
-            success: true,
-            data: classes
-        });
+        const result = { success: true, data: classes };
+        cacheService.set(cacheKey, result, CLASS_CACHE_TTL);
+        res.set('Cache-Control', 'public, max-age=30');
+        res.json(result);
 
     } catch (error) {
-        console.error('Get classes error:', error);
+        logger.error('Get classes error:', { error: error.message });
         res.status(500).json({
             success: false,
             message: 'Lỗi server khi lấy danh sách lớp học'
@@ -66,7 +78,7 @@ router.get('/my-classes', authenticate, async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Get my classes error:', error);
+        logger.error('Get my classes error:', { error: error.message });
         res.status(500).json({
             success: false,
             message: 'Lỗi server khi lấy danh sách lớp học của tôi'
@@ -74,11 +86,41 @@ router.get('/my-classes', authenticate, async (req, res) => {
     }
 });
 
+// Get my schedule (all classes I'm enrolled in)
+router.get('/schedule/my-schedule', authenticate, async (req, res) => {
+    try {
+        const schedule = await db.query(
+            `SELECT c.id, c.name, c.schedule, c.location, c.start_date, c.end_date,
+             u.first_name as instructor_first_name, u.last_name as instructor_last_name
+             FROM class_enrollments ce
+             JOIN classes c ON ce.class_id = c.id
+             JOIN users u ON c.instructor_id = u.id
+             WHERE ce.user_id = ? AND ce.status = 'enrolled' AND c.status = 'active'
+             ORDER BY c.name`,
+            [req.user.id]
+        );
+
+        res.json({
+            success: true,
+            data: { schedule }
+        });
+
+    } catch (error) {
+        logger.error('Get my schedule error:', { error: error.message });
+        res.status(500).json({
+            success: false,
+            message: 'Lỗi server khi lấy lịch học của tôi'
+        });
+    }
+});
+
 // Get class details
-router.get('/:id', ValidationRules.idParam, handleValidationErrors, async (req, res) => {
+router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        
+        const numId = parseInt(id);
+        if (!numId || numId < 1) return res.status(400).json({ success: false, message: 'ID không hợp lệ' });
+
         const classInfo = await db.findOne(`
             SELECT c.*, 
              u.first_name as instructor_first_name, 
@@ -88,7 +130,7 @@ router.get('/:id', ValidationRules.idParam, handleValidationErrors, async (req, 
              FROM classes c
              JOIN users u ON c.instructor_id = u.id
              WHERE c.id = ?`,
-            [id]
+            [numId]
         );
 
         if (!classInfo) {
@@ -103,7 +145,7 @@ router.get('/:id', ValidationRules.idParam, handleValidationErrors, async (req, 
             data: { class: classInfo }
         });
     } catch (error) {
-        console.error('Error getting class details:', error);
+        logger.error('Error getting class details:', { error: error.message });
         res.status(500).json({
             success: false,
             message: 'Lỗi server khi lấy thông tin lớp học'
@@ -112,14 +154,16 @@ router.get('/:id', ValidationRules.idParam, handleValidationErrors, async (req, 
 });
 
 // Enroll in class
-router.post('/:id/enroll', authenticate, ValidationRules.idParam, handleValidationErrors, async (req, res) => {
+router.post('/:id/enroll', authenticate, async (req, res) => {
     try {
         const { id } = req.params;
+        const numId = parseInt(id);
+        if (!numId || numId < 1) return res.status(400).json({ success: false, message: 'ID không hợp lệ' });
 
         // Check if class exists and is active
         const classInfo = await db.findOne(
             'SELECT * FROM classes WHERE id = ? AND status = "active"',
-            [id]
+            [numId]
         );
 
         if (!classInfo) {
@@ -140,7 +184,7 @@ router.post('/:id/enroll', authenticate, ValidationRules.idParam, handleValidati
         // Check if user is already enrolled
         const existingEnrollment = await db.findOne(
             'SELECT * FROM class_enrollments WHERE user_id = ? AND class_id = ?',
-            [req.user.id, id]
+            [req.user.id, numId]
         );
 
         if (existingEnrollment) {
@@ -153,7 +197,7 @@ router.post('/:id/enroll', authenticate, ValidationRules.idParam, handleValidati
         // Create enrollment
         const enrollmentId = await db.insert('class_enrollments', {
             user_id: req.user.id,
-            class_id: id,
+            class_id: numId,
             status: 'enrolled',
             payment_status: 'pending'
         });
@@ -163,19 +207,21 @@ router.post('/:id/enroll', authenticate, ValidationRules.idParam, handleValidati
             'classes',
             { current_students: classInfo.current_students + 1 },
             'id = ?',
-            [id]
+            [numId]
         );
 
         // Log enrollment
-        await db.insert('audit_logs', {
-            user_id: req.user.id,
-            action: 'class_enrolled',
-            table_name: 'class_enrollments',
-            record_id: enrollmentId,
-            new_values: JSON.stringify({ user_id: req.user.id, class_id: id }),
-            ip_address: req.ip,
-            user_agent: req.get('User-Agent')
-        });
+        try {
+            await auditLog({
+                user_id: req.user.id,
+                action: 'class_enrolled',
+                table_name: 'class_enrollments',
+                record_id: enrollmentId,
+                new_values: JSON.stringify({ user_id: req.user.id, class_id: numId }),
+                ip_address: req.ip,
+                user_agent: req.get('User-Agent')
+            });
+        } catch (logErr) { logger.warn('Audit log warning:', { error: logErr.message }); }
 
         res.status(201).json({
             success: true,
@@ -184,7 +230,7 @@ router.post('/:id/enroll', authenticate, ValidationRules.idParam, handleValidati
         });
 
     } catch (error) {
-        console.error('Class enrollment error:', error);
+        logger.error('Class enrollment error:', { error: error.message });
         res.status(500).json({
             success: false,
             message: 'Lỗi server khi đăng ký lớp học'
@@ -250,15 +296,17 @@ router.post('/', authenticate, authorize('instructor', 'admin'), ValidationRules
         );
 
         // Log class creation
-        await db.insert('audit_logs', {
-            user_id: req.user.id,
-            action: 'class_created',
-            table_name: 'classes',
-            record_id: classId,
-            new_values: JSON.stringify(newClass),
-            ip_address: req.ip,
-            user_agent: req.get('User-Agent')
-        });
+        try {
+            await auditLog({
+                user_id: req.user.id,
+                action: 'class_created',
+                table_name: 'classes',
+                record_id: classId,
+                new_values: JSON.stringify(newClass),
+                ip_address: req.ip,
+                user_agent: req.get('User-Agent')
+            });
+        } catch (logErr) { logger.warn('Audit log warning:', { error: logErr.message }); }
 
         res.status(201).json({
             success: true,
@@ -267,7 +315,7 @@ router.post('/', authenticate, authorize('instructor', 'admin'), ValidationRules
         });
 
     } catch (error) {
-        console.error('Create class error:', error);
+        logger.error('Create class error:', { error: error.message });
         res.status(500).json({
             success: false,
             message: 'Lỗi server khi tạo lớp học'
@@ -276,12 +324,14 @@ router.post('/', authenticate, authorize('instructor', 'admin'), ValidationRules
 });
 
 // Update class (instructor/admin only)
-router.put('/:id', authenticate, authorize('instructor', 'admin'), ValidationRules.idParam, ValidationRules.classUpdate, handleValidationErrors, async (req, res) => {
+router.put('/:id', authenticate, authorize('instructor', 'admin'), ValidationRules.classUpdate, handleValidationErrors, async (req, res) => {
     try {
         const { id } = req.params;
+        const numId = parseInt(id);
+        if (!numId || numId < 1) return res.status(400).json({ success: false, message: 'ID không hợp lệ' });
 
         // Check if class exists
-        const existingClass = await db.findOne('SELECT * FROM classes WHERE id = ?', [id]);
+        const existingClass = await db.findOne('SELECT * FROM classes WHERE id = ?', [numId]);
         if (!existingClass) {
             return res.status(404).json({
                 success: false,
@@ -308,7 +358,8 @@ router.put('/:id', authenticate, authorize('instructor', 'admin'), ValidationRul
         });
 
         // Update class
-        await db.update('classes', updateData, 'id = ?', [id]);
+        await db.update('classes', updateData, 'id = ?', [numId]);
+        invalidateClassCache();
 
         // Get updated class
         const updatedClass = await db.findOne(
@@ -318,20 +369,22 @@ router.put('/:id', authenticate, authorize('instructor', 'admin'), ValidationRul
              FROM classes c
              JOIN users u ON c.instructor_id = u.id
              WHERE c.id = ?`,
-            [id]
+            [numId]
         );
 
         // Log class update
-        await db.insert('audit_logs', {
-            user_id: req.user.id,
-            action: 'class_updated',
-            table_name: 'classes',
-            record_id: id,
-            old_values: JSON.stringify(existingClass),
-            new_values: JSON.stringify(updatedClass),
-            ip_address: req.ip,
-            user_agent: req.get('User-Agent')
-        });
+        try {
+            await auditLog({
+                user_id: req.user.id,
+                action: 'class_updated',
+                table_name: 'classes',
+                record_id: numId,
+                old_values: JSON.stringify(existingClass),
+                new_values: JSON.stringify(updatedClass),
+                ip_address: req.ip,
+                user_agent: req.get('User-Agent')
+            });
+        } catch (logErr) { logger.warn('Audit log warning:', { error: logErr.message }); }
 
         res.json({
             success: true,
@@ -340,7 +393,7 @@ router.put('/:id', authenticate, authorize('instructor', 'admin'), ValidationRul
         });
 
     } catch (error) {
-        console.error('Update class error:', error);
+        logger.error('Update class error:', { error: error.message });
         res.status(500).json({
             success: false,
             message: 'Lỗi server khi cập nhật lớp học'
@@ -349,12 +402,14 @@ router.put('/:id', authenticate, authorize('instructor', 'admin'), ValidationRul
 });
 
 // Get class students (instructor/admin only)
-router.get('/:id/students', authenticate, authorize('instructor', 'admin'), ValidationRules.idParam, handleValidationErrors, async (req, res) => {
+router.get('/:id/students', authenticate, authorize('instructor', 'admin'), async (req, res) => {
     try {
         const { id } = req.params;
+        const numId = parseInt(id);
+        if (!numId || numId < 1) return res.status(400).json({ success: false, message: 'ID không hợp lệ' });
 
         // Check if class exists and user has permission
-        const classInfo = await db.findOne('SELECT * FROM classes WHERE id = ?', [id]);
+        const classInfo = await db.findOne('SELECT * FROM classes WHERE id = ?', [numId]);
         if (!classInfo) {
             return res.status(404).json({
                 success: false,
@@ -378,7 +433,7 @@ router.get('/:id/students', authenticate, authorize('instructor', 'admin'), Vali
              JOIN users u ON ce.user_id = u.id
              WHERE ce.class_id = ?
              ORDER BY ce.enrollment_date ASC`,
-            [id]
+            [numId]
         );
 
         res.json({
@@ -387,7 +442,7 @@ router.get('/:id/students', authenticate, authorize('instructor', 'admin'), Vali
         });
 
     } catch (error) {
-        console.error('Get class students error:', error);
+        logger.error('Get class students error:', { error: error.message });
         res.status(500).json({
             success: false,
             message: 'Lỗi server khi lấy danh sách học viên'
@@ -395,68 +450,15 @@ router.get('/:id/students', authenticate, authorize('instructor', 'admin'), Vali
     }
 });
 
-// Delete class (admin only)
-router.delete('/:id', authenticate, authorize('admin'), ValidationRules.idParam, handleValidationErrors, async (req, res) => {
-    try {
-        const { id } = req.params;
-
-        // Check if class exists
-        const existingClass = await db.findOne('SELECT * FROM classes WHERE id = ?', [id]);
-        if (!existingClass) {
-            return res.status(404).json({
-                success: false,
-                message: 'Lớp học không tồn tại'
-            });
-        }
-
-        // Check if class has students
-        const enrollmentCount = await db.findOne(
-            'SELECT COUNT(*) as count FROM class_enrollments WHERE class_id = ? AND status = "enrolled"',
-            [id]
-        );
-
-        if (enrollmentCount.count > 0) {
-            return res.status(400).json({
-                success: false,
-                message: `Không thể xóa lớp học có ${enrollmentCount.count} học viên. Vui lòng chuyển học viên sang lớp khác trước.`
-            });
-        }
-
-        // Soft delete by setting status to inactive
-        await db.update('classes', { status: 'inactive' }, 'id = ?', [id]);
-
-        // Log deletion
-        await db.insert('audit_logs', {
-            user_id: req.user.id,
-            action: 'class_deleted',
-            table_name: 'classes',
-            record_id: id,
-            old_values: JSON.stringify(existingClass),
-            ip_address: req.ip,
-            user_agent: req.get('User-Agent')
-        });
-
-        res.json({
-            success: true,
-            message: 'Xóa lớp học thành công'
-        });
-
-    } catch (error) {
-        console.error('Delete class error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Lỗi server khi xóa lớp học'
-        });
-    }
-});
-
 // Get class schedule
-router.get('/:id/schedule', authenticate, ValidationRules.idParam, handleValidationErrors, async (req, res) => {
+router.get('/:id/schedule', authenticate, async (req, res) => {
     try {
         const { id } = req.params;
+        const numId = parseInt(id);
+        if (!numId || numId < 1) return res.status(400).json({ success: false, message: 'ID không hợp lệ' });
 
         // Check if class exists
-        const classInfo = await db.findOne('SELECT * FROM classes WHERE id = ?', [id]);
+        const classInfo = await db.findOne('SELECT * FROM classes WHERE id = ?', [numId]);
         if (!classInfo) {
             return res.status(404).json({
                 success: false,
@@ -468,7 +470,7 @@ router.get('/:id/schedule', authenticate, ValidationRules.idParam, handleValidat
         res.json({
             success: true,
             data: {
-                class_id: id,
+                class_id: numId,
                 class_name: classInfo.name,
                 schedule: classInfo.schedule,
                 location: classInfo.location,
@@ -478,7 +480,7 @@ router.get('/:id/schedule', authenticate, ValidationRules.idParam, handleValidat
         });
 
     } catch (error) {
-        console.error('Get class schedule error:', error);
+        logger.error('Get class schedule error:', { error: error.message });
         res.status(500).json({
             success: false,
             message: 'Lỗi server khi lấy lịch học'
@@ -486,100 +488,15 @@ router.get('/:id/schedule', authenticate, ValidationRules.idParam, handleValidat
     }
 });
 
-// Remove student from class (admin/instructor only)
-router.delete('/:id/students/:userId', authenticate, authorize('instructor', 'admin'), ValidationRules.idParam, handleValidationErrors, async (req, res) => {
-    try {
-        const { id, userId } = req.params;
-
-        // Check if class exists
-        const classInfo = await db.findOne('SELECT * FROM classes WHERE id = ?', [id]);
-        if (!classInfo) {
-            return res.status(404).json({
-                success: false,
-                message: 'Lớp học không tồn tại'
-            });
-        }
-
-        // Check permissions
-        if (req.user.role === 'instructor' && classInfo.instructor_id !== req.user.id) {
-            return res.status(403).json({
-                success: false,
-                message: 'Bạn chỉ có thể xóa học viên khỏi lớp học của mình'
-            });
-        }
-
-        // Check if enrollment exists
-        const enrollment = await db.findOne(
-            'SELECT * FROM class_enrollments WHERE class_id = ? AND user_id = ?',
-            [id, userId]
-        );
-
-        if (!enrollment) {
-            return res.status(404).json({
-                success: false,
-                message: 'Học viên không có trong lớp này'
-            });
-        }
-
-        // Remove enrollment
-        await db.query(
-            'DELETE FROM class_enrollments WHERE class_id = ? AND user_id = ?',
-            [id, userId]
-        );
-
-        // Update class current students count
-        if (classInfo.current_students > 0) {
-            await db.update(
-                'classes',
-                { current_students: classInfo.current_students - 1 },
-                'id = ?',
-                [id]
-            );
-        }
-
-        // Send notification to user
-        await db.insert('notifications', {
-            user_id: userId,
-            title: '📚 Thông báo về lớp học',
-            message: `Bạn đã được xóa khỏi lớp "${classInfo.name}". Vui lòng liên hệ admin nếu có thắc mắc.`,
-            type: 'info'
-        });
-
-        // Log removal
-        await db.insert('audit_logs', {
-            user_id: req.user.id,
-            action: 'student_removed_from_class',
-            table_name: 'class_enrollments',
-            record_id: enrollment.id,
-            old_values: JSON.stringify(enrollment),
-            ip_address: req.ip,
-            user_agent: req.get('User-Agent')
-        });
-
-        res.json({
-            success: true,
-            message: 'Xóa học viên khỏi lớp thành công'
-        });
-
-    } catch (error) {
-        console.error('Remove student error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Lỗi server khi xóa học viên'
-        });
-    }
-});
-
-module.exports = router;
-
-
 // Delete class (admin only)
-router.delete('/:id', authenticate, authorize('admin'), ValidationRules.idParam, handleValidationErrors, async (req, res) => {
+router.delete('/:id', authenticate, authorize('admin'), async (req, res) => {
     try {
         const { id } = req.params;
+        const numId = parseInt(id);
+        if (!numId || numId < 1) return res.status(400).json({ success: false, message: 'ID không hợp lệ' });
 
         // Check if class exists
-        const existingClass = await db.findOne('SELECT * FROM classes WHERE id = ?', [id]);
+        const existingClass = await db.findOne('SELECT * FROM classes WHERE id = ?', [numId]);
         if (!existingClass) {
             return res.status(404).json({
                 success: false,
@@ -590,7 +507,7 @@ router.delete('/:id', authenticate, authorize('admin'), ValidationRules.idParam,
         // Check if class has students
         const enrollmentCount = await db.findOne(
             'SELECT COUNT(*) as count FROM class_enrollments WHERE class_id = ? AND status = "enrolled"',
-            [id]
+            [numId]
         );
 
         if (enrollmentCount.count > 0) {
@@ -600,19 +517,22 @@ router.delete('/:id', authenticate, authorize('admin'), ValidationRules.idParam,
             });
         }
 
-        // Soft delete by setting status to inactive
-        await db.update('classes', { status: 'inactive' }, 'id = ?', [id]);
+        // Soft delete: đặt status = 'inactive' (có trong CHECK constraint)
+        await db.update('classes', { status: 'inactive', updated_at: new Date() }, 'id = ?', [numId]);
+        invalidateClassCache();
 
         // Log deletion
-        await db.insert('audit_logs', {
-            user_id: req.user.id,
-            action: 'class_deleted',
-            table_name: 'classes',
-            record_id: id,
-            old_values: JSON.stringify(existingClass),
-            ip_address: req.ip,
-            user_agent: req.get('User-Agent')
-        });
+        try {
+            await auditLog({
+                user_id: req.user.id,
+                action: 'class_deleted',
+                table_name: 'classes',
+                record_id: numId,
+                old_values: JSON.stringify(existingClass),
+                ip_address: req.ip,
+                user_agent: req.get('User-Agent')
+            });
+        } catch (logErr) { logger.warn('Audit log warning:', { error: logErr.message }); }
 
         res.json({
             success: true,
@@ -620,7 +540,7 @@ router.delete('/:id', authenticate, authorize('admin'), ValidationRules.idParam,
         });
 
     } catch (error) {
-        console.error('Delete class error:', error);
+        logger.error('Delete class error:', { error: error.message });
         res.status(500).json({
             success: false,
             message: 'Lỗi server khi xóa lớp học'
@@ -628,77 +548,15 @@ router.delete('/:id', authenticate, authorize('admin'), ValidationRules.idParam,
     }
 });
 
-// Get class schedule
-router.get('/:id/schedule', authenticate, ValidationRules.idParam, handleValidationErrors, async (req, res) => {
-    try {
-        const { id } = req.params;
-
-        // Check if class exists
-        const classInfo = await db.findOne('SELECT * FROM classes WHERE id = ?', [id]);
-        if (!classInfo) {
-            return res.status(404).json({
-                success: false,
-                message: 'Lớp học không tồn tại'
-            });
-        }
-
-        // Get schedule from class info (schedule field contains the schedule string)
-        res.json({
-            success: true,
-            data: {
-                class_id: id,
-                class_name: classInfo.name,
-                schedule: classInfo.schedule,
-                location: classInfo.location,
-                start_date: classInfo.start_date,
-                end_date: classInfo.end_date
-            }
-        });
-
-    } catch (error) {
-        console.error('Get class schedule error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Lỗi server khi lấy lịch học'
-        });
-    }
-});
-
-// Get my schedule (all classes I'm enrolled in)
-router.get('/schedule/my-schedule', authenticate, async (req, res) => {
-    try {
-        const schedule = await db.query(
-            `SELECT c.id, c.name, c.schedule, c.location, c.start_date, c.end_date,
-             u.first_name as instructor_first_name, u.last_name as instructor_last_name
-             FROM class_enrollments ce
-             JOIN classes c ON ce.class_id = c.id
-             JOIN users u ON c.instructor_id = u.id
-             WHERE ce.user_id = ? AND ce.status = 'enrolled' AND c.status = 'active'
-             ORDER BY c.name`,
-            [req.user.id]
-        );
-
-        res.json({
-            success: true,
-            data: { schedule }
-        });
-
-    } catch (error) {
-        console.error('Get my schedule error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Lỗi server khi lấy lịch học của tôi'
-        });
-    }
-});
-
 // Remove student from class (admin/instructor only)
-router.delete('/:id/students/:userId', authenticate, authorize('instructor', 'admin'), ValidationRules.idParam, handleValidationErrors, async (req, res) => {
+router.delete('/:id/students/:userId', authenticate, authorize('instructor', 'admin'), async (req, res) => {
     try {
         const { id, userId } = req.params;
+        const numId = parseInt(id);
+        if (!numId || numId < 1) return res.status(400).json({ success: false, message: 'ID không hợp lệ' });
 
         // Check if class exists
-        const classInfo = await db.findOne('SELECT * FROM classes WHERE id = ?', [id]);
+        const classInfo = await db.findOne('SELECT * FROM classes WHERE id = ?', [numId]);
         if (!classInfo) {
             return res.status(404).json({
                 success: false,
@@ -717,7 +575,7 @@ router.delete('/:id/students/:userId', authenticate, authorize('instructor', 'ad
         // Check if enrollment exists
         const enrollment = await db.findOne(
             'SELECT * FROM class_enrollments WHERE class_id = ? AND user_id = ?',
-            [id, userId]
+            [numId, userId]
         );
 
         if (!enrollment) {
@@ -730,7 +588,7 @@ router.delete('/:id/students/:userId', authenticate, authorize('instructor', 'ad
         // Remove enrollment
         await db.query(
             'DELETE FROM class_enrollments WHERE class_id = ? AND user_id = ?',
-            [id, userId]
+            [numId, userId]
         );
 
         // Update class current students count
@@ -739,7 +597,7 @@ router.delete('/:id/students/:userId', authenticate, authorize('instructor', 'ad
                 'classes',
                 { current_students: classInfo.current_students - 1 },
                 'id = ?',
-                [id]
+                [numId]
             );
         }
 
@@ -752,15 +610,17 @@ router.delete('/:id/students/:userId', authenticate, authorize('instructor', 'ad
         });
 
         // Log removal
-        await db.insert('audit_logs', {
-            user_id: req.user.id,
-            action: 'student_removed_from_class',
-            table_name: 'class_enrollments',
-            record_id: enrollment.id,
-            old_values: JSON.stringify(enrollment),
-            ip_address: req.ip,
-            user_agent: req.get('User-Agent')
-        });
+        try {
+            await auditLog({
+                user_id: req.user.id,
+                action: 'student_removed_from_class',
+                table_name: 'class_enrollments',
+                record_id: enrollment.id,
+                old_values: JSON.stringify(enrollment),
+                ip_address: req.ip,
+                user_agent: req.get('User-Agent')
+            });
+        } catch (logErr) { logger.warn('Audit log warning:', { error: logErr.message }); }
 
         res.json({
             success: true,
@@ -768,7 +628,7 @@ router.delete('/:id/students/:userId', authenticate, authorize('instructor', 'ad
         });
 
     } catch (error) {
-        console.error('Remove student error:', error);
+        logger.error('Remove student error:', { error: error.message });
         res.status(500).json({
             success: false,
             message: 'Lỗi server khi xóa học viên'
@@ -776,3 +636,4 @@ router.delete('/:id/students/:userId', authenticate, authorize('instructor', 'ad
     }
 });
 
+module.exports = router;

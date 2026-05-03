@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tin tức - Admin CLB Võ Cổ Truyền HUTECH</title>
+    <link rel="stylesheet" href="shared/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* ── Tag pill ── */
+        .tag-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            background: #f0f4f8;
+            color: #4a5568;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1.5px solid #e2e8f0;
+        }
+        .tag-pill i { color: #c41e3a; font-size: 10px; }
+    </style>
+</head>
+<body>
+
+<!-- App container -->
+<div class="layout" id="app"></div>
+
+<!-- ===== MODAL THÊM / SỬA ===== -->
+<div class="overlay" id="modal">
+    <div class="modal modal-lg" onclick="event.stopPropagation()">
+        <div class="modal-head">
+            <h3 id="modal-title">Thêm tin tức mới</h3>
+            <button class="modal-close" onclick="closeModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="f-id">
+
+            <!-- Tiêu đề -->
+            <div class="form-group">
+                <label class="form-label" for="f-title">
+                    Tiêu đề <span class="req" aria-hidden="true">*</span>
+                </label>
+                <input class="form-control" id="f-title"
+                    aria-label="Tiêu đề bài viết"
+                    aria-required="true"
+                    placeholder="Nhập tiêu đề bài viết">
+            </div>
+
+            <!-- Danh mục + Trạng thái -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="f-cat">Danh mục</label>
+                    <select class="form-control" id="f-cat" aria-label="Danh mục bài viết">
+                        <option value="general">Chung</option>
+                        <option value="training">Tập luyện</option>
+                        <option value="competition">Thi đấu</option>
+                        <option value="event">Sự kiện</option>
+                        <option value="achievement">Thành tích</option>
+                        <option value="announcement">Thông báo</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="f-status">Trạng thái</label>
+                    <select class="form-control" id="f-status" aria-label="Trạng thái bài viết">
+                        <option value="published">Đăng ngay</option>
+                        <option value="draft">Lưu nháp</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Tóm tắt -->
+            <div class="form-group">
+                <label class="form-label" for="f-excerpt">Tóm tắt</label>
+                <textarea class="form-control" id="f-excerpt" rows="2"
+                    aria-label="Tóm tắt bài viết"
+                    placeholder="Mô tả ngắn hiển thị ở trang danh sách..."></textarea>
+            </div>
+
+            <!-- Nội dung -->
+            <div class="form-group">
+                <label class="form-label" for="f-content">
+                    Nội dung <span class="req" aria-hidden="true">*</span>
+                </label>
+                <textarea class="form-control" id="f-content" rows="10"
+                    aria-label="Nội dung bài viết"
+                    aria-required="true"
+                    placeholder="Nội dung đầy đủ của bài viết..."></textarea>
+            </div>
+
+            <!-- Ảnh đại diện -->
+            <div class="form-group">
+                <label class="form-label">Ảnh đại diện</label>
+                <div id="img-upload-container"></div>
+            </div>
+
+            <!-- Tags -->
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-tags" style="color:#c41e3a;margin-right:5px;"></i>
+                    Tags bài viết
+                    <span style="color:#a0aec0;font-size:0.78rem;font-weight:400;margin-left:6px;">(phân cách bằng dấu phẩy)</span>
+                </label>
+                <input class="form-control" id="f-tags"
+                    placeholder="Ví dụ: thi-dau, hutech-game, 2026, vo-co-truyen">
+                <div id="tags-preview" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;min-height:0;"></div>
+            </div>
+        </div>
+        <div class="modal-foot">
+            <button class="btn btn-outline" onclick="closeModal()">
+                <i class="fas fa-times"></i> Hủy
+            </button>
+            <button class="btn btn-primary" id="save-btn" onclick="save()">
+                <i class="fas fa-save"></i> Lưu bài viết
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== MODAL XÓA ===== -->
+<div class="overlay" id="del-modal">
+    <div class="modal modal-sm">
+        <div class="modal-head">
+            <h3><i class="fas fa-exclamation-triangle" style="color:#e74c3c"></i> Xác nhận xóa</h3>
+            <button class="modal-close" onclick="closeDel()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p style="margin-bottom:8px;">Bạn có chắc muốn xóa bài viết:</p>
+            <p><b id="del-name" style="color:#1a252f;"></b></p>
+            <p style="color:#e74c3c; font-size:0.82rem; margin-top:12px;">
+                <i class="fas fa-exclamation-triangle"></i>
+                Hành động này không thể hoàn tác.
+            </p>
+        </div>
+        <div class="modal-foot">
+            <button class="btn btn-outline" onclick="closeDel()">
+                <i class="fas fa-arrow-left"></i> Hủy
+            </button>
+            <button class="btn btn-danger" id="del-btn" onclick="confirmDel()">
+                <i class="fas fa-trash"></i> Xóa bài viết
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== SCRIPTS ===== -->
+<script src="../assets/js/config.js"></script>
+<script src="shared/auth.js"></script>
+<script src="shared/api.js"></script>
+<script src="shared/ui.js"></script>
+<script>
+'use strict';
+
+// ── Khởi tạo layout ──
+var page = initLayout('<i class="fas fa-newspaper"></i> Quản lý Tin tức', 'tin-tuc.html');
+if (!page) throw new Error('Auth failed');
+
+// ── State ──
+var currentPage = 1;
+var delId       = null;
+var CAT_LABELS  = {
+    general: 'Chung', training: 'Tập luyện', competition: 'Thi đấu',
+    event: 'Sự kiện', achievement: 'Thành tích', announcement: 'Thông báo'
+};
+
+// ── Render trang ──
+page.innerHTML = [
+    '<div class="card">',
+    '  <div class="card-head">',
+    '    <h3><i class="fas fa-list"></i> Danh sách tin tức</h3>',
+    '    <button class="btn btn-primary" onclick="openModal()">',
+    '      <i class="fas fa-plus"></i> Thêm tin tức',
+    '    </button>',
+    '  </div>',
+    '  <div class="card-body" style="padding-bottom:0;">',
+    '    <div class="toolbar">',
+    '      <div class="search-wrap">',
+    '        <i class="fas fa-search"></i>',
+    '        <input class="form-control" id="q" placeholder="Tìm kiếm tiêu đề...">',
+    '      </div>',
+    '      <select class="form-control" id="flt-cat" style="width:150px;">',
+    '        <option value="">Tất cả danh mục</option>',
+    '        <option value="general">Chung</option>',
+    '        <option value="training">Tập luyện</option>',
+    '        <option value="competition">Thi đấu</option>',
+    '        <option value="event">Sự kiện</option>',
+    '        <option value="achievement">Thành tích</option>',
+    '        <option value="announcement">Thông báo</option>',
+    '      </select>',
+    '      <select class="form-control" id="flt" style="width:150px;">',
+    '        <option value="">Tất cả trạng thái</option>',
+    '        <option value="published">Đã đăng</option>',
+    '        <option value="draft">Nháp</option>',
+    '      </select>',
+    '      <button class="btn btn-outline" onclick="loadList()" title="Làm mới">',
+    '        <i class="fas fa-sync-alt"></i>',
+    '      </button>',
+    '    </div>',
+    '  </div>',
+    '  <div id="tbl"></div>',
+    '  <div class="pager" id="pager" style="display:none;">',
+    '    <span id="pager-info" style="color:#718096;font-size:0.82rem;"></span>',
+    '    <div id="pager-btns" style="display:flex;gap:4px;"></div>',
+    '  </div>',
+    '</div>'
+].join('');
+
+// ── Event listeners ──
+$('flt').addEventListener('change', function () { currentPage = 1; loadList(); });
+$('flt-cat').addEventListener('change', function () { currentPage = 1; loadList(); });
+
+// Search debounce
+var searchTimer;
+$('q').addEventListener('input', function () {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(function () { currentPage = 1; loadList(); }, 400);
+});
+
+// Load lần đầu
+loadList();
+
+// ── Tags preview ──
+function renderTagsPreview(val) {
+    var preview = $('tags-preview');
+    if (!preview) return;
+    var tags = (val || '').split(',').map(function(t) { return t.trim(); }).filter(Boolean);
+    if (!tags.length) { preview.innerHTML = ''; return; }
+    preview.innerHTML = tags.map(function(t) {
+        return '<span class="tag-pill"><i class="fas fa-tag"></i>' + t + '</span>';
+    }).join('');
+}
+
+// Live preview khi gõ tags
+document.addEventListener('input', function(e) {
+    if (e.target && e.target.id === 'f-tags') {
+        renderTagsPreview(e.target.value);
+    }
+});
+
+// ════════════════════════════════════════
+// LOAD LIST
+// ════════════════════════════════════════
+async function loadList() {
+    loading('tbl');
+    var status = $('flt')     ? $('flt').value     : '';
+    var cat    = $('flt-cat') ? $('flt-cat').value : '';
+    var q      = $('q')       ? $('q').value.trim(): '';
+
+    try {
+        var res   = await API.news.list(currentPage, 10, status, q, cat);
+        var list  = (res.data && res.data.news) || [];
+        var total = (res.data && res.data.total) || 0;
+
+        var pages = Math.max(1, Math.ceil(total / 10));
+
+        if (!list.length) {
+            var hasFilter = status || cat || q;
+            empty('tbl', 'newspaper', hasFilter
+                ? 'Không tìm thấy bài viết phù hợp. Thử thay đổi bộ lọc.'
+                : 'Chưa có tin tức nào. Hãy thêm bài viết đầu tiên!');
+            $('pager').style.display = 'none';
+            return;
+        }
+
+        // Build table rows
+        var rows = list.map(function (n, i) {
+            var idx       = (currentPage - 1) * 10 + i + 1;
+            var catLabel  = CAT_LABELS[n.category] || n.category || '—';
+            var statusCls = n.status === 'published' ? 'b-success' : 'b-warning';
+            var statusLbl = n.status === 'published' ? 'Đã đăng' : 'Nháp';
+            var imgHtml   = n.featured_image
+                ? '<img src="' + resolveImgUrl(n.featured_image) + '" style="width:48px;height:36px;object-fit:cover;border-radius:4px;border:1px solid #e2e8f0;" onerror="this.style.display=\'none\'">'
+                : '<span style="color:#cbd5e0;font-size:0.75rem;">Không có ảnh</span>';
+
+            // Encode data an toàn để truyền vào onclick
+            var safeJson = encodeURIComponent(JSON.stringify(n));
+
+            return '<tr>' +
+                '<td style="color:#718096;font-size:0.8rem;">' + idx + '</td>' +
+                '<td>' + imgHtml + '</td>' +
+                '<td><b style="color:#1a252f;">' + safe(n.title, 50) + '</b>' +
+                    (n.excerpt ? '<br><span style="color:#718096;font-size:0.78rem;">' + safe(n.excerpt, 60) + '</span>' : '') +
+                '</td>' +
+                '<td><span style="font-size:0.8rem;color:#4a5568;">' + catLabel + '</span></td>' +
+                '<td><span class="badge ' + statusCls + '">' + statusLbl + '</span></td>' +
+                '<td style="color:#718096;font-size:0.82rem;">' + fmtDate(n.created_at) + '</td>' +
+                '<td>' +
+                    '<div style="display:flex;gap:6px;">' +
+                        '<button class="btn btn-sm btn-outline" onclick="editItem(\'' + safeJson + '\')" title="Chỉnh sửa">' +
+                            '<i class="fas fa-edit"></i> Sửa' +
+                        '</button>' +
+                        '<button class="btn btn-sm btn-danger" data-del-id="' + n.id + '" data-del-name="' + n.title.replace(/"/g, '&quot;') + '" onclick="openDel(this.dataset.delId, this.dataset.delName)" title="Xóa">' +
+                            '<i class="fas fa-trash"></i>' +
+                        '</button>' +
+                    '</div>' +
+                '</td>' +
+            '</tr>';
+        }).join('');
+
+        setHTML('tbl',
+            '<div class="tbl">' +
+            '<table>' +
+            '<thead><tr>' +
+                '<th style="width:40px;">#</th>' +
+                '<th style="width:60px;">Ảnh</th>' +
+                '<th>Tiêu đề</th>' +
+                '<th style="width:110px;">Danh mục</th>' +
+                '<th style="width:100px;">Trạng thái</th>' +
+                '<th style="width:100px;">Ngày tạo</th>' +
+                '<th style="width:120px;">Thao tác</th>' +
+            '</tr></thead>' +
+            '<tbody>' + rows + '</tbody>' +
+            '</table>' +
+            '</div>'
+        );
+
+        // Pagination
+        $('pager').style.display = 'flex';
+        setHTML('pager-info', 'Hiển thị ' + list.length + ' / ' + total + ' bài viết');
+
+        var btns = '';
+        if (currentPage > 1) btns += '<button class="pager-btn" onclick="goPage(' + (currentPage-1) + ')"><i class="fas fa-chevron-left"></i></button>';
+        for (var i = 1; i <= pages; i++) {
+            btns += '<button class="pager-btn' + (i === currentPage ? ' active' : '') + '" onclick="goPage(' + i + ')">' + i + '</button>';
+        }
+        if (currentPage < pages) btns += '<button class="pager-btn" onclick="goPage(' + (currentPage+1) + ')"><i class="fas fa-chevron-right"></i></button>';
+        setHTML('pager-btns', btns);
+
+    } catch (e) {
+        empty('tbl', 'exclamation-circle', 'Lỗi tải dữ liệu: ' + e.message);
+    }
+}
+
+function goPage(p) { currentPage = p; loadList(); }
+
+// ════════════════════════════════════════
+// MODAL THÊM / SỬA
+// ════════════════════════════════════════
+function openModal() {
+    $('f-id').value      = '';
+    $('f-title').value   = '';
+    $('f-cat').value     = 'general';
+    $('f-status').value  = 'published';
+    $('f-excerpt').value = '';
+    $('f-content').value = '';
+    $('f-tags').value    = '';
+    setHTML('tags-preview', '');
+    initUpload('img-upload-container', 'f-img', 'ảnh đại diện');
+    setHTML('modal-title', '<i class="fas fa-plus-circle" style="color:#e74c3c;margin-right:8px;"></i>Thêm tin tức mới');
+    $('modal').classList.add('open');
+    setTimeout(function () { $('f-title').focus(); }, 100);
+}
+
+function closeModal() {
+    if (typeof isUploadInProgress === 'function' && isUploadInProgress()) {
+        toast('Đang upload ảnh, vui lòng chờ...', 'info');
+        return;
+    }
+    $('modal').classList.remove('open');
+    cleanupUpload('f-img');
+}
+
+function editItem(encodedJson) {
+    var n;
+    try { n = JSON.parse(decodeURIComponent(encodedJson)); }
+    catch (e) { toast('Lỗi đọc dữ liệu bài viết', 'danger'); return; }
+
+    $('f-id').value      = n.id;
+    $('f-title').value   = n.title    || '';
+    $('f-cat').value     = n.category || 'general';
+    $('f-status').value  = n.status   || 'published';
+    $('f-excerpt').value = n.excerpt  || '';
+    $('f-content').value = n.content  || '';
+    $('f-tags').value    = n.tags     || '';
+    renderTagsPreview(n.tags || '');
+
+    initUpload('img-upload-container', 'f-img', 'ảnh đại diện');
+    if (n.featured_image) setUploadImage('f-img', n.featured_image);
+
+    setHTML('modal-title', '<i class="fas fa-edit" style="color:#e74c3c;margin-right:8px;"></i>Chỉnh sửa tin tức');
+    $('modal').classList.add('open');
+    setTimeout(function () { $('f-title').focus(); }, 100);
+}
+
+// ════════════════════════════════════════
+// LƯU (TẠO MỚI / CẬP NHẬT)
+// ════════════════════════════════════════
+async function save() {
+    var id      = $('f-id').value.trim();
+    var title   = $('f-title').value.trim();
+    var content = $('f-content').value.trim();
+
+    // Validate
+    if (!title) {
+        toast('Vui lòng nhập tiêu đề bài viết', 'danger');
+        $('f-title').focus();
+        return;
+    }
+    if (!content) {
+        toast('Vui lòng nhập nội dung bài viết', 'danger');
+        $('f-content').focus();
+        return;
+    }
+
+    var body = {
+        title:          title,
+        content:        content,
+        category:       $('f-cat').value,
+        status:         $('f-status').value,
+        excerpt:        $('f-excerpt').value.trim() || null,
+        featured_image: $('f-img').value.trim() || null,
+        tags:           $('f-tags').value.trim() || null
+    };
+
+    var btn = $('save-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang lưu...';
+
+    try {
+        if (id) {
+            await API.news.update(id, body);
+            toast('✅ Cập nhật bài viết thành công!');
+        } else {
+            await API.news.create(body);
+            toast('✅ Đăng tin tức thành công!');
+        }
+        closeModal();
+        loadList();
+    } catch (e) {
+        toast('Lỗi: ' + e.message, 'danger');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-save"></i> Lưu bài viết';
+    }
+}
+
+// ════════════════════════════════════════
+// XÓA
+// ════════════════════════════════════════
+function openDel(id, name) {
+    delId = id;
+    setHTML('del-name', name);
+    $('del-modal').classList.add('open');
+}
+
+function closeDel() {
+    $('del-modal').classList.remove('open');
+    delId = null;
+}
+
+async function confirmDel() {
+    if (!delId) return;
+
+    var btn = $('del-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xóa...';
+
+    try {
+        await API.news.delete(delId);
+        toast('🗑️ Đã xóa bài viết thành công');
+        closeDel();
+        // Nếu đang ở trang > 1 và đây là item cuối → về trang trước
+        if (currentPage > 1) currentPage--;
+        loadList();
+    } catch (e) {
+        toast('Lỗi xóa: ' + e.message, 'danger');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-trash"></i> Xóa bài viết';
+    }
+}
+
+// del-modal chỉ đóng qua nút X và nút Hủy
+</script>
+</body>
+</html>

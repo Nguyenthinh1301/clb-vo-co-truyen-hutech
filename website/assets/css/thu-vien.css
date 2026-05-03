@@ -1,0 +1,167 @@
+/* =============================================
+   Trang: Thư viện hình ảnh
+   File: views/thu-vien.html
+   ============================================= */
+
+body {
+    font-family: "Open Sans", sans-serif;
+}
+
+body,
+.page-hero h1,
+.page-hero p,
+.page-body,
+.gallery-cat-title,
+.lb-close {
+    font-family: "Open Sans", sans-serif;
+}
+
+.page-hero {
+    background: linear-gradient(135deg, #0d1117 0%, #1a1a2e 50%, #c41e3a 100%);
+    color: white;
+    padding: 110px 20px 60px;
+    text-align: center;
+}
+
+.page-hero h1 {
+    font-size: 38px;
+    font-weight: 800;
+    margin-bottom: 12px;
+}
+
+.page-hero p {
+    font-size: 16px;
+    opacity: 0.8;
+}
+
+.breadcrumb {
+    font-size: 13px;
+    opacity: 0.6;
+    margin-bottom: 16px;
+}
+
+.breadcrumb a {
+    color: #ffd700;
+    text-decoration: none;
+}
+
+.page-body {
+    max-width: 1100px;
+    margin: 64px auto;
+    padding: 0 24px 80px;
+}
+
+/* --- Gallery category --- */
+.gallery-cat {
+    margin-bottom: 52px;
+}
+
+.gallery-cat-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1a252f;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.gallery-cat-title i {
+    color: #c41e3a;
+}
+
+/* --- Photo grid --- */
+.photo-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.photo-item {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    aspect-ratio: 4/3;
+    cursor: pointer;
+}
+
+.photo-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s;
+    display: block;
+}
+
+.photo-item:hover img {
+    transform: scale(1.07);
+}
+
+.photo-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0);
+    transition: background 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.photo-item:hover .photo-overlay {
+    background: rgba(0,0,0,0.3);
+}
+
+.photo-overlay i {
+    color: white;
+    font-size: 26px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.photo-item:hover .photo-overlay i {
+    opacity: 1;
+}
+
+/* --- Lightbox --- */
+.lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.92);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+}
+
+.lightbox.open {
+    display: flex;
+}
+
+.lightbox img {
+    max-width: 90vw;
+    max-height: 85vh;
+    border-radius: 8px;
+    object-fit: contain;
+}
+
+.lb-close {
+    position: absolute;
+    top: 20px;
+    right: 24px;
+    color: white;
+    font-size: 36px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    line-height: 1;
+    transition: color 0.2s;
+}
+
+.lb-close:hover {
+    color: #c41e3a;
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+    .photo-grid { grid-template-columns: repeat(2, 1fr); }
+}

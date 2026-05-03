@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liên hệ - Admin CLB Võ Cổ Truyền HUTECH</title>
+    <link rel="stylesheet" href="shared/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Badge trạng thái */
+        .st-new      { background:#fff3cd; color:#856404; }
+        .st-read     { background:#e8f4fd; color:#1a6fa8; }
+        .st-replied  { background:#d1fae5; color:#065f46; }
+        .st-archived { background:#f0f0f0; color:#6b7280; }
+
+        /* Badge trạng thái email */
+        .email-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        .email-badge.sent    { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
+        .email-badge.failed  { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+
+        /* Preview nội dung */
+        .msg-preview {
+            font-size: 0.82rem;
+            color: #718096;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 280px;
+        }
+
+        /* Modal chi tiết */
+        .msg-detail-box {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 16px 18px;
+            font-size: 14px;
+            color: #374151;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            margin-bottom: 16px;
+            border-left: 3px solid #c41e3a;
+        }
+        .msg-meta-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .msg-meta-item {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 10px 14px;
+        }
+        .msg-meta-item label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            display: block;
+            margin-bottom: 3px;
+        }
+        .msg-meta-item span {
+            font-size: 13px;
+            color: #1a252f;
+            font-weight: 600;
+        }
+        .reply-box {
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 14px;
+            background: #fff;
+        }
+        .reply-box label {
+            font-size: 12px;
+            font-weight: 700;
+            color: #4a5568;
+            display: block;
+            margin-bottom: 8px;
+        }
+        .reply-box textarea {
+            width: 100%;
+            min-height: 100px;
+            resize: vertical;
+        }
+        .replied-content {
+            background: #d1fae5;
+            border-radius: 10px;
+            padding: 14px 16px;
+            font-size: 13px;
+            color: #065f46;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+        .replied-meta {
+            font-size: 11px;
+            color: #6b7280;
+            margin-top: 8px;
+        }
+
+        /* Stat cards */
+        .contact-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+        .cs-card {
+            background: #fff;
+            border: 1.5px solid #edf0f4;
+            border-radius: 12px;
+            padding: 16px 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .cs-icon {
+            width: 40px; height: 40px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+        .cs-icon.new      { background: #fff3cd; color: #856404; }
+        .cs-icon.read     { background: #e8f4fd; color: #1a6fa8; }
+        .cs-icon.replied  { background: #d1fae5; color: #065f46; }
+        .cs-icon.archived { background: #f0f0f0; color: #6b7280; }
+        .cs-val { font-size: 1.4rem; font-weight: 800; color: #1a252f; line-height: 1; }
+        .cs-lbl { font-size: 12px; color: #9ca3af; margin-top: 2px; }
+
+        @media (max-width: 768px) {
+            .contact-stats { grid-template-columns: repeat(2, 1fr); }
+            .msg-meta-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="layout" id="app"></div>
+
+<!-- ===== MODAL CHI TIẾT / TRẢ LỜI ===== -->
+<div class="overlay" id="modal">
+    <div class="modal modal-lg" onclick="event.stopPropagation()">
+        <div class="modal-head">
+            <h3 id="modal-title"><i class="fas fa-envelope-open" style="color:#e74c3c;margin-right:8px;"></i>Chi tiết tin nhắn</h3>
+            <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body" id="modal-body">
+            <div style="text-align:center;padding:40px;color:#aaa;">
+                <i class="fas fa-spinner fa-spin" style="font-size:24px;"></i>
+            </div>
+        </div>
+        <div class="modal-foot" id="modal-foot">
+            <button class="btn btn-outline" onclick="closeModal()">
+                <i class="fas fa-times"></i> Đóng
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== MODAL XÓA ===== -->
+<div class="overlay" id="del-modal">
+    <div class="modal modal-sm">
+        <div class="modal-head">
+            <h3><i class="fas fa-exclamation-triangle" style="color:#e74c3c"></i> Xác nhận xóa</h3>
+            <button class="modal-close" onclick="closeDel()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <p>Bạn có chắc muốn xóa tin nhắn từ:</p>
+            <p><b id="del-name" style="color:#1a252f;"></b></p>
+            <p style="color:#e74c3c;font-size:0.82rem;margin-top:10px;">
+                <i class="fas fa-exclamation-triangle"></i> Hành động này không thể hoàn tác.
+            </p>
+        </div>
+        <div class="modal-foot">
+            <button class="btn btn-outline" onclick="closeDel()"><i class="fas fa-arrow-left"></i> Hủy</button>
+            <button class="btn btn-danger" id="del-btn" onclick="confirmDel()">
+                <i class="fas fa-trash"></i> Xóa
+            </button>
+        </div>
+    </div>
+</div>
+
+<script src="../assets/js/config.js"></script>
+<script src="shared/auth.js"></script>
+<script src="shared/api.js"></script>
+<script src="shared/ui.js"></script>
+<script>
+'use strict';
+
+var page = initLayout('<i class="fas fa-envelope"></i> Quản lý Liên hệ', 'lien-he.html');
+if (!page) throw new Error('Auth failed');
+
+var currentPage = 1;
+var PAGE_SIZE   = 20;
+var delId       = null;
+var msgMap      = {};
+
+var ST_LBL = { new: 'Mới', read: 'Đã đọc', replied: 'Đã trả lời', archived: 'Lưu trữ' };
+var ST_CLS = { new: 'st-new', read: 'st-read', replied: 'st-replied', archived: 'st-archived' };
+var ST_ICN = { new: 'envelope', read: 'envelope-open', replied: 'reply', archived: 'archive' };
+
+// ── Render trang ──
+page.innerHTML = [
+    '<!-- Stats -->',
+    '<div class="contact-stats" id="stats-row">',
+    '  <div class="cs-card"><div class="cs-icon new"><i class="fas fa-envelope"></i></div><div><div class="cs-val" id="st-new">—</div><div class="cs-lbl">Tin mới</div></div></div>',
+    '  <div class="cs-card"><div class="cs-icon read"><i class="fas fa-envelope-open"></i></div><div><div class="cs-val" id="st-read">—</div><div class="cs-lbl">Đã đọc</div></div></div>',
+    '  <div class="cs-card"><div class="cs-icon replied"><i class="fas fa-reply"></i></div><div><div class="cs-val" id="st-replied">—</div><div class="cs-lbl">Đã trả lời</div></div></div>',
+    '  <div class="cs-card"><div class="cs-icon archived"><i class="fas fa-archive"></i></div><div><div class="cs-val" id="st-archived">—</div><div class="cs-lbl">Lưu trữ</div></div></div>',
+    '</div>',
+    '<!-- Table -->',
+    '<div class="card">',
+    '  <div class="card-head">',
+    '    <h3><i class="fas fa-list"></i> Danh sách tin nhắn</h3>',
+    '    <button class="btn btn-outline" onclick="loadList()" title="Làm mới"><i class="fas fa-sync-alt"></i></button>',
+    '  </div>',
+    '  <div class="card-body" style="padding-bottom:0;">',
+    '    <div class="toolbar">',
+    '      <div class="search-wrap">',
+    '        <i class="fas fa-search"></i>',
+    '        <input class="form-control" id="q" placeholder="Tìm tên, email, nội dung...">',
+    '      </div>',
+    '      <select class="form-control" id="flt-status" style="width:160px;">',
+    '        <option value="">Tất cả trạng thái</option>',
+    '        <option value="new">Mới</option>',
+    '        <option value="read">Đã đọc</option>',
+    '        <option value="replied">Đã trả lời</option>',
+    '        <option value="archived">Lưu trữ</option>',
+    '      </select>',
+    '    </div>',
+    '  </div>',
+    '  <div id="tbl"></div>',
+    '  <div class="pager" id="pager" style="display:none;">',
+    '    <span id="pager-info" style="color:#718096;font-size:0.82rem;"></span>',
+    '    <div id="pager-btns" style="display:flex;gap:4px;"></div>',
+    '  </div>',
+    '</div>'
+].join('');
+
+// ── Event listeners ──
+$('flt-status').addEventListener('change', function() { currentPage = 1; loadList(); });
+var searchTimer;
+$('q').addEventListener('input', function() {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(function() { currentPage = 1; loadList(); }, 400);
+});
+
+loadList();
+loadStats();
+
+// ════════════════════════════════════════
+// STATS
+// ════════════════════════════════════════
+async function loadStats() {
+    try {
+        // Lấy tất cả để đếm theo status
+        var r = await API.contact.list(1, 1000, '', '');
+        var all = r.data || [];
+        var counts = { new: 0, read: 0, replied: 0, archived: 0 };
+        all.forEach(function(m) { if (counts[m.status] !== undefined) counts[m.status]++; });
+        setHTML('st-new',      counts.new);
+        setHTML('st-read',     counts.read);
+        setHTML('st-replied',  counts.replied);
+        setHTML('st-archived', counts.archived);
+    } catch(e) { /* silent */ }
+}
+
+// ════════════════════════════════════════
+// LOAD LIST
+// ════════════════════════════════════════
+async function loadList() {
+    loading('tbl');
+    var q      = $('q')          ? $('q').value.trim()    : '';
+    var status = $('flt-status') ? $('flt-status').value  : '';
+
+    try {
+        var res   = await API.contact.list(currentPage, PAGE_SIZE, status, q);
+        var list  = res.data || [];
+        var total = (res.pagination && res.pagination.total) || 0;
+        var pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+
+        if (!list.length) {
+            empty('tbl', 'envelope', (q || status)
+                ? 'Không tìm thấy tin nhắn phù hợp.'
+                : 'Chưa có tin nhắn liên hệ nào.');
+            $('pager').style.display = 'none';
+            return;
+        }
+
+        // Lưu vào Map
+        msgMap = {};
+        list.forEach(function(m) { msgMap[m.id] = m; });
+
+        var rows = list.map(function(m, i) {
+            var idx     = (currentPage - 1) * PAGE_SIZE + i + 1;
+            var isNew   = m.status === 'new';
+            var stCls   = ST_CLS[m.status] || 'st-read';
+            var stLbl   = ST_LBL[m.status] || m.status;
+
+            return '<tr' + (isNew ? ' style="font-weight:600;"' : '') + '>' +
+                '<td style="color:#718096;font-size:0.8rem;">' + idx + '</td>' +
+                '<td>' +
+                    '<b style="color:#1a252f;">' + safe(m.name, 25) + '</b>' +
+                    '<br><span style="color:#718096;font-size:0.78rem;">' + escapeHtml(m.email || '—') + '</span>' +
+                    (m.phone ? '<br><span style="color:#a0aec0;font-size:0.75rem;"><i class="fas fa-phone"></i> ' + escapeHtml(m.phone) + '</span>' : '') +
+                '</td>' +
+                '<td style="font-size:0.85rem;color:#4a5568;">' + safe(m.subject || '—', 35) + '</td>' +
+                '<td><div class="msg-preview">' + safe(m.message || '', 60) + '</div></td>' +
+                '<td><span class="badge ' + stCls + '">' +
+                    '<i class="fas fa-' + (ST_ICN[m.status] || 'envelope') + '" style="margin-right:4px;"></i>' +
+                    stLbl + '</span></td>' +
+                '<td style="color:#718096;font-size:0.82rem;">' + fmtDate(m.created_at) + '</td>' +
+                '<td>' +
+                    '<div style="display:flex;gap:6px;">' +
+                        '<button class="btn btn-sm btn-primary js-view" data-id="' + m.id + '" title="Xem & Trả lời">' +
+                            '<i class="fas fa-eye"></i> Xem' +
+                        '</button>' +
+                        '<button class="btn btn-sm btn-outline js-archive" data-id="' + m.id + '" ' +
+                            'data-status="' + m.status + '" ' +
+                            'title="' + (m.status === 'archived' ? 'Bỏ lưu trữ' : 'Lưu trữ') + '">' +
+                            '<i class="fas fa-' + (m.status === 'archived' ? 'inbox' : 'archive') + '"></i>' +
+                        '</button>' +
+                        '<button class="btn btn-sm btn-danger js-del" data-id="' + m.id + '" ' +
+                            'data-name="' + encodeURIComponent(m.name) + '" title="Xóa">' +
+                            '<i class="fas fa-trash"></i>' +
+                        '</button>' +
+                    '</div>' +
+                '</td>' +
+            '</tr>';
+        }).join('');
+
+        setHTML('tbl',
+            '<div class="tbl"><table>' +
+            '<thead><tr>' +
+                '<th style="width:40px;">#</th>' +
+                '<th style="width:180px;">Người gửi</th>' +
+                '<th style="width:200px;">Chủ đề</th>' +
+                '<th>Nội dung</th>' +
+                '<th style="width:110px;">Trạng thái</th>' +
+                '<th style="width:90px;">Ngày gửi</th>' +
+                '<th style="width:140px;">Thao tác</th>' +
+            '</tr></thead>' +
+            '<tbody>' + rows + '</tbody>' +
+            '</table></div>'
+        );
+
+        // Event delegation
+        var tblEl = document.querySelector('#tbl .tbl');
+        if (tblEl) {
+            tblEl.addEventListener('click', function(e) {
+                var btn = e.target.closest('button');
+                if (!btn) return;
+                var mid = btn.dataset.id;
+                if (btn.classList.contains('js-view')) {
+                    openDetail(mid);
+                } else if (btn.classList.contains('js-archive')) {
+                    var newSt = btn.dataset.status === 'archived' ? 'read' : 'archived';
+                    toggleArchive(mid, newSt);
+                } else if (btn.classList.contains('js-del')) {
+                    openDel(mid, decodeURIComponent(btn.dataset.name));
+                }
+            });
+        }
+
+        // Pagination
+        $('pager').style.display = 'flex';
+        setHTML('pager-info', 'Hiển thị ' + list.length + ' / ' + total + ' tin nhắn');
+        var btns = '';
+        if (currentPage > 1) btns += '<button class="pager-btn" onclick="goPage(' + (currentPage-1) + ')"><i class="fas fa-chevron-left"></i></button>';
+        for (var i = 1; i <= pages; i++) {
+            btns += '<button class="pager-btn' + (i === currentPage ? ' active' : '') + '" onclick="goPage(' + i + ')">' + i + '</button>';
+        }
+        if (currentPage < pages) btns += '<button class="pager-btn" onclick="goPage(' + (currentPage+1) + ')"><i class="fas fa-chevron-right"></i></button>';
+        setHTML('pager-btns', btns);
+
+    } catch(e) {
+        empty('tbl', 'exclamation-circle', 'Lỗi tải dữ liệu: ' + e.message);
+    }
+}
+
+function goPage(p) { currentPage = p; loadList(); }
+
+// ════════════════════════════════════════
+// XEM CHI TIẾT & TRẢ LỜI
+// ════════════════════════════════════════
+async function openDetail(id) {
+    $('modal-body').innerHTML = '<div style="text-align:center;padding:40px;color:#aaa;"><i class="fas fa-spinner fa-spin" style="font-size:24px;"></i></div>';
+    $('modal-foot').innerHTML = '<button class="btn btn-outline" onclick="closeModal()"><i class="fas fa-times"></i> Đóng</button>';
+    $('modal').classList.add('open');
+
+    try {
+        var res = await API.contact.get(id);
+        var m   = res.data && res.data.message ? res.data.message : res.data;
+        if (!m) throw new Error('Không tìm thấy tin nhắn');
+
+        // Cập nhật Map
+        msgMap[id] = m;
+
+        var repliedHtml = '';
+        if (m.status === 'replied' && m.reply_message) {
+            var repliedBy = [m.replied_by_first_name, m.replied_by_last_name].filter(Boolean).join(' ') || 'Admin';
+            repliedHtml =
+                '<div style="margin-top:16px;">' +
+                    '<div style="font-size:12px;font-weight:700;color:#065f46;margin-bottom:8px;">' +
+                        '<i class="fas fa-reply"></i> Đã trả lời' +
+                    '</div>' +
+                    '<div class="replied-content">' + escapeHtml(m.reply_message) + '</div>' +
+                    '<div class="replied-meta">Bởi ' + escapeHtml(repliedBy) + ' · ' + fmtDate(m.replied_at) + '</div>' +
+                '</div>';
+        }
+
+        var replyFormHtml = (m.status !== 'replied') ?
+            '<div class="reply-box" style="margin-top:16px;">' +
+                '<label><i class="fas fa-reply" style="color:#c41e3a;margin-right:6px;"></i>Trả lời tin nhắn này</label>' +
+                '<div style="margin-bottom:10px;">' +
+                    '<label style="font-size:11px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:0.4px;display:block;margin-bottom:4px;">' +
+                        '<i class="fas fa-envelope" style="margin-right:4px;color:#c41e3a;"></i>Gửi đến email' +
+                    '</label>' +
+                    '<input type="email" class="form-control" id="reply-email" value="' + escapeHtml(m.email || '') + '" placeholder="email@example.com" style="font-size:13px;">' +
+                    '<div style="font-size:11px;color:#9ca3af;margin-top:3px;"><i class="fas fa-info-circle"></i> Tự động điền từ email người liên hệ, có thể chỉnh sửa nếu cần</div>' +
+                '</div>' +
+                '<label style="font-size:11px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:0.4px;display:block;margin-bottom:4px;">Nội dung trả lời</label>' +
+                '<textarea class="form-control" id="reply-text" rows="4" placeholder="Nhập nội dung trả lời..."></textarea>' +
+                '<div style="margin-top:10px;display:flex;justify-content:flex-end;">' +
+                    '<button class="btn btn-primary" id="reply-btn" onclick="sendReply(' + id + ')">' +
+                        '<i class="fas fa-paper-plane"></i> Gửi trả lời' +
+                    '</button>' +
+                '</div>' +
+            '</div>' : '';
+
+        setHTML('modal-body',
+            '<div class="msg-meta-grid">' +
+                '<div class="msg-meta-item"><label>Người gửi</label><span>' + escapeHtml(m.name || '—') + '</span></div>' +
+                '<div class="msg-meta-item"><label>Email</label><span>' + escapeHtml(m.email || '—') + '</span></div>' +
+                '<div class="msg-meta-item"><label>Số điện thoại</label><span>' + escapeHtml(m.phone || '—') + '</span></div>' +
+                '<div class="msg-meta-item"><label>Ngày gửi</label><span>' + fmtDate(m.created_at) + '</span></div>' +
+            '</div>' +
+            '<div style="font-size:12px;font-weight:700;color:#4a5568;margin-bottom:8px;">Chủ đề: ' + escapeHtml(m.subject || '—') + '</div>' +
+            '<div class="msg-detail-box">' + escapeHtml(m.message || '') + '</div>' +
+            repliedHtml +
+            replyFormHtml
+        );
+
+        setHTML('modal-foot',
+            '<button class="btn btn-outline" onclick="closeModal()"><i class="fas fa-times"></i> Đóng</button>' +
+            (m.status !== 'archived'
+                ? '<button class="btn btn-outline" onclick="toggleArchive(' + id + ', \'archived\')">' +
+                  '<i class="fas fa-archive"></i> Lưu trữ</button>'
+                : '<button class="btn btn-outline" onclick="toggleArchive(' + id + ', \'read\')">' +
+                  '<i class="fas fa-inbox"></i> Bỏ lưu trữ</button>')
+        );
+
+        // Reload list để cập nhật badge (đã đọc)
+        loadList();
+        loadStats();
+
+    } catch(e) {
+        setHTML('modal-body',
+            '<div style="padding:40px;text-align:center;color:#e74c3c;">' +
+            '<i class="fas fa-exclamation-circle" style="font-size:28px;margin-bottom:12px;display:block;"></i>' +
+            'Không thể tải tin nhắn: ' + e.message + '</div>'
+        );
+    }
+}
+
+function closeModal() { $('modal').classList.remove('open'); }
+
+// ── Gửi trả lời ──
+async function sendReply(id) {
+    var text       = $('reply-text')  ? $('reply-text').value.trim()  : '';
+    var replyEmail = $('reply-email') ? $('reply-email').value.trim() : '';
+
+    if (!text) { toast('Vui lòng nhập nội dung trả lời', 'danger'); return; }
+    if (!replyEmail) { toast('Vui lòng nhập email người nhận', 'danger'); return; }
+
+    // Validate email format
+    var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(replyEmail)) { toast('Email không hợp lệ', 'danger'); return; }
+
+    var btn = $('reply-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi...';
+
+    try {
+        var res = await API.contact.reply(id, text, replyEmail);
+
+        // Hiển thị badge trạng thái email ngay trong modal
+        var emailData = res.data || {};
+        var emailSent = emailData.email_sent;
+        var emailMsg  = emailData.email_message || '';
+
+        var badgeHtml = emailSent
+            ? '<div class="email-badge sent"><i class="fas fa-check-circle"></i>' + emailMsg + '</div>'
+            : '<div class="email-badge failed"><i class="fas fa-exclamation-triangle"></i>' + emailMsg + '</div>';
+
+        // Thay form reply bằng thông báo kết quả
+        var replyBox = document.querySelector('.reply-box');
+        if (replyBox) {
+            replyBox.innerHTML =
+                '<div style="text-align:center;padding:10px 0;">' +
+                    '<i class="fas fa-check-circle" style="color:#065f46;font-size:22px;"></i>' +
+                    '<div style="font-weight:700;color:#065f46;margin:6px 0 4px;">Đã gửi trả lời thành công!</div>' +
+                    badgeHtml +
+                '</div>';
+        }
+
+        if (emailSent) {
+            toast('✅ Đã gửi trả lời & email đến ' + replyEmail);
+        } else {
+            toast('⚠️ Đã lưu trả lời nhưng gửi email thất bại', 'warning');
+        }
+
+        loadList();
+        loadStats();
+    } catch(e) {
+        toast('Lỗi: ' + e.message, 'danger');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Gửi trả lời';
+    }
+}
+
+// ── Lưu trữ / Bỏ lưu trữ ──
+async function toggleArchive(id, newStatus) {
+    try {
+        await API.contact.status(id, newStatus);
+        toast(newStatus === 'archived' ? '📦 Đã lưu trữ tin nhắn' : '📥 Đã bỏ lưu trữ');
+        closeModal();
+        loadList();
+        loadStats();
+    } catch(e) {
+        toast('Lỗi: ' + e.message, 'danger');
+    }
+}
+
+// ════════════════════════════════════════
+// XÓA
+// ════════════════════════════════════════
+function openDel(id, name) {
+    delId = id;
+    setHTML('del-name', name);
+    $('del-modal').classList.add('open');
+}
+
+function closeDel() {
+    $('del-modal').classList.remove('open');
+    delId = null;
+}
+
+async function confirmDel() {
+    if (!delId) return;
+    var btn = $('del-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xóa...';
+    try {
+        await API.contact.delete(delId);
+        toast('🗑️ Đã xóa tin nhắn thành công');
+        closeDel();
+        loadList();
+        loadStats();
+    } catch(e) {
+        toast('Lỗi: ' + e.message, 'danger');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-trash"></i> Xóa';
+    }
+}
+
+// Đóng modal khi click backdrop
+['modal', 'del-modal'].forEach(function(id) {
+    $(id).addEventListener('click', function(e) {
+        if (e.target === this) {
+            if (id === 'modal')     closeModal();
+            if (id === 'del-modal') closeDel();
+        }
+    });
+});
+</script>
+</body>
+</html>

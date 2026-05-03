@@ -1,11 +1,41 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CLB Võ Cổ Truyền HUTECH - Trang chủ</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="CLB Võ Cổ Truyền HUTECH - Nơi rèn luyện võ thuật truyền thống, phát triển thể chất và tinh thần cho sinh viên HUTECH. Tham gia ngay hôm nay!">
+    <meta name="keywords" content="võ cổ truyền, HUTECH, CLB võ thuật, võ thuật truyền thống, sinh viên HUTECH">
+    <meta name="author" content="CLB Võ Cổ Truyền HUTECH">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph (Facebook, Zalo share) -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="CLB Võ Cổ Truyền HUTECH">
+    <meta property="og:description" content="Nơi rèn luyện võ thuật truyền thống, phát triển thể chất và tinh thần cho sinh viên HUTECH.">
+    <meta property="og:image" content="assets/images_Logo/Logo.jpg">
+    <meta property="og:url" content="https://vocotruyenhutech.edu.vn">
+    <meta property="og:locale" content="vi_VN">
+    <meta property="og:site_name" content="CLB Võ Cổ Truyền HUTECH">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="CLB Võ Cổ Truyền HUTECH">
+    <meta name="twitter:description" content="Nơi rèn luyện võ thuật truyền thống, phát triển thể chất và tinh thần cho sinh viên HUTECH.">
+    <meta name="twitter:image" content="assets/images_Logo/Logo.jpg">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/jpeg" href="assets/images_Logo/Logo.jpg">
+    <link rel="apple-touch-icon" href="assets/images_Logo/Logo.jpg">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
+    <script src="assets/js/config.js"></script>
 </head>
 <body>
     <!-- Loading Spinner -->
@@ -19,6 +49,7 @@
 
     <main>
         <div id="hero-placeholder"></div>
+        <div id="announcements-placeholder"></div>
         <div id="about-placeholder"></div>
         <div id="schedule-placeholder"></div>
         <div id="coaches-placeholder"></div>
@@ -30,174 +61,8 @@
 
     <div id="footer-placeholder"></div>
 
-    <!-- Coach Detail Modal -->
-    <div id="coachModal" class="coach-modal-overlay" onclick="closeCoachModal(event)">
-        <div class="coach-modal-box">
-            <button class="coach-modal-close" onclick="closeCoachModal()">&times;</button>
-            <div class="coach-modal-header">
-                <svg class="coach-modal-dong-son" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="100" cy="100" r="12" fill="#c49e28"/>
-                    <polygon points="100,78 105,95 122,95 109,105 114,122 100,112 86,122 91,105 78,95 95,95" fill="#c49e28"/>
-                    <circle cx="100" cy="100" r="20" fill="none" stroke="#c49e28" stroke-width="1.5"/>
-                    <circle cx="100" cy="100" r="30" fill="none" stroke="#c49e28" stroke-width="1"/>
-                    <circle cx="100" cy="100" r="42" fill="none" stroke="#c49e28" stroke-width="1.5"/>
-                    <circle cx="100" cy="100" r="55" fill="none" stroke="#c49e28" stroke-width="1"/>
-                    <circle cx="100" cy="100" r="68" fill="none" stroke="#c49e28" stroke-width="1.5"/>
-                    <circle cx="100" cy="100" r="82" fill="none" stroke="#c49e28" stroke-width="1"/>
-                    <circle cx="100" cy="100" r="95" fill="none" stroke="#c49e28" stroke-width="1.5"/>
-                    <g stroke="#c49e28" stroke-width="0.8" opacity="0.7">
-                        <line x1="100" y1="5"  x2="100" y2="195"/>
-                        <line x1="5"   y1="100" x2="195" y2="100"/>
-                        <line x1="29"  y1="29"  x2="171" y2="171"/>
-                        <line x1="171" y1="29"  x2="29"  y2="171"/>
-                        <line x1="100" y1="5" x2="100" y2="195" transform="rotate(22.5,100,100)"/>
-                        <line x1="100" y1="5" x2="100" y2="195" transform="rotate(45,100,100)"/>
-                        <line x1="100" y1="5" x2="100" y2="195" transform="rotate(67.5,100,100)"/>
-                        <line x1="100" y1="5" x2="100" y2="195" transform="rotate(112.5,100,100)"/>
-                        <line x1="100" y1="5" x2="100" y2="195" transform="rotate(135,100,100)"/>
-                        <line x1="100" y1="5" x2="100" y2="195" transform="rotate(157.5,100,100)"/>
-                    </g>
-                    <g fill="#c49e28" opacity="0.6" transform="translate(100,100)">
-                        <path d="M0,-68 Q8,-60 4,-52 Q0,-58 -4,-52 Q-8,-60 0,-68Z" transform="rotate(0)"/>
-                        <path d="M0,-68 Q8,-60 4,-52 Q0,-58 -4,-52 Q-8,-60 0,-68Z" transform="rotate(45)"/>
-                        <path d="M0,-68 Q8,-60 4,-52 Q0,-58 -4,-52 Q-8,-60 0,-68Z" transform="rotate(90)"/>
-                        <path d="M0,-68 Q8,-60 4,-52 Q0,-58 -4,-52 Q-8,-60 0,-68Z" transform="rotate(135)"/>
-                        <path d="M0,-68 Q8,-60 4,-52 Q0,-58 -4,-52 Q-8,-60 0,-68Z" transform="rotate(180)"/>
-                        <path d="M0,-68 Q8,-60 4,-52 Q0,-58 -4,-52 Q-8,-60 0,-68Z" transform="rotate(225)"/>
-                        <path d="M0,-68 Q8,-60 4,-52 Q0,-58 -4,-52 Q-8,-60 0,-68Z" transform="rotate(270)"/>
-                        <path d="M0,-68 Q8,-60 4,-52 Q0,-58 -4,-52 Q-8,-60 0,-68Z" transform="rotate(315)"/>
-                    </g>
-                </svg>
-                <div class="coach-modal-avatar">
-                    <img id="modalAvatar" src="" alt="">
-                </div>
-                <div class="coach-modal-info">
-                    <h2 id="modalName"></h2>
-                    <div id="modalTitle" class="coach-modal-role"></div>
-                    <div id="modalBelt" class="coach-modal-belt"></div>
-                </div>
-            </div>
-            <div class="coach-modal-body">
-                <table class="coach-detail-table">
-                    <tbody id="modalTableBody"></tbody>
-                </table>
-            </div>
-            <div class="coach-modal-footer">
-                <div class="coach-modal-footer-pattern">❖ ✦ ❖ ✦ ❖ ✦ ❖</div>
-            </div>
-        </div>
-    </div>
-
     <script src="script.js"></script>
     <script>
-        // ===== COACH MODAL =====
-        const coachData = {
-            coach1: {
-                name: 'Trương Ngọc Lĩnh', title: 'Phó Chủ Nhiệm', belt: 'Cấp 14 - 2 đẳng',
-                avatar: 'assets/images_Avatar/Avatar_Anh_Linh.jpg',
-                details: [
-                    { label: 'Chức vụ', value: 'Phó Chủ Nhiệm CLB' },
-                    { label: 'Cấp bậc', value: 'Cấp 14 - 2 đẳng' },
-                    { label: 'Kinh nghiệm', value: '9 năm giảng dạy võ cổ truyền' },
-                    { label: 'Chuyên môn', value: 'Quyền thuật, Binh khí' },
-                    { label: 'Giải thưởng', value: '20+ giải thưởng quốc gia' },
-                    { label: 'Học viên đào tạo', value: '200+ học viên' },
-                    { label: 'Thành tích nổi bật', value: 'HCV GIẢI LIÊN HOAN QUỐC TẾ 2022' }
-                ]
-            },
-            coach2: {
-                name: 'Trần Võ Minh Ngọc', title: 'Chủ nhiệm CLB', belt: 'Cấp 16 - 4 đẳng',
-                avatar: 'assets/images_Avatar/Avatar_Anh_Ngoc.jpg',
-                details: [
-                    { label: 'Chức vụ', value: 'Chủ nhiệm CLB Võ Cổ Truyền HUTECH' },
-                    { label: 'Cấp bậc', value: 'Cấp 16 - 4 đẳng' },
-                    { label: 'Kinh nghiệm', value: '12 năm giảng dạy' },
-                    { label: 'Chuyên môn', value: 'Kỹ thuật thi đấu, Chiến thuật võ cổ truyền' },
-                    { label: 'Giải thưởng', value: '20+ giải thưởng' },
-                    { label: 'Học viên đào tạo', value: '200+ học viên' },
-                    { label: 'Thành tích nổi bật', value: 'HCV GIẢI LIÊN HOAN QUỐC TẾ TP.HCM 2022, 2023' }
-                ]
-            },
-            coach3: {
-                name: 'Nguyễn Quốc An', title: 'Phó Chủ Nhiệm CLB', belt: 'Cấp 15 - 3 đẳng',
-                avatar: 'assets/images_Avatar/Avatar_An_2.jpg',
-                details: [
-                    { label: 'Chức vụ', value: 'Phó Chủ Nhiệm CLB' },
-                    { label: 'Cấp bậc', value: 'Cấp 15 - 3 đẳng' },
-                    { label: 'Kinh nghiệm', value: '8 năm giảng dạy' },
-                    { label: 'Chuyên môn', value: 'Quyền thuật, Đối kháng' },
-                    { label: 'Giải thưởng', value: '20+ giải thưởng' },
-                    { label: 'Học viên đào tạo', value: '200+ học viên' },
-                    { label: 'Thành tích nổi bật', value: 'HCV, HCB GIẢI LIÊN HOAN QUỐC TẾ 2024' }
-                ]
-            },
-            coach4: {
-                name: 'Hoàng Văn B', title: 'Huấn Luyện Viên', belt: 'Cấp 0 - 0 đẳng', avatar: '',
-                details: [
-                    { label: 'Chức vụ', value: 'Huấn Luyện Viên' },
-                    { label: 'Cấp bậc', value: 'Cấp 0 - 0 đẳng' },
-                    { label: 'Kinh nghiệm', value: '10 năm trong lĩnh vực võ cổ truyền' },
-                    { label: 'Chuyên môn', value: 'Môn phái truyền thống, Lịch sử võ học' },
-                    { label: 'Giải thưởng', value: '16+ giải thưởng' },
-                    { label: 'Học viên đào tạo', value: '90+ học viên' }
-                ]
-            },
-            coach5: {
-                name: 'Trần Quốc Huy', title: 'Huấn Luyện Viên Quyền Thuật', belt: 'Cấp 0 - 0 đẳng', avatar: '',
-                details: [
-                    { label: 'Chức vụ', value: 'Huấn Luyện Viên Quyền Thuật' },
-                    { label: 'Cấp bậc', value: 'Cấp 0 - 0 đẳng' },
-                    { label: 'Kinh nghiệm', value: '8 năm chuyên về thi đấu và huấn luyện VĐV' },
-                    { label: 'Chuyên môn', value: 'Quyền thuật, Thi đấu đối kháng' },
-                    { label: 'Giải thưởng', value: '22+ giải thưởng' },
-                    { label: 'Học viên đào tạo', value: '75+ học viên' },
-                    { label: 'Thành tích nổi bật', value: 'Từng là VĐV quốc gia' }
-                ]
-            },
-            coach6: {
-                name: 'Nguyễn Thị Lan', title: 'Huấn Luyện Viên', belt: 'Cấp 0 - Sơ đẳng', avatar: '',
-                details: [
-                    { label: 'Chức vụ', value: 'Huấn Luyện Viên' },
-                    { label: 'Cấp bậc', value: 'Cấp 0 - Sơ đẳng' },
-                    { label: 'Kinh nghiệm', value: '4 năm chuyên đào tạo trẻ em 5-12 tuổi' },
-                    { label: 'Chuyên môn', value: 'Đào tạo thiếu nhi, Võ cơ bản' },
-                    { label: 'Bằng cấp', value: 'Cử nhân Sư phạm Thể dục' },
-                    { label: 'Giải thưởng', value: '8+ giải thưởng' },
-                    { label: 'Học viên đào tạo', value: '60+ học viên' }
-                ]
-            }
-        };
-
-        function openCoachModal(id) {
-            const data = coachData[id];
-            if (!data) return;
-            document.getElementById('modalName').textContent = data.name;
-            document.getElementById('modalTitle').textContent = data.title;
-            document.getElementById('modalBelt').textContent = data.belt;
-            const img = document.getElementById('modalAvatar');
-            img.src = data.avatar || '';
-            img.alt = data.name;
-            img.style.display = data.avatar ? 'block' : 'none';
-            document.getElementById('modalTableBody').innerHTML = data.details.map(row =>
-                `<tr><td class="detail-label"><i class="fas fa-chevron-right"></i> ${row.label}</td><td class="detail-value">${row.value}</td></tr>`
-            ).join('');
-            document.getElementById('coachModal').classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeCoachModal(event) {
-            if (event && event.target !== document.getElementById('coachModal') && !event.target.classList.contains('coach-modal-close')) return;
-            document.getElementById('coachModal').classList.remove('active');
-            document.body.style.overflow = '';
-        }
-
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                document.getElementById('coachModal').classList.remove('active');
-                document.body.style.overflow = '';
-            }
-        });
-
         // ===== BỘ ĐẾM SỰ KIỆN =====
         function initEventCountdowns() {
             const cards = document.querySelectorAll('.event-card[data-start]');
@@ -226,19 +91,15 @@
                     const countdown = card.querySelector('.event-countdown');
                     if (!badge || !countdown) return;
 
-                    card.classList.remove('status-upcoming', 'status-ongoing', 'status-ended');
-
-                    if (now < startDate) {
-                        card.classList.add('status-upcoming');
-                        badge.textContent = 'Sắp diễn ra';
+                    // Chỉ cập nhật countdown, không override badge (badge đã set từ API status)
+                    if (card.classList.contains('status-upcoming') && now < startDate) {
                         renderCountdown(countdown, startDate - now);
-                    } else if (now <= endDate) {
-                        card.classList.add('status-ongoing');
-                        badge.textContent = '🟢 Đang diễn ra';
+                    } else if (card.classList.contains('status-ongoing') && now <= endDate) {
+                        renderCountdown(countdown, endDate - now);
+                    } else if (card.classList.contains('status-upcoming') && now >= startDate) {
+                        // Sự kiện đã bắt đầu nhưng status vẫn upcoming → hiện countdown từ endDate
                         renderCountdown(countdown, endDate - now);
                     } else {
-                        card.classList.add('status-ended');
-                        badge.textContent = 'Đã kết thúc';
                         countdown.classList.add('hidden');
                     }
                 });
@@ -262,24 +123,525 @@
         }
 
         document.addEventListener('DOMContentLoaded', async function() {
-            await loadComponent('header-placeholder',   'components/header.html');
-            await loadComponent('hero-placeholder',     'components/hero-section.html');
-            await loadComponent('about-placeholder',    'components/about-section.html');
-            await loadComponent('schedule-placeholder', 'components/schedule-section.html');
-            await loadComponent('coaches-placeholder',  'components/coaches-section.html');
-            await loadComponent('gallery-placeholder',  'components/gallery-section.html');
-            await loadComponent('events-placeholder',   'components/events-section.html');
-            await loadComponent('services-placeholder', 'components/services-section.html');
-            await loadComponent('contact-placeholder',  'components/contact-section.html');
-            await loadComponent('footer-placeholder',   'components/footer.html');
+            // ── Ưu tiên 1: Load header + hero + announcements song song (visible first) ──
+            await Promise.all([
+                loadComponent('header-placeholder',        'components/header.html'),
+                loadComponent('hero-placeholder',          'components/hero-section.html'),
+                loadComponent('announcements-placeholder', 'components/announcements-banner.html')
+            ]);
+            loadAnnouncementsBanner(); // chạy ngay sau khi HTML đã inject vào DOM
 
-            setTimeout(function() {
-                document.getElementById('loading-overlay').classList.add('hidden');
-            }, 1000);
+            // ── Ưu tiên 2: Load phần nội dung chính song song ──
+            await Promise.all([
+                loadComponent('about-placeholder',    'components/about-section.html'),
+                loadComponent('schedule-placeholder', 'components/schedule-section.html'),
+                loadComponent('coaches-placeholder',  'components/coaches-section.html'),
+                loadComponent('gallery-placeholder',  'components/gallery-section.html'),
+                loadComponent('events-placeholder',   'components/events-section.html')
+            ]);
+            loadEventsSection(); // chạy ngay sau khi HTML đã inject vào DOM
+            loadGallerySection(); // chạy ngay sau khi gallery-section.html đã inject
 
-            setTimeout(initializeComponents, 200);
-            setTimeout(initEventCountdowns, 300);
+            // ── Ưu tiên 3: Load footer + contact (ít quan trọng hơn) song song ──
+            Promise.all([
+                loadComponent('services-placeholder', 'components/services-section.html'),
+                loadComponent('contact-placeholder',  'components/contact-section.html'),
+                loadComponent('footer-placeholder',   'components/footer.html')
+            ]).then(function() {
+                initializeComponents();
+            });
+
+            // Ẩn loading overlay sớm hơn — nội dung chính đã sẵn sàng
+            document.getElementById('loading-overlay').classList.add('hidden');
+            setTimeout(initEventCountdowns, 100);
+
+            // Dropdown Giới thiệu — chạy sau khi header đã load
+            document.querySelectorAll('.nav-has-dropdown > .nav-link').forEach(function(toggle) {
+                toggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    var item = this.closest('.nav-has-dropdown');
+                    var isOpen = item.classList.contains('open');
+                    document.querySelectorAll('.nav-has-dropdown').forEach(function(d) { d.classList.remove('open'); });
+                    if (!isOpen) item.classList.add('open');
+                });
+            });
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.nav-has-dropdown')) {
+                    document.querySelectorAll('.nav-has-dropdown').forEach(function(d) { d.classList.remove('open'); });
+                }
+            });
         });
+
+        // ===== BANNER THÔNG BÁO (Option 3 — Inline strip) =====
+        async function loadAnnouncementsBanner() {
+            var container = document.getElementById('ann-banner-list');
+            if (!container) return;
+
+            var API_BASE = window.APP_CONFIG ? window.APP_CONFIG.API_BASE : 'http://localhost:3001/api';
+            var TYPE_ICN = { general: 'bullhorn', urgent: 'exclamation-circle', event: 'calendar-alt', training: 'dumbbell' };
+            var TYPE_LBL = { general: 'Chung', urgent: 'Khẩn cấp', event: 'Sự kiện', training: 'Tập luyện' };
+            var PRI_LBL  = { high: 'Ưu tiên cao', normal: 'Bình thường', low: 'Thấp' };
+            var PRI_DOT  = { high: '🔴', normal: '🔵', low: '⚪', urgent: '🟠' };
+
+            function fmtDate(s) {
+                if (!s) return '';
+                try { return new Date(s).toLocaleDateString('vi-VN', { day:'2-digit', month:'2-digit', year:'numeric' }); }
+                catch(e) { return ''; }
+            }
+            function trunc(s, n) {
+                if (!s) return '';
+                return s.length > n ? s.slice(0, n) + '…' : s;
+            }
+
+            function renderCard(a) {
+                var priCls  = a.type === 'urgent' ? 'urgent' : (a.priority === 'high' ? 'high' : (a.priority === 'low' ? 'low' : 'normal'));
+                var typeCls = a.type === 'urgent' ? ' urgent' : '';
+
+                var expiryHtml = a.expires_at
+                    ? '<div class="ann-card-expiry"><i class="fas fa-clock"></i> Hạn đến: ' + fmtDate(a.expires_at) + '</div>'
+                    : '';
+
+                return '<a class="ann-strip-card pri-' + priCls + '" href="views/thong-bao.html">' +
+                    '<div class="ann-card-meta">' +
+                        '<span class="ann-type-chip' + typeCls + '">' +
+                            '<i class="fas fa-' + (TYPE_ICN[a.type] || 'bell') + '"></i>' +
+                            (TYPE_LBL[a.type] || 'Chung') +
+                        '</span>' +
+                        '<span class="ann-card-date-lbl">' + fmtDate(a.created_at) + '</span>' +
+                    '</div>' +
+                    '<span class="ann-pri-pill ' + priCls + '">' +
+                        (PRI_DOT[priCls] || '🔵') + ' ' + (a.type === 'urgent' ? 'Khẩn cấp' : (PRI_LBL[a.priority] || 'Bình thường')) +
+                    '</span>' +
+                    '<h4>' + trunc(a.title, 72) + '</h4>' +
+                    '<p>' + trunc(a.content, 110) + '</p>' +
+                    expiryHtml +
+                    '<span class="ann-card-arrow"><i class="fas fa-arrow-right"></i></span>' +
+                '</a>';
+            }
+
+            try {
+                var res  = await fetch(API_BASE + '/cms/announcements?all=1', { cache: 'no-cache' });
+                var data = await res.json();
+                if (!data.success) throw new Error(data.message);
+
+                // Lọc: chỉ active, chưa hết hạn
+                var all = (data.data || []).filter(function(a) {
+                    if (a.status !== 'active') return false;
+                    if (a.expires_at && new Date(a.expires_at) < new Date()) return false;
+                    return true;
+                });
+
+                // Sắp xếp: urgent > high > normal > low, rồi mới nhất trước
+                var priOrder = { urgent: 0, high: 1, normal: 2, low: 3 };
+                all.sort(function(a, b) {
+                    var pa = a.type === 'urgent' ? 0 : (priOrder[a.priority] !== undefined ? priOrder[a.priority] : 2);
+                    var pb = b.type === 'urgent' ? 0 : (priOrder[b.priority] !== undefined ? priOrder[b.priority] : 2);
+                    if (pa !== pb) return pa - pb;
+                    return new Date(b.created_at) - new Date(a.created_at);
+                });
+
+                var list = all.slice(0, 3);
+
+                if (!list.length) {
+                    container.innerHTML =
+                        '<div class="ann-strip-grid">' +
+                            '<div class="ann-strip-empty">' +
+                                '<i class="fas fa-bell-slash"></i>' +
+                                '<p>Hiện chưa có thông báo mới.</p>' +
+                            '</div>' +
+                        '</div>';
+                    return;
+                }
+
+                container.innerHTML = '<div class="ann-strip-grid">' + list.map(renderCard).join('') + '</div>';
+
+            } catch(e) {
+                // Ẩn section nếu API không khả dụng — không hiện lỗi trên trang chủ
+                var section = document.getElementById('announcements-banner');
+                if (section) section.style.display = 'none';
+            }
+        }
+
+        // ===== TIN TỨC - SỰ KIỆN (kết nối API) =====
+        (function() {
+            var API_BASE   = window.APP_CONFIG ? window.APP_CONFIG.API_BASE : 'http://localhost:3001/api';
+            var activeTab  = 'events'; // 'events' | 'news'
+
+            var CAT_LBL = { general:'Chung', training:'Tập luyện', competition:'Thi đấu', event:'Sự kiện', achievement:'Thành tích', announcement:'Thông báo' };
+            var ST_LBL  = { upcoming:'Sắp diễn ra', ongoing:'Đang diễn ra', completed:'Đã kết thúc', cancelled:'Đã hủy' };
+            var ST_CLS  = { upcoming:'status-upcoming', ongoing:'status-ongoing', completed:'status-ended', cancelled:'status-ended' };
+
+            var MONTHS_VI = ['Tháng 1','Tháng 2','Tháng 3','Tháng 4','Tháng 5','Tháng 6','Tháng 7','Tháng 8','Tháng 9','Tháng 10','Tháng 11','Tháng 12'];
+
+            function fmtDate(s) {
+                if (!s) return '';
+                try { return new Date(s).toLocaleDateString('vi-VN', { day:'2-digit', month:'2-digit', year:'numeric' }); }
+                catch(e) { return ''; }
+            }
+            function trunc(s, n) { return !s ? '' : s.length > n ? s.slice(0, n) + '…' : s; }
+            function resolveImg(url) {
+                if (!url) return null;
+                if (url.startsWith('http')) return url;
+                var base = window.APP_CONFIG ? window.APP_CONFIG.API_BASE.replace('/api','') : 'http://localhost:3001';
+                return base + (url.startsWith('/') ? url : '/' + url);
+            }
+
+            // ── Parse date an toàn — convert UTC về local timezone ──
+            function parseDateLocal(s) {
+                if (!s) return null;
+                // Nếu là ISO datetime có timezone (có Z hoặc +), parse rồi lấy local date
+                if (s.indexOf('T') !== -1) {
+                    var d = new Date(s);
+                    // Trả về ngày theo local timezone (không phải UTC)
+                    return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+                }
+                // Đã là YYYY-MM-DD thuần — parse local trực tiếp
+                var parts = s.split('-');
+                if (parts.length !== 3) return null;
+                return new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+            }
+
+            // ── Extract HH:MM từ ISO datetime hoặc time string ──
+            function extractTime(s) {
+                if (!s) return null;
+                // ISO datetime: "1970-01-01T00:00:00.000Z" — MSSQL lưu time dạng UTC
+                // Cần convert về local timezone
+                if (s.indexOf('T') !== -1) {
+                    var t = new Date(s);
+                    // Dùng toLocaleTimeString để lấy giờ local
+                    var h = t.getHours().toString().padStart(2, '0');
+                    var m = t.getMinutes().toString().padStart(2, '0');
+                    return h + ':' + m;
+                }
+                // Đã là "HH:MM" hoặc "HH:MM:SS"
+                return s.substring(0, 5);
+            }
+
+            // ── Render event card (giữ nguyên style cũ) ──
+            function renderEventCard(ev) {
+                var d     = parseDateLocal(ev.date);
+                var day   = d ? d.getDate() : '—';
+                var month = d ? MONTHS_VI[d.getMonth()] : '';
+                var year  = d ? d.getFullYear() : '';
+
+                // Lấy date string dạng YYYY-MM-DD (local) để dùng cho countdown
+                var dateStr = d
+                    ? d.getFullYear() + '-' +
+                      String(d.getMonth() + 1).padStart(2, '0') + '-' +
+                      String(d.getDate()).padStart(2, '0')
+                    : '';
+
+                var stCls = ST_CLS[ev.status] || 'status-ended';
+                var stLbl = ST_LBL[ev.status] || ev.status || '';
+
+                var startTime = extractTime(ev.start_time);
+                var endTime   = extractTime(ev.end_time);
+                var timeStr   = startTime
+                    ? (startTime + (endTime ? ' – ' + endTime : ''))
+                    : 'Đang cập nhật';
+
+                var hideCountdown = (ev.status === 'completed' || ev.status === 'cancelled');
+
+                return '<div class="event-card ' + stCls + '" data-start="' + dateStr + '" data-end="' + dateStr + '">' +
+                    '<div class="event-badge-auto">' + stLbl + '</div>' +
+                    '<div class="event-date">' +
+                        '<span class="event-day">'   + day   + '</span>' +
+                        '<span class="event-month">' + month + '</span>' +
+                        '<span class="event-year">'  + year  + '</span>' +
+                    '</div>' +
+                    '<div class="event-info">' +
+                        '<h3>' + trunc(ev.name, 70) + '</h3>' +
+                        '<p>'  + trunc(ev.description || '', 100) + '</p>' +
+                        '<div class="event-meta">' +
+                            (ev.location ? '<span><i class="fas fa-map-marker-alt"></i> ' + trunc(ev.location, 35) + '</span>' : '') +
+                            '<span><i class="fas fa-clock"></i> ' + timeStr + '</span>' +
+                        '</div>' +
+                        '<div class="event-countdown' + (hideCountdown ? ' hidden' : '') + '"></div>' +
+                    '</div>' +
+                '</div>';
+            }
+
+            // ── Render news card ──
+            function renderNewsCard(n) {
+                var imgHtml = n.featured_image
+                    ? '<img class="ev-news-img" src="' + resolveImg(n.featured_image) + '" alt="" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">' +
+                      '<div class="ev-news-img-placeholder" style="display:none;"><i class="fas fa-image"></i></div>'
+                    : '<div class="ev-news-img-placeholder"><i class="fas fa-image"></i></div>';
+
+                return '<div class="ev-news-card" onclick="window.location.href=\'views/tin-tuc.html\'">' +
+                    imgHtml +
+                    '<div class="ev-news-body">' +
+                        '<span class="ev-news-cat"><i class="fas fa-tag"></i>' + (CAT_LBL[n.category] || n.category || 'Tin tức') + '</span>' +
+                        '<h3>' + trunc(n.title, 75) + '</h3>' +
+                        '<p>'  + trunc(n.excerpt || n.content || '', 110) + '</p>' +
+                        '<div class="ev-news-date"><i class="fas fa-calendar"></i>' + fmtDate(n.published_at || n.created_at) + '</div>' +
+                    '</div>' +
+                '</div>';
+            }
+
+            // ── Skeleton ──
+            function showSkeleton() {
+                var grid = document.getElementById('ev-grid');
+                if (!grid) return;
+                grid.innerHTML =
+                    '<div class="ev-skeleton"></div>' +
+                    '<div class="ev-skeleton"></div>' +
+                    '<div class="ev-skeleton"></div>' +
+                    '<div class="ev-skeleton"></div>';
+            }
+
+            // ── Load events ──
+            async function loadEvents() {
+                showSkeleton();
+                var grid    = document.getElementById('ev-grid');
+                var viewAll = document.getElementById('ev-viewall');
+                if (!grid) return;
+
+                try {
+                    // Lấy tất cả events, sort client-side: ongoing > upcoming > completed > cancelled
+                    var res  = await fetch(API_BASE + '/cms/events?limit=20', { cache: 'default' });
+                    var data = await res.json();
+                    if (!data.success) throw new Error(data.message);
+
+                    var all = (data.data && data.data.events) || [];
+
+                    var order = { ongoing: 0, upcoming: 1, completed: 2, cancelled: 3 };
+                    all.sort(function(a, b) {
+                        var oa = order[a.status] !== undefined ? order[a.status] : 2;
+                        var ob = order[b.status] !== undefined ? order[b.status] : 2;
+                        if (oa !== ob) return oa - ob;
+                        return new Date(a.date) - new Date(b.date);
+                    });
+
+                    var list = all.slice(0, 4);
+
+                    if (!list.length) {
+                        grid.innerHTML = '<div class="ev-empty"><i class="fas fa-calendar-alt"></i><p>Chưa có sự kiện nào.</p></div>';
+                        return;
+                    }
+
+                    grid.innerHTML = list.map(renderEventCard).join('');
+                    if (viewAll) { viewAll.href = 'views/su-kien.html'; viewAll.innerHTML = 'Xem tất cả sự kiện <i class="fas fa-arrow-right"></i>'; }
+
+                    // Khởi động lại countdown cho cards mới
+                    if (typeof initEventCountdowns === 'function') initEventCountdowns();
+
+                } catch(e) {
+                    console.warn('[Events] API lỗi:', e.message);
+                    grid.innerHTML = '<div class="ev-empty"><i class="fas fa-calendar-alt"></i><p>Không thể tải sự kiện. Vui lòng thử lại sau.</p></div>';
+                }
+            }
+
+            // ── Load news ──
+            async function loadNews() {
+                showSkeleton();
+                var grid    = document.getElementById('ev-grid');
+                var viewAll = document.getElementById('ev-viewall');
+                if (!grid) return;
+
+                try {
+                    var res  = await fetch(API_BASE + '/cms/news?limit=4&status=published', { cache: 'default' });
+                    var data = await res.json();
+                    if (!data.success) throw new Error(data.message);
+
+                    var list = (data.data && data.data.news) || [];
+
+                    if (!list.length) {
+                        grid.innerHTML = '<div class="ev-empty"><i class="fas fa-newspaper"></i><p>Chưa có tin tức nào.</p></div>';
+                        return;
+                    }
+
+                    grid.innerHTML = list.map(renderNewsCard).join('');
+                    if (viewAll) { viewAll.href = 'views/tin-tuc.html'; viewAll.innerHTML = 'Xem tất cả tin tức <i class="fas fa-arrow-right"></i>'; }
+
+                } catch(e) {
+                    console.warn('[News] API lỗi:', e.message);
+                    grid.innerHTML = '<div class="ev-empty"><i class="fas fa-newspaper"></i><p>Không thể tải tin tức. Vui lòng thử lại sau.</p></div>';
+                }
+            }
+
+            // ── Public: gọi từ index.html sau khi inject component ──
+            window.loadEventsSection = function() {
+                var tabBar = document.getElementById('ev-tabs');
+                if (!tabBar) return;
+
+                // Tab click
+                tabBar.addEventListener('click', function(e) {
+                    var btn = e.target.closest('.ev-tab');
+                    if (!btn) return;
+                    document.querySelectorAll('.ev-tab').forEach(function(b) { b.classList.remove('active'); });
+                    btn.classList.add('active');
+                    activeTab = btn.dataset.tab;
+
+                    var grid = document.getElementById('ev-grid');
+                    if (grid) { grid.style.opacity = '0'; grid.style.transition = 'opacity 0.18s'; }
+                    setTimeout(function() {
+                        if (activeTab === 'events') loadEvents();
+                        else loadNews();
+                        if (grid) grid.style.opacity = '1';
+                    }, 180);
+                });
+
+                // Load mặc định: sự kiện
+                loadEvents();
+            };
+        })();
+
+        // ===== GALLERY SECTION =====
+        (function() {
+            var GS_API = window.APP_CONFIG ? window.APP_CONFIG.API_BASE : 'http://localhost:3001/api';
+            var gsAlbums = [];
+            var gsActive = -1;
+            var gsLbPhotos = [];
+            var gsLbIdx = 0;
+
+            var STATIC_ALBUMS = [
+                { name: 'Thi đấu & Giải thưởng', photos: [
+                    { src: 'assets/images_Thi_dau_vo/Giai_SV3.jpg',        title: 'Giải III Toàn Đoàn',                     desc: 'Giải Võ Cổ Truyền Sinh Viên VLU TP.HCM 2024.' },
+                    { src: 'assets/images_Thi_dau_vo/Thi_Vo_Nhac.jpg',     title: 'Thi đấu võ nhạc Đất phương nam 2025',    desc: 'Cuộc thi Liên hoan Võ Việt đất phương nam 2026.' },
+                    { src: 'assets/images_Thi_dau_vo/Hinh_Thi_Dau.jpg',    title: 'Giải Võ cổ truyền Quốc tế TP.HCM 2026', desc: 'Mục tiêu học hỏi và trải nghiệm tại đấu trường lớn.' },
+                    { src: 'assets/images_Thi_dau_vo/Hinh_Nhan_thuong.jpg', title: 'Lễ Tổng Kết Giải Liên Hoan Quốc Tế',   desc: 'Ghi nhận sự nỗ lực và tiến bộ của từng cá nhân.' }
+                ]},
+                { name: 'Diễn show', photos: [
+                    { src: 'assets/images_Dien_Show/Show_Quoc_Te.jpg', title: 'Giải nhất biểu diễn Quốc tế HUTECH', desc: 'HUTECH GLOBAL FESTIVAL.' },
+                    { src: 'assets/images_Dien_Show/Show.jpg',         title: 'Biểu diễn Nam Kỳ Lục Tỉnh',         desc: 'Tham gia giao lưu chào đón tân sinh viên.' }
+                ]},
+                { name: 'Hoạt động CLB', photos: [
+                    { src: 'assets/images_Team_Building/Hinh_Team_BuilDing_1.jpg', title: 'Team Building 2025',  desc: 'Hoạt động ngoại khóa gắn kết các thành viên CLB.' },
+                    { src: 'assets/images_Thien_Nguyen/HD_Thien_Nguyen.jpg',       title: 'Hoạt Động Từ Thiện', desc: 'Chương trình thiện nguyện hỗ trợ cộng đồng.' }
+                ]}
+            ];
+
+            function gsResolveImg(url) {
+                if (!url) return '';
+                if (url.startsWith('http')) return url;
+                return GS_API.replace('/api','') + (url.startsWith('/') ? url : '/' + url);
+            }
+
+            function gsRenderGrid(photos) {
+                var grid = document.getElementById('gallery-grid');
+                if (!grid) return;
+                gsLbPhotos = photos.slice(0, 9);
+                if (!gsLbPhotos.length) {
+                    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#999;"><i class="fas fa-images" style="font-size:2rem;margin-bottom:12px;display:block;"></i>Chưa có ảnh nào.</div>';
+                    return;
+                }
+                grid.innerHTML = gsLbPhotos.map(function(item, idx) {
+                    return '<div class="gallery-item" onclick="gsLbOpen(' + idx + ')" style="min-height:200px;">' +
+                        '<img src="' + item.src + '" alt="' + (item.title||'') + '" class="gallery-real-img" loading="lazy" onerror="this.style.display=\'none\'">' +
+                        '<div class="gallery-info"><h4>' + (item.title||'') + '</h4><p>' + (item.desc||'') + '</p></div>' +
+                        '</div>';
+                }).join('');
+            }
+
+            function gsRenderTabs() {
+                var tabBar = document.getElementById('gallery-album-tabs');
+                if (!tabBar || gsAlbums.length <= 1) return;
+                var html = '<div class="gallery-tab-bar">';
+                html += '<button class="gallery-tab-btn active" onclick="gsSetTab(-1)">Tất cả</button>';
+                gsAlbums.forEach(function(album, i) {
+                    html += '<button class="gallery-tab-btn" onclick="gsSetTab(' + i + ')">' +
+                        '<i class="fas fa-folder" style="margin-right:5px;font-size:11px;"></i>' + album.name + '</button>';
+                });
+                html += '</div>';
+                html += '<div style="text-align:center;margin-bottom:8px;">' +
+                    '<a href="views/thu-vien.html" class="gallery-view-all-link">Xem toàn bộ thư viện <i class="fas fa-arrow-right"></i></a></div>';
+                tabBar.innerHTML = html;
+                tabBar.style.display = 'block';
+            }
+
+            function gsGetPhotos(idx) {
+                if (idx === -1) {
+                    var all = [];
+                    gsAlbums.forEach(function(a) { a.photos.forEach(function(p) { all.push(p); }); });
+                    return all;
+                }
+                return gsAlbums[idx] ? gsAlbums[idx].photos : [];
+            }
+
+            window.gsSetTab = function(idx) {
+                gsActive = idx;
+                document.querySelectorAll('.gallery-tab-btn').forEach(function(btn, i) {
+                    btn.classList.toggle('active', (i === 0 && idx === -1) || (i - 1 === idx));
+                });
+                gsRenderGrid(gsGetPhotos(idx));
+            };
+
+            function gsFallback() {
+                gsAlbums = STATIC_ALBUMS;
+                gsActive = -1;
+                gsRenderTabs();
+                gsRenderGrid(gsGetPhotos(-1));
+            }
+
+            window.loadGallerySection = async function() {
+                try {
+                    var res  = await fetch(GS_API + '/gallery/albums', { cache: 'default' });
+                    var data = await res.json();
+                    if (!data.success || !data.data || !data.data.length) { gsFallback(); return; }
+
+                    var albums = data.data.slice(0, 5);
+                    var results = await Promise.all(albums.map(function(album) {
+                        return fetch(GS_API + '/gallery/albums/' + album.id, { cache: 'default' })
+                            .then(function(r) { return r.json(); })
+                            .then(function(ad) {
+                                var photos = (ad.data && ad.data.photos) || [];
+                                return {
+                                    id: album.id, name: album.name,
+                                    photos: photos.map(function(p) {
+                                        return { src: gsResolveImg(p.image_url), title: p.caption || album.name, desc: album.description || album.name };
+                                    })
+                                };
+                            })
+                            .catch(function() { return { id: album.id, name: album.name, photos: [] }; });
+                    }));
+
+                    gsAlbums = results.filter(function(a) { return a.photos.length > 0; });
+                    if (!gsAlbums.length) { gsFallback(); return; }
+
+                    gsActive = -1;
+                    gsRenderTabs();
+                    gsRenderGrid(gsGetPhotos(-1));
+                } catch(e) {
+                    gsFallback();
+                }
+            };
+
+            // Lightbox
+            window.gsLbOpen = function(idx) {
+                gsLbIdx = idx;
+                gsLbShow();
+                document.getElementById('gs-lightbox').classList.add('open');
+                document.body.style.overflow = 'hidden';
+            };
+            function gsLbShow() {
+                var p = gsLbPhotos[gsLbIdx];
+                if (!p) return;
+                document.getElementById('gs-lb-img').src = p.src;
+                document.getElementById('gs-lb-caption').textContent = p.title || '';
+                document.getElementById('gs-lb-counter').textContent = (gsLbIdx + 1) + ' / ' + gsLbPhotos.length;
+                document.getElementById('gs-lb-prev').style.display = gsLbIdx > 0 ? '' : 'none';
+                document.getElementById('gs-lb-next').style.display = gsLbIdx < gsLbPhotos.length - 1 ? '' : 'none';
+            }
+            window.gsLbNav = function(dir) {
+                gsLbIdx = Math.max(0, Math.min(gsLbPhotos.length - 1, gsLbIdx + dir));
+                gsLbShow();
+            };
+            window.gsLbClose = function(e) {
+                if (!e || e.target === document.getElementById('gs-lightbox') || e.target.id === 'gs-lb-close') {
+                    document.getElementById('gs-lightbox').classList.remove('open');
+                    document.body.style.overflow = '';
+                }
+            };
+            document.addEventListener('keydown', function(e) {
+                var lb = document.getElementById('gs-lightbox');
+                if (!lb || !lb.classList.contains('open')) return;
+                if (e.key === 'Escape')     gsLbClose({ target: lb });
+                if (e.key === 'ArrowLeft')  gsLbNav(-1);
+                if (e.key === 'ArrowRight') gsLbNav(1);
+            });
+        })();
 
         function initializeComponents() {
             const contactForm = document.getElementById('contactForm');
@@ -302,7 +664,8 @@
                     showNotification('Số điện thoại không hợp lệ!', 'error'); return;
                 }
                 showNotification('Đang gửi...', 'info');
-                fetch('http://localhost:3001/api/contact', {
+                var contactApi = window.APP_CONFIG ? window.APP_CONFIG.API_BASE : 'http://localhost:3001/api';
+                fetch(contactApi + '/contact', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(formData)

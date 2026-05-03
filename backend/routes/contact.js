@@ -1,11 +1,29 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
+const auditLog = require('../utils/auditLog');
 const { authenticate, authorize } = require('../middleware/auth');
-const { ValidationRules, handleValidationErrors } = require('../middleware/validation');
+const { ValidationRules, handleValidationErrors, parsePagination } = require('../middleware/validation');
+const emailService = require('../services/emailService');
+const rateLimit = require('express-rate-limit');
+const logger = require('../services/loggerService');
 
-// Submit contact message (public)
-router.post('/', ValidationRules.contactMessage, handleValidationErrors, async (req, res) => {
+// Rate limiter riêng cho form liên hệ public
+// Giới hạn: 5 lần gửi / 15 phút / IP — ngăn spam
+const contactLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 phút
+    max: process.env.NODE_ENV === 'development' ? 50 : 5,
+    message: {
+        success: false,
+        message: 'Bạn đã gửi quá nhiều tin nhắn. Vui lòng thử lại sau 15 phút.'
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
+    keyGenerator: (req) => req.ip // giới hạn theo IP
+});
+
+// Submit contact message (public) — rate limited: 5 lần/15 phút/IP
+router.post('/', contactLimiter, ValidationRules.contactMessage, handleValidationErrors, async (req, res) => {
     try {
         const { name, email, phone, subject, message } = req.body;
 
@@ -38,7 +56,7 @@ router.post('/', ValidationRules.contactMessage, handleValidationErrors, async (
         });
 
     } catch (error) {
-        console.error('Submit contact message error:', error);
+        logger.error('Submit contact message error:', { error: error.message });
         res.status(500).json({
             success: false,
             message: 'Lỗi server khi gửi tin nhắn'
@@ -49,52 +67,62 @@ router.post('/', ValidationRules.contactMessage, handleValidationErrors, async (
 // Get all contact messages (admin only)
 router.get('/', authenticate, authorize('admin'), async (req, res) => {
     try {
-        const { page = 1, limit = 20, status, search } = req.query;
+        const { page, limit, offset } = parsePagination(req.query, 20, 100);
+        const { status, search } = req.query;
 
         let whereClause = '1=1';
         let params = [];
 
         if (status) {
-            whereClause += ' AND status = ?';
+            whereClause += ' AND cm.status = ?';
             params.push(status);
         }
-
         if (search) {
-            whereClause += ' AND (name LIKE ? OR email LIKE ? OR subject LIKE ? OR message LIKE ?)';
-            const searchTerm = `%${search}%`;
-            params.push(searchTerm, searchTerm, searchTerm, searchTerm);
+            whereClause += ' AND (cm.name LIKE ? OR cm.email LIKE ? OR cm.subject LIKE ? OR cm.message LIKE ?)';
+            const s = `%${search}%`;
+            params.push(s, s, s, s);
         }
 
-        const sql = `
-            SELECT cm.*, 
-             u.first_name as replied_by_first_name,
-             u.last_name as replied_by_last_name
+        const rows = await db.find(
+            `SELECT cm.id, cm.name, cm.email, cm.phone, cm.subject, cm.message,
+             cm.status, cm.replied_at, cm.reply_message, cm.created_at,
+             u.first_name as replied_by_first_name, u.last_name as replied_by_last_name
              FROM contact_messages cm
              LEFT JOIN users u ON cm.replied_by = u.id
              WHERE ${whereClause}
              ORDER BY cm.created_at DESC
-        `;
+             OFFSET ${offset} ROWS FETCH NEXT ${limit} ROWS ONLY`,
+            params
+        );
 
-        const result = await db.findMany(sql, params, parseInt(page), parseInt(limit));
+        const total = await db.findOne(
+            `SELECT COUNT(*) as cnt FROM contact_messages cm WHERE ${whereClause}`, params
+        );
 
         res.json({
             success: true,
-            data: result
+            data: rows,
+            pagination: {
+                page,
+                limit,
+                total: total ? (total.cnt || 0) : 0,
+                pages: Math.ceil((total ? total.cnt || 0 : 0) / limit)
+            }
         });
-
     } catch (error) {
-        console.error('Get contact messages error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Lỗi server khi lấy danh sách tin nhắn'
-        });
+        logger.error('Get contact messages error:', { error: error.message });
+        res.status(500).json({ success: false, message: 'Lỗi server khi lấy danh sách tin nhắn' });
     }
 });
 
 // Get contact message details (admin only)
-router.get('/:id', authenticate, authorize('admin'), ValidationRules.idParam, handleValidationErrors, async (req, res) => {
+router.get('/:id', authenticate, authorize('admin'), async (req, res) => {
     try {
         const { id } = req.params;
+        const numId = parseInt(id);
+        if (!numId || numId < 1) {
+            return res.status(400).json({ success: false, message: 'ID không hợp lệ' });
+        }
 
         const message = await db.findOne(
             `SELECT cm.*, 
@@ -104,7 +132,7 @@ router.get('/:id', authenticate, authorize('admin'), ValidationRules.idParam, ha
              FROM contact_messages cm
              LEFT JOIN users u ON cm.replied_by = u.id
              WHERE cm.id = ?`,
-            [id]
+            [numId]
         );
 
         if (!message) {
@@ -120,7 +148,7 @@ router.get('/:id', authenticate, authorize('admin'), ValidationRules.idParam, ha
                 'contact_messages',
                 { status: 'read' },
                 'id = ?',
-                [id]
+                [numId]
             );
             message.status = 'read';
         }
@@ -131,7 +159,7 @@ router.get('/:id', authenticate, authorize('admin'), ValidationRules.idParam, ha
         });
 
     } catch (error) {
-        console.error('Get contact message error:', error);
+        logger.error('Get contact message error:', { error: error.message });
         res.status(500).json({
             success: false,
             message: 'Lỗi server khi lấy tin nhắn'
@@ -140,10 +168,14 @@ router.get('/:id', authenticate, authorize('admin'), ValidationRules.idParam, ha
 });
 
 // Reply to contact message (admin only)
-router.post('/:id/reply', authenticate, authorize('admin'), ValidationRules.idParam, handleValidationErrors, async (req, res) => {
+router.post('/:id/reply', authenticate, authorize('admin'), async (req, res) => {
     try {
         const { id } = req.params;
-        const { reply_message } = req.body;
+        const numId = parseInt(id);
+        if (!numId || numId < 1) {
+            return res.status(400).json({ success: false, message: 'ID không hợp lệ' });
+        }
+        const { reply_message, reply_to_email } = req.body;
 
         if (!reply_message || reply_message.trim().length === 0) {
             return res.status(400).json({
@@ -152,8 +184,17 @@ router.post('/:id/reply', authenticate, authorize('admin'), ValidationRules.idPa
             });
         }
 
+        // Validate reply_to_email nếu được cung cấp
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (reply_to_email && !emailRegex.test(reply_to_email)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Email người nhận không hợp lệ'
+            });
+        }
+
         // Check if message exists
-        const message = await db.findOne('SELECT * FROM contact_messages WHERE id = ?', [id]);
+        const message = await db.findOne('SELECT * FROM contact_messages WHERE id = ?', [numId]);
         if (!message) {
             return res.status(404).json({
                 success: false,
@@ -171,30 +212,48 @@ router.post('/:id/reply', authenticate, authorize('admin'), ValidationRules.idPa
                 reply_message: reply_message.trim()
             },
             'id = ?',
-            [id]
+            [numId]
         );
 
         // Log reply
-        await db.insert('audit_logs', {
-            user_id: req.user.id,
-            action: 'contact_message_replied',
-            table_name: 'contact_messages',
-            record_id: id,
-            new_values: JSON.stringify({ reply_message }),
-            ip_address: req.ip,
-            user_agent: req.get('User-Agent')
-        });
+        try {
+            await auditLog({
+                user_id: req.user.id,
+                action: 'contact_message_replied',
+                table_name: 'contact_messages',
+                record_id: numId,
+                new_values: JSON.stringify({ reply_message }),
+                ip_address: req.ip,
+                user_agent: req.get('User-Agent')
+            });
+        } catch (logErr) {
+            logger.warn('Audit log warning (non-critical):', { error: logErr.message });
+        }
 
-        // TODO: Send email reply to the contact person
-        // This would require email service integration
+        // Send email reply — dùng reply_to_email nếu admin chỉnh sửa, fallback về message.email
+        const targetEmail = (reply_to_email && reply_to_email.trim()) || message.email;
+        let emailResult = { success: false, message: 'Chưa gửi' };
+        try {
+            const contactForEmail = { ...message, email: targetEmail };
+            emailResult = await emailService.sendContactReply(contactForEmail, reply_message.trim());
+        } catch (emailErr) {
+            console.warn('Email send warning (non-critical):', emailErr.message);
+            emailResult = { success: false, message: emailErr.message };
+        }
 
         res.json({
             success: true,
-            message: 'Phản hồi tin nhắn thành công'
+            message: 'Phản hồi tin nhắn thành công',
+            data: {
+                email_sent: emailResult.success,
+                email_message: emailResult.success
+                    ? 'Email đã được gửi đến ' + targetEmail
+                    : 'Không thể gửi email: ' + emailResult.message
+            }
         });
 
     } catch (error) {
-        console.error('Reply contact message error:', error);
+        logger.error('Reply contact message error:', { error: error.message });
         res.status(500).json({
             success: false,
             message: 'Lỗi server khi phản hồi tin nhắn'
@@ -203,9 +262,13 @@ router.post('/:id/reply', authenticate, authorize('admin'), ValidationRules.idPa
 });
 
 // Update contact message status (admin only)
-router.put('/:id/status', authenticate, authorize('admin'), ValidationRules.idParam, handleValidationErrors, async (req, res) => {
+router.put('/:id/status', authenticate, authorize('admin'), async (req, res) => {
     try {
         const { id } = req.params;
+        const numId = parseInt(id);
+        if (!numId || numId < 1) {
+            return res.status(400).json({ success: false, message: 'ID không hợp lệ' });
+        }
         const { status } = req.body;
 
         if (!['new', 'read', 'replied', 'archived'].includes(status)) {
@@ -216,7 +279,7 @@ router.put('/:id/status', authenticate, authorize('admin'), ValidationRules.idPa
         }
 
         // Check if message exists
-        const message = await db.findOne('SELECT * FROM contact_messages WHERE id = ?', [id]);
+        const message = await db.findOne('SELECT * FROM contact_messages WHERE id = ?', [numId]);
         if (!message) {
             return res.status(404).json({
                 success: false,
@@ -229,20 +292,24 @@ router.put('/:id/status', authenticate, authorize('admin'), ValidationRules.idPa
             'contact_messages',
             { status },
             'id = ?',
-            [id]
+            [numId]
         );
 
         // Log status change
-        await db.insert('audit_logs', {
-            user_id: req.user.id,
-            action: 'contact_message_status_updated',
-            table_name: 'contact_messages',
-            record_id: id,
-            old_values: JSON.stringify({ status: message.status }),
-            new_values: JSON.stringify({ status }),
-            ip_address: req.ip,
-            user_agent: req.get('User-Agent')
-        });
+        try {
+            await auditLog({
+                user_id: req.user.id,
+                action: 'contact_message_status_updated',
+                table_name: 'contact_messages',
+                record_id: numId,
+                old_values: JSON.stringify({ status: message.status }),
+                new_values: JSON.stringify({ status }),
+                ip_address: req.ip,
+                user_agent: req.get('User-Agent')
+            });
+        } catch (logErr) {
+            logger.warn('Audit log warning (non-critical):', { error: logErr.message });
+        }
 
         res.json({
             success: true,
@@ -250,7 +317,7 @@ router.put('/:id/status', authenticate, authorize('admin'), ValidationRules.idPa
         });
 
     } catch (error) {
-        console.error('Update message status error:', error);
+        logger.error('Update message status error:', { error: error.message });
         res.status(500).json({
             success: false,
             message: 'Lỗi server khi cập nhật trạng thái'
@@ -259,12 +326,18 @@ router.put('/:id/status', authenticate, authorize('admin'), ValidationRules.idPa
 });
 
 // Delete contact message (admin only)
-router.delete('/:id', authenticate, authorize('admin'), ValidationRules.idParam, handleValidationErrors, async (req, res) => {
+router.delete('/:id', authenticate, authorize('admin'), async (req, res) => {
     try {
         const { id } = req.params;
 
+        // Validate id
+        const numId = parseInt(id);
+        if (!numId || numId < 1) {
+            return res.status(400).json({ success: false, message: 'ID không hợp lệ' });
+        }
+
         // Check if message exists
-        const message = await db.findOne('SELECT * FROM contact_messages WHERE id = ?', [id]);
+        const message = await db.findOne('SELECT * FROM contact_messages WHERE id = ?', [numId]);
         if (!message) {
             return res.status(404).json({
                 success: false,
@@ -273,18 +346,22 @@ router.delete('/:id', authenticate, authorize('admin'), ValidationRules.idParam,
         }
 
         // Delete message
-        await db.delete('contact_messages', 'id = ?', [id]);
+        await db.delete('contact_messages', 'id = ?', [numId]);
 
         // Log deletion
-        await db.insert('audit_logs', {
-            user_id: req.user.id,
-            action: 'contact_message_deleted',
-            table_name: 'contact_messages',
-            record_id: id,
-            old_values: JSON.stringify(message),
-            ip_address: req.ip,
-            user_agent: req.get('User-Agent')
-        });
+        try {
+            await auditLog({
+                user_id: req.user.id,
+                action: 'contact_message_deleted',
+                table_name: 'contact_messages',
+                record_id: numId,
+                old_values: JSON.stringify(message),
+                ip_address: req.ip,
+                user_agent: req.get('User-Agent')
+            });
+        } catch (logErr) {
+            logger.warn('Audit log warning (non-critical):', { error: logErr.message });
+        }
 
         res.json({
             success: true,
@@ -292,10 +369,10 @@ router.delete('/:id', authenticate, authorize('admin'), ValidationRules.idParam,
         });
 
     } catch (error) {
-        console.error('Delete contact message error:', error);
+        logger.error('Delete contact message error:', { error: error.message });
         res.status(500).json({
             success: false,
-            message: 'Lỗi server khi xóa tin nhắn'
+            message: 'Lỗi server khi xóa tin nhắn: ' + error.message
         });
     }
 });
@@ -370,7 +447,7 @@ router.get('/stats/overview', authenticate, authorize('admin'), async (req, res)
         });
 
     } catch (error) {
-        console.error('Get contact stats error:', error);
+        logger.error('Get contact stats error:', { error: error.message });
         res.status(500).json({
             success: false,
             message: 'Lỗi server khi lấy thống kê tin nhắn'
@@ -405,7 +482,7 @@ router.put('/bulk/status', authenticate, authorize('admin'), async (req, res) =>
         );
 
         // Log bulk update
-        await db.insert('audit_logs', {
+        await auditLog({
             user_id: req.user.id,
             action: 'contact_messages_bulk_update',
             table_name: 'contact_messages',
@@ -421,7 +498,7 @@ router.put('/bulk/status', authenticate, authorize('admin'), async (req, res) =>
         });
 
     } catch (error) {
-        console.error('Bulk update contact messages error:', error);
+        logger.error('Bulk update contact messages error:', { error: error.message });
         res.status(500).json({
             success: false,
             message: 'Lỗi server khi cập nhật hàng loạt'

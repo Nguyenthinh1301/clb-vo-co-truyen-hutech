@@ -1,0 +1,240 @@
+/* =============================================
+   Trang: Lịch tập luyện
+   File: views/lich-tap.html
+   ============================================= */
+
+body {
+    font-family: "Open Sans", sans-serif;
+}
+
+.page-hero {
+    background: linear-gradient(135deg, #0d1117 0%, #1a1a2e 50%, #c41e3a 100%);
+    color: white;
+    padding: 110px 20px 60px;
+    text-align: center;
+}
+
+.page-hero h1 {
+    font-size: 38px;
+    font-weight: 800;
+    margin-bottom: 12px;
+    font-family: "Open Sans", sans-serif;
+}
+
+.page-hero p {
+    font-size: 16px;
+    opacity: 0.8;
+}
+
+.breadcrumb {
+    font-size: 13px;
+    opacity: 0.6;
+    margin-bottom: 16px;
+}
+
+.breadcrumb a {
+    color: #ffd700;
+    text-decoration: none;
+}
+
+.page-body {
+    max-width: 1000px;
+    margin: 64px auto;
+    padding: 0 24px 80px;
+}
+
+/* --- Intro note --- */
+.lt-intro {
+    background: linear-gradient(135deg, #1a252f, #2c3e50);
+    color: white;
+    border-radius: 14px;
+    padding: 24px 28px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 48px;
+    font-size: 15px;
+    line-height: 1.7;
+}
+
+.lt-intro i {
+    font-size: 28px;
+    color: #ffd700;
+    flex-shrink: 0;
+}
+
+/* --- Schedule grid --- */
+.lt-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-bottom: 48px;
+}
+
+.lt-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 14px rgba(0,0,0,0.08);
+    transition: transform 0.3s, box-shadow 0.3s;
+    position: relative;
+}
+
+.lt-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+}
+
+.lt-card-header {
+    background: #1a252f;
+    color: white;
+    padding: 20px 22px 16px;
+    position: relative;
+}
+
+.lt-card.featured .lt-card-header {
+    background: linear-gradient(135deg, #c41e3a, #8b0000);
+}
+
+.lt-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: #ffd700;
+    color: #1a252f;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+}
+
+.lt-days {
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.lt-time {
+    font-size: 22px;
+    font-weight: 800;
+    color: #ffd700;
+}
+
+.lt-card-body {
+    padding: 20px 22px;
+}
+
+.lt-location {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1a252f;
+    margin-bottom: 8px;
+}
+
+.lt-detail {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 6px;
+}
+
+.lt-detail i {
+    color: #c41e3a;
+    width: 14px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.lt-desc {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid #f0f0f0;
+    font-size: 13px;
+    color: #777;
+    line-height: 1.7;
+}
+
+/* --- Map section --- */
+.lt-map-section {
+    margin-bottom: 48px;
+}
+
+.lt-map-section h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1a252f;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.lt-map-section h2 i { color: #c41e3a; }
+
+.lt-map-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.lt-map-card {
+    background: white;
+    border-radius: 14px;
+    padding: 22px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    border-left: 4px solid #c41e3a;
+}
+
+.lt-map-card h4 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a252f;
+    margin-bottom: 8px;
+}
+
+.lt-map-card p {
+    font-size: 13px;
+    color: #666;
+    line-height: 1.7;
+    margin: 0;
+}
+
+.lt-map-card .lt-map-tag {
+    display: inline-block;
+    background: #fff0f2;
+    color: #c41e3a;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+}
+
+/* --- Note --- */
+.lt-note {
+    background: #fff8e1;
+    border: 1px solid #ffe082;
+    border-radius: 12px;
+    padding: 18px 24px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 14px;
+    color: #555;
+    line-height: 1.7;
+}
+
+.lt-note i {
+    color: #f59e0b;
+    font-size: 20px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+    .lt-grid { grid-template-columns: 1fr; }
+    .lt-map-grid { grid-template-columns: 1fr; }
+}

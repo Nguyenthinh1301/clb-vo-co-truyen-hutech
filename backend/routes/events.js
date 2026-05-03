@@ -1,13 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
+const auditLog = require('../utils/auditLog');
 const { authenticate, authorize, optionalAuth } = require('../middleware/auth');
 const { ValidationRules, handleValidationErrors } = require('../middleware/validation');
 
 // Get all events (public)
 router.get('/', optionalAuth, async (req, res) => {
     try {
-        const { page = 1, limit = 10, type, status = 'active', upcoming = false } = req.query;
+        const { page = 1, limit = 10, type, status, upcoming = false } = req.query;
 
         let whereClause = '1=1';
         let params = [];
@@ -49,9 +50,11 @@ router.get('/', optionalAuth, async (req, res) => {
 });
 
 // Get event details
-router.get('/:id', optionalAuth, ValidationRules.idParam, handleValidationErrors, async (req, res) => {
+router.get('/:id', optionalAuth, async (req, res) => {
     try {
         const { id } = req.params;
+        const numId = parseInt(id);
+        if (!numId || numId < 1) return res.status(400).json({ success: false, message: 'ID không hợp lệ' });
 
         const event = await db.findOne(
             `SELECT e.*, 
@@ -61,7 +64,7 @@ router.get('/:id', optionalAuth, ValidationRules.idParam, handleValidationErrors
              FROM events e
              JOIN users u ON e.organizer_id = u.id
              WHERE e.id = ? AND e.is_public = 1`,
-            [id]
+            [numId]
         );
 
         if (!event) {
@@ -76,7 +79,7 @@ router.get('/:id', optionalAuth, ValidationRules.idParam, handleValidationErrors
         if (req.user) {
             userRegistration = await db.findOne(
                 'SELECT * FROM event_registrations WHERE user_id = ? AND event_id = ?',
-                [req.user.id, id]
+                [req.user.id, numId]
             );
         }
 
@@ -98,14 +101,16 @@ router.get('/:id', optionalAuth, ValidationRules.idParam, handleValidationErrors
 });
 
 // Register for event
-router.post('/:id/register', authenticate, ValidationRules.idParam, handleValidationErrors, async (req, res) => {
+router.post('/:id/register', authenticate, async (req, res) => {
     try {
         const { id } = req.params;
+        const numId = parseInt(id);
+        if (!numId || numId < 1) return res.status(400).json({ success: false, message: 'ID không hợp lệ' });
 
         // Check if event exists and is open for registration
         const event = await db.findOne(
             'SELECT * FROM events WHERE id = ? AND status = "scheduled" AND is_public = 1',
-            [id]
+            [numId]
         );
 
         if (!event) {
@@ -134,7 +139,7 @@ router.post('/:id/register', authenticate, ValidationRules.idParam, handleValida
         // Check if user is already registered
         const existingRegistration = await db.findOne(
             'SELECT * FROM event_registrations WHERE user_id = ? AND event_id = ?',
-            [req.user.id, id]
+            [req.user.id, numId]
         );
 
         if (existingRegistration) {
@@ -147,7 +152,7 @@ router.post('/:id/register', authenticate, ValidationRules.idParam, handleValida
         // Create registration
         const registrationId = await db.insert('event_registrations', {
             user_id: req.user.id,
-            event_id: id,
+            event_id: numId,
             status: 'registered',
             payment_status: event.registration_fee > 0 ? 'pending' : 'paid'
         });
@@ -157,19 +162,21 @@ router.post('/:id/register', authenticate, ValidationRules.idParam, handleValida
             'events',
             { current_participants: event.current_participants + 1 },
             'id = ?',
-            [id]
+            [numId]
         );
 
         // Log registration
-        await db.insert('audit_logs', {
-            user_id: req.user.id,
-            action: 'event_registered',
-            table_name: 'event_registrations',
-            record_id: registrationId,
-            new_values: JSON.stringify({ user_id: req.user.id, event_id: id }),
-            ip_address: req.ip,
-            user_agent: req.get('User-Agent')
-        });
+        try {
+            await auditLog({
+                user_id: req.user.id,
+                action: 'event_registered',
+                table_name: 'event_registrations',
+                record_id: registrationId,
+                new_values: JSON.stringify({ user_id: req.user.id, event_id: numId }),
+                ip_address: req.ip,
+                user_agent: req.get('User-Agent')
+            });
+        } catch (logErr) { console.warn('Audit log warning:', logErr.message); }
 
         res.status(201).json({
             success: true,
@@ -187,14 +194,16 @@ router.post('/:id/register', authenticate, ValidationRules.idParam, handleValida
 });
 
 // Cancel event registration
-router.delete('/:id/register', authenticate, ValidationRules.idParam, handleValidationErrors, async (req, res) => {
+router.delete('/:id/register', authenticate, async (req, res) => {
     try {
         const { id } = req.params;
+        const numId = parseInt(id);
+        if (!numId || numId < 1) return res.status(400).json({ success: false, message: 'ID không hợp lệ' });
 
         // Check if registration exists
         const registration = await db.findOne(
             'SELECT * FROM event_registrations WHERE user_id = ? AND event_id = ?',
-            [req.user.id, id]
+            [req.user.id, numId]
         );
 
         if (!registration) {
@@ -205,7 +214,7 @@ router.delete('/:id/register', authenticate, ValidationRules.idParam, handleVali
         }
 
         // Check if cancellation is allowed
-        const event = await db.findOne('SELECT * FROM events WHERE id = ?', [id]);
+        const event = await db.findOne('SELECT * FROM events WHERE id = ?', [numId]);
         if (event.start_date <= new Date()) {
             return res.status(400).json({
                 success: false,
@@ -226,19 +235,21 @@ router.delete('/:id/register', authenticate, ValidationRules.idParam, handleVali
             'events',
             { current_participants: Math.max(0, event.current_participants - 1) },
             'id = ?',
-            [id]
+            [numId]
         );
 
         // Log cancellation
-        await db.insert('audit_logs', {
-            user_id: req.user.id,
-            action: 'event_registration_cancelled',
-            table_name: 'event_registrations',
-            record_id: registration.id,
-            old_values: JSON.stringify(registration),
-            ip_address: req.ip,
-            user_agent: req.get('User-Agent')
-        });
+        try {
+            await auditLog({
+                user_id: req.user.id,
+                action: 'event_registration_cancelled',
+                table_name: 'event_registrations',
+                record_id: registration.id,
+                old_values: JSON.stringify(registration),
+                ip_address: req.ip,
+                user_agent: req.get('User-Agent')
+            });
+        } catch (logErr) { console.warn('Audit log warning:', logErr.message); }
 
         res.json({
             success: true,
@@ -304,15 +315,17 @@ router.post('/', authenticate, authorize('admin'), ValidationRules.eventCreation
         );
 
         // Log event creation
-        await db.insert('audit_logs', {
-            user_id: req.user.id,
-            action: 'event_created',
-            table_name: 'events',
-            record_id: eventId,
-            new_values: JSON.stringify(newEvent),
-            ip_address: req.ip,
-            user_agent: req.get('User-Agent')
-        });
+        try {
+            await auditLog({
+                user_id: req.user.id,
+                action: 'event_created',
+                table_name: 'events',
+                record_id: eventId,
+                new_values: JSON.stringify(newEvent),
+                ip_address: req.ip,
+                user_agent: req.get('User-Agent')
+            });
+        } catch (logErr) { console.warn('Audit log warning:', logErr.message); }
 
         res.status(201).json({
             success: true,
@@ -330,12 +343,14 @@ router.post('/', authenticate, authorize('admin'), ValidationRules.eventCreation
 });
 
 // Update event (admin only)
-router.put('/:id', authenticate, authorize('admin'), ValidationRules.idParam, handleValidationErrors, async (req, res) => {
+router.put('/:id', authenticate, authorize('admin'), async (req, res) => {
     try {
         const { id } = req.params;
+        const numId = parseInt(id);
+        if (!numId || numId < 1) return res.status(400).json({ success: false, message: 'ID không hợp lệ' });
 
         // Check if event exists
-        const existingEvent = await db.findOne('SELECT * FROM events WHERE id = ?', [id]);
+        const existingEvent = await db.findOne('SELECT * FROM events WHERE id = ?', [numId]);
         if (!existingEvent) {
             return res.status(404).json({
                 success: false,
@@ -359,7 +374,7 @@ router.put('/:id', authenticate, authorize('admin'), ValidationRules.idParam, ha
         });
 
         // Update event
-        await db.update('events', updateData, 'id = ?', [id]);
+        await db.update('events', updateData, 'id = ?', [numId]);
 
         // Get updated event
         const updatedEvent = await db.findOne(
@@ -369,20 +384,22 @@ router.put('/:id', authenticate, authorize('admin'), ValidationRules.idParam, ha
              FROM events e
              JOIN users u ON e.organizer_id = u.id
              WHERE e.id = ?`,
-            [id]
+            [numId]
         );
 
         // Log event update
-        await db.insert('audit_logs', {
-            user_id: req.user.id,
-            action: 'event_updated',
-            table_name: 'events',
-            record_id: id,
-            old_values: JSON.stringify(existingEvent),
-            new_values: JSON.stringify(updatedEvent),
-            ip_address: req.ip,
-            user_agent: req.get('User-Agent')
-        });
+        try {
+            await auditLog({
+                user_id: req.user.id,
+                action: 'event_updated',
+                table_name: 'events',
+                record_id: numId,
+                old_values: JSON.stringify(existingEvent),
+                new_values: JSON.stringify(updatedEvent),
+                ip_address: req.ip,
+                user_agent: req.get('User-Agent')
+            });
+        } catch (logErr) { console.warn('Audit log warning:', logErr.message); }
 
         res.json({
             success: true,
@@ -400,12 +417,14 @@ router.put('/:id', authenticate, authorize('admin'), ValidationRules.idParam, ha
 });
 
 // Get event participants (admin only)
-router.get('/:id/participants', authenticate, authorize('admin'), ValidationRules.idParam, handleValidationErrors, async (req, res) => {
+router.get('/:id/participants', authenticate, authorize('admin'), async (req, res) => {
     try {
         const { id } = req.params;
+        const numId = parseInt(id);
+        if (!numId || numId < 1) return res.status(400).json({ success: false, message: 'ID không hợp lệ' });
 
         // Check if event exists
-        const event = await db.findOne('SELECT * FROM events WHERE id = ?', [id]);
+        const event = await db.findOne('SELECT * FROM events WHERE id = ?', [numId]);
         if (!event) {
             return res.status(404).json({
                 success: false,
@@ -422,7 +441,7 @@ router.get('/:id/participants', authenticate, authorize('admin'), ValidationRule
              JOIN users u ON er.user_id = u.id
              WHERE er.event_id = ?
              ORDER BY er.registration_date ASC`,
-            [id]
+            [numId]
         );
 
         res.json({

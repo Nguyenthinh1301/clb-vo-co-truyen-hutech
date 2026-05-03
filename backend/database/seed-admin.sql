@@ -7,10 +7,12 @@ GO
 
 -- Create admin user
 -- Password: admin123456 (hashed with bcrypt)
-INSERT INTO users (email, password, full_name, phone, role, email_verified)
+INSERT INTO users (email, password, first_name, last_name, full_name, phone_number, role, email_verified)
 VALUES (
     'admin@vocotruyenhutech.edu.vn',
     '$2a$10$Yjo.ZcgB2c/50QOUC.d9I.WQA3rXeeMZnPdzA1TA5io/aKkZX/SWq',
+    'Admin',
+    'CLB',
     'Administrator',
     '0123456789',
     'admin',
@@ -20,10 +22,12 @@ GO
 
 -- Create instructor user  
 -- Password: instructor123
-INSERT INTO users (email, password, full_name, phone, role, email_verified)
+INSERT INTO users (email, password, first_name, last_name, full_name, phone_number, role, email_verified)
 VALUES (
     'instructor@vocotruyenhutech.edu.vn',
     '$2a$10$rKZWJQXvaaQbR8H1P.Zz0.xGJ5fN8vZ8qH0yKGxJ5vZ8qH0yKGxJ5v',
+    'Huấn Luyện',
+    'Viên',
     'Huấn Luyện Viên',
     '0987654321',
     'instructor',
@@ -33,10 +37,12 @@ GO
 
 -- Create sample student
 -- Password: student123
-INSERT INTO users (email, password, full_name, phone, role, email_verified)
+INSERT INTO users (email, password, first_name, last_name, full_name, phone_number, role, email_verified)
 VALUES (
     'student@vocotruyenhutech.edu.vn',
     '$2a$10$sKZWJQXvaaQbR8H1P.Zz0.xGJ5fN8vZ8qH0yKGxJ5vZ8qH0yKGxJ5v',
+    'Học Viên',
+    'Mẫu',
     'Học Viên Mẫu',
     '0912345678',
     'student',

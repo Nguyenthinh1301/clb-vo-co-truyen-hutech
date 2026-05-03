@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sự kiện - Admin CLB Võ Cổ Truyền HUTECH</title>
+    <link rel="stylesheet" href="shared/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+<div class="layout" id="app"></div>
+
+<!-- ===== MODAL THÊM / SỬA ===== -->
+<div class="overlay" id="modal">
+    <div class="modal modal-lg" onclick="event.stopPropagation()">
+        <div class="modal-head">
+            <h3 id="modal-title">Thêm sự kiện mới</h3>
+            <button class="modal-close" onclick="closeModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="f-id">
+
+            <!-- Tên sự kiện -->
+            <div class="form-group">
+                <label class="form-label" for="f-name">Tên sự kiện <span class="req" aria-hidden="true">*</span></label>
+                <input class="form-control" id="f-name"
+                    aria-label="Tên sự kiện"
+                    aria-required="true"
+                    placeholder="Nhập tên sự kiện">
+            </div>
+
+            <!-- Loại + Trạng thái -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="f-type">Loại sự kiện</label>
+                    <select class="form-control" id="f-type" aria-label="Loại sự kiện">
+                        <option value="tournament">🏆 Thi đấu</option>
+                        <option value="demonstration">🎭 Biểu diễn</option>
+                        <option value="workshop">📚 Workshop</option>
+                        <option value="seminar">🎤 Hội thảo</option>
+                        <option value="other">📌 Khác</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="f-status">Trạng thái</label>
+                    <select class="form-control" id="f-status" aria-label="Trạng thái sự kiện">
+                        <option value="upcoming">🔜 Sắp diễn ra</option>
+                        <option value="ongoing">🟢 Đang diễn ra</option>
+                        <option value="completed">✅ Đã kết thúc</option>
+                        <option value="cancelled">❌ Đã hủy</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Ngày tổ chức -->
+            <div class="form-group">
+                <label class="form-label" for="f-date">Ngày tổ chức <span class="req" aria-hidden="true">*</span></label>
+                <input class="form-control" id="f-date" type="date"
+                    aria-label="Ngày tổ chức sự kiện"
+                    aria-required="true">
+            </div>
+
+            <!-- Giờ bắt đầu + Giờ kết thúc -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="f-time-start">Giờ bắt đầu</label>
+                    <input class="form-control" id="f-time-start" type="time"
+                        aria-label="Giờ bắt đầu sự kiện">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="f-time-end">Giờ kết thúc</label>
+                    <input class="form-control" id="f-time-end" type="time"
+                        aria-label="Giờ kết thúc sự kiện">
+                </div>
+            </div>
+
+            <!-- Địa điểm + Số người -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="f-loc">Địa điểm</label>
+                    <input class="form-control" id="f-loc"
+                        aria-label="Địa điểm tổ chức"
+                        placeholder="VD: Sân HUTECH, 475A Điện Biên Phủ">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="f-max">Số người tối đa</label>
+                    <input class="form-control" id="f-max" type="number" min="1"
+                        aria-label="Số người tham gia tối đa"
+                        placeholder="Để trống = không giới hạn">
+                </div>
+            </div>
+
+            <!-- Ảnh -->
+            <div class="form-group">
+                <label class="form-label" for="ev-img-container">Ảnh sự kiện</label>
+                <div id="ev-img-container"></div>
+            </div>
+
+            <!-- Mô tả -->
+            <div class="form-group">
+                <label class="form-label" for="f-desc">Mô tả chi tiết</label>
+                <textarea class="form-control" id="f-desc" rows="4"
+                    aria-label="Mô tả chi tiết sự kiện"
+                    placeholder="Mô tả nội dung, chương trình, yêu cầu tham gia..."></textarea>
+            </div>
+        </div>
+        <div class="modal-foot">
+            <button class="btn btn-outline" onclick="closeModal()">
+                <i class="fas fa-times"></i> Hủy
+            </button>
+            <button class="btn btn-primary" id="save-btn" onclick="save()">
+                <i class="fas fa-save"></i> Lưu sự kiện
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== MODAL XÓA ===== -->
+<div class="overlay" id="del-modal">
+    <div class="modal modal-sm">
+        <div class="modal-head">
+            <h3><i class="fas fa-exclamation-triangle" style="color:#e74c3c"></i> Xác nhận xóa</h3>
+            <button class="modal-close" onclick="closeDel()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p style="margin-bottom:8px;">Bạn có chắc muốn xóa sự kiện:</p>
+            <p><b id="del-name" style="color:#1a252f;"></b></p>
+            <p style="color:#e74c3c; font-size:0.82rem; margin-top:12px;">
+                <i class="fas fa-exclamation-triangle"></i>
+                Hành động này không thể hoàn tác.
+            </p>
+        </div>
+        <div class="modal-foot">
+            <button class="btn btn-outline" onclick="closeDel()">
+                <i class="fas fa-arrow-left"></i> Hủy
+            </button>
+            <button class="btn btn-danger" id="del-btn" onclick="confirmDel()">
+                <i class="fas fa-trash"></i> Xóa sự kiện
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== SCRIPTS ===== -->
+<script src="../assets/js/config.js"></script>
+<script src="shared/auth.js"></script>
+<script src="shared/api.js"></script>
+<script src="shared/ui.js"></script>
+<script>
+'use strict';
+
+// ── Khởi tạo layout ──
+var page = initLayout('<i class="fas fa-calendar-alt"></i> Quản lý Sự kiện', 'su-kien.html');
+if (!page) throw new Error('Auth failed');
+
+// ── State ──
+var currentPage = 1;
+var PAGE_SIZE   = 12;
+var delId       = null;
+
+// ── Labels ──
+var TYPE_LBL = {
+    tournament: 'Thi đấu', demonstration: 'Biểu diễn',
+    workshop: 'Workshop', seminar: 'Hội thảo', other: 'Khác'
+};
+var ST_CLS = {
+    upcoming: 'b-info', ongoing: 'b-success',
+    completed: 'b-secondary', cancelled: 'b-danger'
+};
+var ST_LBL = {
+    upcoming: 'Sắp diễn ra', ongoing: 'Đang diễn ra',
+    completed: 'Đã kết thúc', cancelled: 'Đã hủy'
+};
+
+// ── Extract HH:MM từ ISO datetime hoặc time string ──
+function extractTime(s) {
+    if (!s) return null;
+    if (s.indexOf('T') !== -1) {
+        var t = new Date(s);
+        return t.getHours().toString().padStart(2, '0') + ':' + t.getMinutes().toString().padStart(2, '0');
+    }
+    return s.substring(0, 5);
+}
+
+// ── Render trang ──
+page.innerHTML = [
+    '<div class="card">',
+    '  <div class="card-head">',
+    '    <h3><i class="fas fa-list"></i> Danh sách sự kiện</h3>',
+    '    <button class="btn btn-primary" onclick="openModal()">',
+    '      <i class="fas fa-plus"></i> Thêm sự kiện',
+    '    </button>',
+    '  </div>',
+    '  <div class="card-body" style="padding-bottom:0;">',
+    '    <div class="toolbar">',
+    '      <div class="search-wrap">',
+    '        <i class="fas fa-search"></i>',
+    '        <input class="form-control" id="q" placeholder="Tìm kiếm tên, địa điểm...">',
+    '      </div>',
+    '      <select class="form-control" id="flt-status" style="width:170px;">',
+    '        <option value="">Tất cả trạng thái</option>',
+    '        <option value="upcoming">Sắp diễn ra</option>',
+    '        <option value="ongoing">Đang diễn ra</option>',
+    '        <option value="completed">Đã kết thúc</option>',
+    '        <option value="cancelled">Đã hủy</option>',
+    '      </select>',
+    '      <select class="form-control" id="flt-type" style="width:150px;">',
+    '        <option value="">Tất cả loại</option>',
+    '        <option value="tournament">Thi đấu</option>',
+    '        <option value="demonstration">Biểu diễn</option>',
+    '        <option value="workshop">Workshop</option>',
+    '        <option value="seminar">Hội thảo</option>',
+    '        <option value="other">Khác</option>',
+    '      </select>',
+    '      <button class="btn btn-outline" onclick="loadList()" title="Làm mới">',
+    '        <i class="fas fa-sync-alt"></i>',
+    '      </button>',
+    '    </div>',
+    '  </div>',
+    '  <div id="tbl"></div>',
+    '  <div class="pager" id="pager" style="display:none;">',
+    '    <span id="pager-info" style="color:#718096;font-size:0.82rem;"></span>',
+    '    <div id="pager-btns" style="display:flex;gap:4px;"></div>',
+    '  </div>',
+    '</div>'
+].join('');
+
+// ── Event listeners ──
+$('flt-status').addEventListener('change', function () { currentPage = 1; loadList(); });
+$('flt-type').addEventListener('change',   function () { currentPage = 1; loadList(); });
+
+var searchTimer;
+$('q').addEventListener('input', function () {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(function () { currentPage = 1; loadList(); }, 400);
+});
+
+// Load lần đầu
+loadList();
+
+// ════════════════════════════════════════
+// LOAD LIST
+// ════════════════════════════════════════
+async function loadList() {
+    loading('tbl');
+    var status = $('flt-status') ? $('flt-status').value : '';
+    var type   = $('flt-type')   ? $('flt-type').value   : '';
+    var q      = $('q')          ? $('q').value.trim()   : '';
+
+    try {
+        var res   = await API.events.list(currentPage, PAGE_SIZE, status, type, q);
+        var list  = (res.data && res.data.events) || [];
+        var total = (res.data && res.data.total)  || 0;
+        var pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+
+        if (!list.length) {
+            var hasFilter = status || type || q;
+            empty('tbl', 'calendar-alt', hasFilter
+                ? 'Không tìm thấy sự kiện phù hợp. Thử thay đổi bộ lọc.'
+                : 'Chưa có sự kiện nào. Hãy thêm sự kiện đầu tiên!');
+            $('pager').style.display = 'none';
+            return;
+        }
+
+        var rows = list.map(function (ev, i) {
+            var idx      = (currentPage - 1) * PAGE_SIZE + i + 1;
+            var safeJson = encodeURIComponent(JSON.stringify(ev));
+            var safeName = ev.name.replace(/"/g, '&quot;');
+            var imgHtml  = ev.image
+                ? '<img src="' + resolveImgUrl(ev.image) + '" style="width:52px;height:38px;object-fit:cover;border-radius:4px;border:1px solid #e2e8f0;" onerror="this.style.display=\'none\'">'
+                : '<span style="color:#cbd5e0;font-size:0.75rem;">—</span>';
+
+            // Hiển thị giờ: start_time – end_time nếu có cả hai
+            var timeHtml = '';
+            if (ev.start_time || ev.end_time) {
+                var st = extractTime(ev.start_time);
+                var et = extractTime(ev.end_time);
+                timeHtml = '<br><span style="color:#718096;font-size:0.78rem;">' +
+                    '<i class="fas fa-clock"></i> ' +
+                    (st || '') +
+                    (st && et ? ' – ' : '') +
+                    (et || '') +
+                    '</span>';
+            }
+
+            return '<tr>' +
+                '<td style="color:#718096;font-size:0.8rem;">' + idx + '</td>' +
+                '<td>' + imgHtml + '</td>' +
+                '<td>' +
+                    '<b style="color:#1a252f;">' + safe(ev.name, 45) + '</b>' +
+                    (ev.location ? '<br><span style="color:#718096;font-size:0.78rem;"><i class="fas fa-map-marker-alt"></i> ' + safe(ev.location, 35) + '</span>' : '') +
+                '</td>' +
+                '<td><span style="font-size:0.82rem;">' + (TYPE_LBL[ev.type] || ev.type || '—') + '</span></td>' +
+                '<td style="font-size:0.85rem;">' + fmtDate(ev.date) + timeHtml + '</td>' +
+                '<td><span class="badge ' + (ST_CLS[ev.status] || 'b-secondary') + '">' + (ST_LBL[ev.status] || ev.status || '—') + '</span></td>' +
+                '<td>' +
+                    '<div style="display:flex;gap:6px;">' +
+                        '<button class="btn btn-sm btn-outline" onclick="editItem(\'' + safeJson + '\')" title="Chỉnh sửa">' +
+                            '<i class="fas fa-edit"></i> Sửa' +
+                        '</button>' +
+                        '<button class="btn btn-sm btn-danger" data-del-id="' + ev.id + '" data-del-name="' + safeName + '" onclick="openDel(this.dataset.delId, this.dataset.delName)" title="Xóa">' +
+                            '<i class="fas fa-trash"></i>' +
+                        '</button>' +
+                    '</div>' +
+                '</td>' +
+            '</tr>';
+        }).join('');
+
+        setHTML('tbl',
+            '<div class="tbl">' +
+            '<table>' +
+            '<thead><tr>' +
+                '<th style="width:40px;">#</th>' +
+                '<th style="width:60px;">Ảnh</th>' +
+                '<th>Tên sự kiện</th>' +
+                '<th style="width:110px;">Loại</th>' +
+                '<th style="width:120px;">Ngày / Giờ</th>' +
+                '<th style="width:120px;">Trạng thái</th>' +
+                '<th style="width:130px;">Thao tác</th>' +
+            '</tr></thead>' +
+            '<tbody>' + rows + '</tbody>' +
+            '</table>' +
+            '</div>'
+        );
+
+        // Pagination
+        $('pager').style.display = 'flex';
+        setHTML('pager-info', 'Hiển thị ' + list.length + ' / ' + total + ' sự kiện');
+
+        var btns = '';
+        if (currentPage > 1)
+            btns += '<button class="pager-btn" onclick="goPage(' + (currentPage - 1) + ')"><i class="fas fa-chevron-left"></i></button>';
+        for (var i = 1; i <= pages; i++) {
+            btns += '<button class="pager-btn' + (i === currentPage ? ' active' : '') + '" onclick="goPage(' + i + ')">' + i + '</button>';
+        }
+        if (currentPage < pages)
+            btns += '<button class="pager-btn" onclick="goPage(' + (currentPage + 1) + ')"><i class="fas fa-chevron-right"></i></button>';
+        setHTML('pager-btns', btns);
+
+    } catch (e) {
+        empty('tbl', 'exclamation-circle', 'Lỗi tải dữ liệu: ' + e.message);
+        $('pager').style.display = 'none';
+    }
+}
+
+function goPage(p) { currentPage = p; loadList(); }
+
+// ════════════════════════════════════════
+// MODAL THÊM / SỬA
+// ════════════════════════════════════════
+function openModal() {
+    $('f-id').value         = '';
+    $('f-name').value       = '';
+    $('f-loc').value        = '';
+    $('f-date').value       = '';
+    $('f-time-start').value = '';
+    $('f-time-end').value   = '';
+    $('f-max').value        = '';
+    $('f-desc').value       = '';
+    $('f-type').value       = 'tournament';
+    $('f-status').value     = 'upcoming';
+    initUpload('ev-img-container', 'f-img', 'ảnh sự kiện');
+    setHTML('modal-title', '<i class="fas fa-plus-circle" style="color:#e74c3c;margin-right:8px;"></i>Thêm sự kiện mới');
+    $('modal').classList.add('open');
+    setTimeout(function () { $('f-name').focus(); }, 100);
+}
+
+function closeModal() {
+    if (typeof isUploadInProgress === 'function' && isUploadInProgress()) {
+        toast('Đang upload ảnh, vui lòng chờ...', 'info');
+        return;
+    }
+    $('modal').classList.remove('open');
+    cleanupUpload('f-img');
+}
+
+function editItem(encodedJson) {
+    var ev;
+    try { ev = JSON.parse(decodeURIComponent(encodedJson)); }
+    catch (e) { toast('Lỗi đọc dữ liệu sự kiện', 'danger'); return; }
+
+    $('f-id').value         = ev.id;
+    $('f-name').value       = ev.name        || '';
+    $('f-type').value       = ev.type        || 'other';
+    $('f-status').value     = ev.status      || 'upcoming';
+    $('f-date').value       = (ev.date       || '').substring(0, 10);
+    $('f-time-start').value = extractTime(ev.start_time) || '';
+    $('f-time-end').value   = extractTime(ev.end_time)   || '';
+    $('f-loc').value        = ev.location    || '';
+    $('f-max').value        = ev.max_participants || '';
+    $('f-desc').value       = ev.description || '';
+
+    initUpload('ev-img-container', 'f-img', 'ảnh sự kiện');
+    if (ev.image) setUploadImage('f-img', ev.image);
+
+    setHTML('modal-title', '<i class="fas fa-edit" style="color:#e74c3c;margin-right:8px;"></i>Chỉnh sửa sự kiện');
+    $('modal').classList.add('open');
+    setTimeout(function () { $('f-name').focus(); }, 100);
+}
+
+// ════════════════════════════════════════
+// LƯU
+// ════════════════════════════════════════
+async function save() {
+    var id   = $('f-id').value.trim();
+    var name = $('f-name').value.trim();
+    var date = $('f-date').value;
+
+    if (!name) {
+        toast('Vui lòng nhập tên sự kiện', 'danger');
+        $('f-name').focus();
+        return;
+    }
+    if (!date) {
+        toast('Vui lòng chọn ngày tổ chức', 'danger');
+        $('f-date').focus();
+        return;
+    }
+
+    // Validate giờ: end_time phải sau start_time nếu cùng ngày
+    var startTime = $('f-time-start').value;
+    var endTime   = $('f-time-end').value;
+    if (startTime && endTime && endTime <= startTime) {
+        toast('Giờ kết thúc phải sau giờ bắt đầu', 'danger');
+        $('f-time-end').focus();
+        return;
+    }
+
+    var maxVal = parseInt($('f-max').value);
+    var body = {
+        name:             name,
+        date:             date,
+        type:             $('f-type').value,
+        status:           $('f-status').value,
+        location:         $('f-loc').value.trim()  || null,
+        start_time:       startTime                || null,
+        end_time:         endTime                  || null,
+        max_participants: isNaN(maxVal) ? null : maxVal,
+        image:            $('f-img').value.trim()  || null,
+        description:      $('f-desc').value.trim() || null
+    };
+
+    var btn = $('save-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang lưu...';
+
+    try {
+        if (id) {
+            await API.events.update(id, body);
+            toast('✅ Cập nhật sự kiện thành công!');
+        } else {
+            await API.events.create(body);
+            toast('✅ Thêm sự kiện thành công!');
+        }
+        closeModal();
+        loadList();
+    } catch (e) {
+        toast('Lỗi: ' + e.message, 'danger');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-save"></i> Lưu sự kiện';
+    }
+}
+
+// ════════════════════════════════════════
+// XÓA
+// ════════════════════════════════════════
+function openDel(id, name) {
+    delId = id;
+    setHTML('del-name', name);
+    $('del-modal').classList.add('open');
+}
+
+function closeDel() {
+    $('del-modal').classList.remove('open');
+    delId = null;
+}
+
+async function confirmDel() {
+    if (!delId) return;
+
+    var btn = $('del-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xóa...';
+
+    try {
+        await API.events.delete(delId);
+        toast('🗑️ Đã xóa sự kiện thành công');
+        closeDel();
+        // Nếu trang hiện tại không còn item nào → về trang trước
+        if (currentPage > 1) currentPage--;
+        loadList();
+    } catch (e) {
+        toast('Lỗi xóa: ' + e.message, 'danger');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-trash"></i> Xóa sự kiện';
+    }
+}
+// del-modal chỉ đóng qua nút X và nút Hủy
+</script>
+</body>
+</html>

@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cảm nhận sinh viên - Admin CLB Võ Cổ Truyền HUTECH</title>
+    <link rel="stylesheet" href="shared/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+<div class="layout" id="app"></div>
+
+<!-- ===== MODAL THÊM / SỬA ===== -->
+<div class="overlay" id="modal">
+    <div class="modal modal-lg" onclick="event.stopPropagation()">
+        <div class="modal-head">
+            <h3 id="modal-title">Thêm cảm nhận mới</h3>
+            <button class="modal-close" onclick="closeModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="f-id">
+
+            <!-- Họ tên + Khoa -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Họ và tên <span class="req">*</span></label>
+                    <input class="form-control" id="f-name" placeholder="Nguyễn Văn A">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Khoa / Ngành</label>
+                    <input class="form-control" id="f-faculty" placeholder="Khoa CNTT">
+                </div>
+            </div>
+
+            <!-- Năm tham gia + Số sao -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Thành viên từ năm</label>
+                    <input class="form-control" id="f-year" type="number"
+                        placeholder="2022" min="2016" max="2030">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Đánh giá (sao)</label>
+                    <select class="form-control" id="f-rating">
+                        <option value="5">⭐⭐⭐⭐⭐ — 5 sao</option>
+                        <option value="4">⭐⭐⭐⭐ — 4 sao</option>
+                        <option value="3">⭐⭐⭐ — 3 sao</option>
+                        <option value="2">⭐⭐ — 2 sao</option>
+                        <option value="1">⭐ — 1 sao</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Nội dung cảm nhận -->
+            <div class="form-group">
+                <label class="form-label">Nội dung cảm nhận <span class="req">*</span></label>
+                <textarea class="form-control" id="f-content" rows="5"
+                    placeholder="Chia sẻ cảm nhận của sinh viên về CLB..."></textarea>
+            </div>
+
+            <!-- Ảnh đại diện + Trạng thái -->
+            <div class="form-row">
+                <div class="form-group" style="flex:1;">
+                    <label class="form-label">Ảnh đại diện <span style="color:#a0aec0;font-size:0.8rem;">(tùy chọn)</span></label>
+                    <div id="img-upload-container"></div>
+                </div>
+                <div class="form-group" style="flex:0 0 160px;">
+                    <label class="form-label">Trạng thái</label>
+                    <select class="form-control" id="f-status">
+                        <option value="active">Hiển thị</option>
+                        <option value="inactive">Ẩn</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="modal-foot">
+            <button class="btn btn-outline" onclick="closeModal()">
+                <i class="fas fa-times"></i> Hủy
+            </button>
+            <button class="btn btn-primary" id="save-btn" onclick="save()">
+                <i class="fas fa-save"></i> Lưu cảm nhận
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== MODAL XÓA ===== -->
+<div class="overlay" id="del-modal">
+    <div class="modal modal-sm">
+        <div class="modal-head">
+            <h3><i class="fas fa-exclamation-triangle" style="color:#e74c3c"></i> Xác nhận xóa</h3>
+            <button class="modal-close" onclick="closeDel()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p style="margin-bottom:8px;">Bạn có chắc muốn xóa cảm nhận của:</p>
+            <p><b id="del-name" style="color:#1a252f;"></b></p>
+            <p style="color:#e74c3c; font-size:0.82rem; margin-top:12px;">
+                <i class="fas fa-exclamation-triangle"></i>
+                Hành động này không thể hoàn tác.
+            </p>
+        </div>
+        <div class="modal-foot">
+            <button class="btn btn-outline" onclick="closeDel()">
+                <i class="fas fa-arrow-left"></i> Hủy
+            </button>
+            <button class="btn btn-danger" id="del-btn" onclick="confirmDel()">
+                <i class="fas fa-trash"></i> Xóa
+            </button>
+        </div>
+    </div>
+</div>
+
+<script src="../assets/js/config.js"></script>
+<script src="shared/auth.js"></script>
+<script src="shared/api.js"></script>
+<script src="shared/ui.js"></script>
+<script>
+'use strict';
+
+var page = initLayout('<i class="fas fa-heart"></i> Cảm nhận Sinh viên', 'cam-nhan.html');
+if (!page) throw new Error('Auth failed');
+
+var delId = null;
+
+// ── Render trang ──
+page.innerHTML = [
+    '<div class="card">',
+    '  <div class="card-head">',
+    '    <h3><i class="fas fa-list"></i> Danh sách cảm nhận</h3>',
+    '    <button class="btn btn-primary" onclick="openModal()">',
+    '      <i class="fas fa-plus"></i> Thêm cảm nhận',
+    '    </button>',
+    '  </div>',
+    '  <div class="card-body" style="padding-bottom:0;">',
+    '    <div class="toolbar">',
+    '      <div class="search-wrap">',
+    '        <i class="fas fa-search"></i>',
+    '        <input class="form-control" id="q" placeholder="Tìm theo tên, nội dung...">',
+    '      </div>',
+    '      <select class="form-control" id="flt-rating" style="width:160px;">',
+    '        <option value="">Tất cả đánh giá</option>',
+    '        <option value="5">⭐⭐⭐⭐⭐ 5 sao</option>',
+    '        <option value="4">⭐⭐⭐⭐ 4 sao</option>',
+    '        <option value="3">⭐⭐⭐ 3 sao</option>',
+    '      </select>',
+    '      <select class="form-control" id="flt-status" style="width:155px;">',
+    '        <option value="">Tất cả trạng thái</option>',
+    '        <option value="active">Đang hiển thị</option>',
+    '        <option value="inactive">Đã ẩn</option>',
+    '      </select>',
+    '      <button class="btn btn-outline" onclick="loadList()" title="Làm mới">',
+    '        <i class="fas fa-sync-alt"></i>',
+    '      </button>',
+    '    </div>',
+    '  </div>',
+    '  <div id="tbl"></div>',
+    '  <div id="tbl-footer" style="display:none; padding:10px 16px; background:#fafbfc;',
+    '       border-top:1px solid #e2e8f0; font-size:0.82rem; color:#718096;"></div>',
+    '</div>'
+].join('');
+
+// ── Event listeners ──
+$('flt-rating').addEventListener('change', function () { loadList(); });
+$('flt-status').addEventListener('change', function () { loadList(); });
+
+var searchTimer;
+$('q').addEventListener('input', function () {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(loadList, 400);
+});
+
+loadList();
+
+// ════════════════════════════════════════
+// LOAD LIST
+// ════════════════════════════════════════
+async function loadList() {
+    loading('tbl');
+    $('tbl-footer').style.display = 'none';
+
+    var rating = $('flt-rating') ? $('flt-rating').value : '';
+    var status = $('flt-status') ? $('flt-status').value : '';
+    var q      = $('q')          ? $('q').value.trim()   : '';
+
+    try {
+        var r    = await API.reviews.list(status, rating, q);
+        var list = r.data || [];
+
+        if (!list.length) {
+            var hasFilter = rating || status || q;
+            empty('tbl', 'heart', hasFilter
+                ? 'Không tìm thấy cảm nhận phù hợp. Thử thay đổi bộ lọc.'
+                : 'Chưa có cảm nhận nào. Hãy thêm cảm nhận đầu tiên!');
+            return;
+        }
+
+        var rows = list.map(function (rv, i) {
+            var safeJson = encodeURIComponent(JSON.stringify(rv));
+            var safeName = encodeURIComponent(rv.author_name || '');
+
+            // Stars
+            var stars = '';
+            var r = parseInt(rv.rating) || 5;
+            for (var s = 1; s <= 5; s++) {
+                stars += '<i class="fas fa-star" style="color:' + (s <= r ? '#f59e0b' : '#e2e8f0') + ';font-size:11px;"></i>';
+            }
+
+            // Avatar
+            var avatarHtml = rv.avatar_url
+                ? '<img src="' + resolveImgUrl(rv.avatar_url) + '" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid #e2e8f0;" onerror="this.style.display=\'none\'">'
+                : '<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#c41e3a,#e74c3c);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px;">' +
+                  (rv.author_name ? rv.author_name.charAt(0).toUpperCase() : '?') + '</div>';
+
+            return '<tr>' +
+                '<td style="color:#718096;font-size:0.8rem;">' + (i + 1) + '</td>' +
+                '<td>' + avatarHtml + '</td>' +
+                '<td>' +
+                    '<b style="color:#1a252f;">' + safe(rv.author_name, 30) + '</b>' +
+                    (rv.faculty ? '<br><span style="color:#718096;font-size:0.78rem;">' + escapeHtml(rv.faculty) + '</span>' : '') +
+                    (rv.year    ? '<span style="color:#a0aec0;font-size:0.75rem;"> · Từ ' + rv.year + '</span>' : '') +
+                '</td>' +
+                '<td>' + stars + '</td>' +
+                '<td style="color:#4a5568;font-size:0.82rem;">' + safe(rv.content, 80) + '</td>' +
+                '<td>' +
+                    '<span class="badge b-' + (rv.status === 'active' ? 'success' : 'secondary') + '">' +
+                        (rv.status === 'active' ? 'Hiển thị' : 'Đã ẩn') +
+                    '</span>' +
+                '</td>' +
+                '<td style="color:#718096;font-size:0.82rem;">' + fmtDate(rv.created_at) + '</td>' +
+                '<td>' +
+                    '<div style="display:flex;gap:6px;">' +
+                        '<button class="btn btn-sm btn-outline js-edit" data-item="' + safeJson + '" title="Chỉnh sửa">' +
+                            '<i class="fas fa-edit"></i> Sửa' +
+                        '</button>' +
+                        '<button class="btn btn-sm ' + (rv.status === 'active' ? 'btn-outline' : 'btn-success') + ' js-toggle" ' +
+                            'data-id="' + rv.id + '" data-status="' + rv.status + '" ' +
+                            'title="' + (rv.status === 'active' ? 'Ẩn' : 'Hiện') + '">' +
+                            '<i class="fas fa-' + (rv.status === 'active' ? 'eye-slash' : 'eye') + '"></i>' +
+                        '</button>' +
+                        '<button class="btn btn-sm btn-danger js-del" ' +
+                            'data-id="' + rv.id + '" data-name="' + safeName + '" title="Xóa">' +
+                            '<i class="fas fa-trash"></i>' +
+                        '</button>' +
+                    '</div>' +
+                '</td>' +
+            '</tr>';
+        }).join('');
+
+        setHTML('tbl',
+            '<div class="tbl"><table>' +
+            '<thead><tr>' +
+                '<th style="width:40px;">#</th>' +
+                '<th style="width:50px;">Ảnh</th>' +
+                '<th style="width:180px;">Tên / Khoa</th>' +
+                '<th style="width:90px;">Đánh giá</th>' +
+                '<th>Nội dung</th>' +
+                '<th style="width:100px;">Trạng thái</th>' +
+                '<th style="width:90px;">Ngày tạo</th>' +
+                '<th style="width:150px;">Thao tác</th>' +
+            '</tr></thead>' +
+            '<tbody>' + rows + '</tbody>' +
+            '</table></div>'
+        );
+
+        // Event delegation
+        var tblEl = document.querySelector('#tbl .tbl');
+        if (tblEl) {
+            tblEl.addEventListener('click', function (e) {
+                var btn = e.target.closest('button');
+                if (!btn) return;
+                if (btn.classList.contains('js-edit')) {
+                    editItem(btn.dataset.item);
+                } else if (btn.classList.contains('js-toggle')) {
+                    toggleStatus(btn.dataset.id, btn.dataset.status);
+                } else if (btn.classList.contains('js-del')) {
+                    openDel(btn.dataset.id, decodeURIComponent(btn.dataset.name));
+                }
+            });
+        }
+
+        // Footer
+        var activeCount   = list.filter(function (rv) { return rv.status === 'active';   }).length;
+        var inactiveCount = list.filter(function (rv) { return rv.status === 'inactive'; }).length;
+        var hasFilter = rating || status || q;
+        $('tbl-footer').style.display = 'block';
+        setHTML('tbl-footer',
+            'Tổng: <b>' + list.length + '</b> cảm nhận' +
+            (hasFilter ? ' (đã lọc)' : '') +
+            ' &nbsp;·&nbsp; ' +
+            '<span style="color:#38a169;">' + activeCount + ' đang hiển thị</span>' +
+            (inactiveCount ? ' &nbsp;·&nbsp; ' + inactiveCount + ' đã ẩn' : '')
+        );
+
+    } catch (e) {
+        empty('tbl', 'exclamation-circle', 'Lỗi tải dữ liệu: ' + e.message);
+    }
+}
+
+// ════════════════════════════════════════
+// MODAL THÊM / SỬA
+// ════════════════════════════════════════
+function openModal() {
+    $('f-id').value      = '';
+    $('f-name').value    = '';
+    $('f-faculty').value = '';
+    $('f-year').value    = '';
+    $('f-rating').value  = '5';
+    $('f-content').value = '';
+    $('f-status').value  = 'active';
+    initUpload('img-upload-container', 'f-img', 'ảnh đại diện');
+    setHTML('modal-title', '<i class="fas fa-plus-circle" style="color:#e74c3c;margin-right:8px;"></i>Thêm cảm nhận mới');
+    $('modal').classList.add('open');
+    setTimeout(function () { $('f-name').focus(); }, 100);
+}
+
+function closeModal() {
+    $('modal').classList.remove('open');
+    cleanupUpload('f-img');
+}
+
+function editItem(encodedJson) {
+    var rv;
+    try { rv = JSON.parse(decodeURIComponent(encodedJson)); }
+    catch (e) { toast('Lỗi đọc dữ liệu', 'danger'); return; }
+
+    $('f-id').value      = rv.id;
+    $('f-name').value    = rv.author_name || '';
+    $('f-faculty').value = rv.faculty     || '';
+    $('f-year').value    = rv.year        || '';
+    $('f-rating').value  = rv.rating      || '5';
+    $('f-content').value = rv.content     || '';
+    $('f-status').value  = rv.status      || 'active';
+
+    initUpload('img-upload-container', 'f-img', 'ảnh đại diện');
+    if (rv.avatar_url) setUploadImage('f-img', rv.avatar_url);
+
+    setHTML('modal-title', '<i class="fas fa-edit" style="color:#e74c3c;margin-right:8px;"></i>Chỉnh sửa cảm nhận');
+    $('modal').classList.add('open');
+    setTimeout(function () { $('f-name').focus(); }, 100);
+}
+
+// ════════════════════════════════════════
+// LƯU
+// ════════════════════════════════════════
+async function save() {
+    var id      = $('f-id').value.trim();
+    var name    = $('f-name').value.trim();
+    var content = $('f-content').value.trim();
+
+    if (!name) {
+        toast('Vui lòng nhập họ tên', 'danger');
+        $('f-name').focus(); return;
+    }
+    if (!content) {
+        toast('Vui lòng nhập nội dung cảm nhận', 'danger');
+        $('f-content').focus(); return;
+    }
+
+    var body = {
+        author_name: name,
+        faculty:     $('f-faculty').value.trim() || null,
+        year:        $('f-year').value ? parseInt($('f-year').value) : null,
+        rating:      parseInt($('f-rating').value) || 5,
+        content:     content,
+        status:      $('f-status').value,
+        avatar_url:  $('f-img') ? ($('f-img').value.trim() || null) : null
+    };
+
+    var btn = $('save-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang lưu...';
+
+    try {
+        if (id) {
+            await API.reviews.update(id, body);
+            toast('✅ Cập nhật cảm nhận thành công!');
+        } else {
+            await API.reviews.create(body);
+            toast('✅ Thêm cảm nhận thành công!');
+        }
+        closeModal();
+        loadList();
+    } catch (e) {
+        toast('Lỗi: ' + e.message, 'danger');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-save"></i> Lưu cảm nhận';
+    }
+}
+
+// ════════════════════════════════════════
+// TOGGLE TRẠNG THÁI
+// ════════════════════════════════════════
+async function toggleStatus(id, currentStatus) {
+    var newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+    try {
+        await API.reviews.update(id, { status: newStatus });
+        toast(newStatus === 'active' ? '👁️ Đã hiện cảm nhận' : '🙈 Đã ẩn cảm nhận');
+        loadList();
+    } catch (e) {
+        toast('Lỗi: ' + e.message, 'danger');
+    }
+}
+
+// ════════════════════════════════════════
+// XÓA
+// ════════════════════════════════════════
+function openDel(id, name) {
+    delId = id;
+    setHTML('del-name', name || 'cảm nhận này');
+    $('del-modal').classList.add('open');
+}
+
+function closeDel() {
+    $('del-modal').classList.remove('open');
+    delId = null;
+}
+
+async function confirmDel() {
+    if (!delId) return;
+    var btn = $('del-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xóa...';
+    try {
+        await API.reviews.delete(delId);
+        toast('🗑️ Đã xóa cảm nhận thành công');
+        closeDel();
+        loadList();
+    } catch (e) {
+        toast('Lỗi xóa: ' + e.message, 'danger');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-trash"></i> Xóa';
+    }
+}
+
+// Đóng modal khi click backdrop
+$('modal').addEventListener('click', function (e) { if (e.target === this) closeModal(); });
+$('del-modal').addEventListener('click', function (e) { if (e.target === this) closeDel(); });
+</script>
+</body>
+</html>

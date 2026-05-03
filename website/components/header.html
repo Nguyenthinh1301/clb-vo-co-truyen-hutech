@@ -1,13 +1,13 @@
-<header class="main-header">
+﻿<header class="main-header">
     <nav class="navbar">
         <div class="nav-container">
             <div class="logo">
                 <div class="logo-image">
-                    <img src="assets/images/Logo.jpg" alt="CLB Võ Cổ Truyền HUTECH" class="header-logo-img">
+                    <img src="assets/images_logo/Logo.jpg" alt="CLB Võ Cổ Truyền HUTECH" class="header-logo-img">
                 </div>
                 <div class="logo-text">
-                    <h1>CLB VÕ CỔ TRUYỀN</h1>
-                    <span class="subtitle">HUTECH</span>
+                    <h1>HUTECH</h1>
+                    <span class="subtitle">Võ Cổ Truyền</span>
                 </div>
             </div>
             
@@ -23,33 +23,42 @@
                         <span>Trang chủ</span>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item nav-has-dropdown">
                     <a href="#about" class="nav-link">
                         <span>Giới thiệu</span>
+                        <i class="fas fa-chevron-down nav-chevron"></i>
                     </a>
+                    <ul class="nav-dropdown-menu">
+                        <li><a href="views/gioi-thieu.html"><i class="fas fa-info-circle"></i> Giới thiệu về chúng tôi</a></li>
+                        <li><a href="views/doi-ngu.html"><i class="fas fa-users"></i> Đội ngũ CLB</a></li>
+                        <li><a href="views/thu-vien.html"><i class="fas fa-images"></i> Thư viện hình ảnh</a></li>
+                    </ul>
                 </li>
                 <li class="nav-item">
-                    <a href="#schedule" class="nav-link">
+                    <a href="views/lich-tap.html" class="nav-link">
                         <span>Lịch tập</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#coaches" class="nav-link">
-                        <span>Huấn luyện viên</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#gallery" class="nav-link">
+                    <a href="views/thanh-tich.html" class="nav-link">
                         <span>Thành tích</span>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item nav-has-dropdown">
                     <a href="#events" class="nav-link">
-                        <span>Sự kiện</span>
+                        <span>Tin tức</span>
+                        <i class="fas fa-chevron-down nav-chevron"></i>
                     </a>
+                    <ul class="nav-dropdown-menu">
+                        <li><a href="views/tin-tuc.html"><i class="fas fa-newspaper"></i> Tin tức</a></li>
+                        <li><a href="views/su-kien.html"><i class="fas fa-calendar-alt"></i> Sự kiện</a></li>
+                        <li><a href="views/thong-bao.html"><i class="fas fa-bell"></i> Thông báo</a></li>
+                        <li><a href="views/bao-chi.html"><i class="fas fa-bullhorn"></i> Báo chí về HUTECH – Võ Cổ Truyền</a></li>
+                        <li><a href="views/cam-nhan.html"><i class="fas fa-heart"></i> Cảm nhận sinh viên</a></li>
+                    </ul>
                 </li>
                 <li class="nav-item">
-                    <a href="#contact" class="nav-link">
+                    <a href="views/lien-he.html" class="nav-link">
                         <span>Liên hệ</span>
                     </a>
                 </li>
@@ -59,35 +68,50 @@
 </header>
 
 <script>
-// Mobile menu toggle
 document.addEventListener('DOMContentLoaded', function() {
     const navToggle = document.getElementById('nav-toggle');
     const navMenu = document.getElementById('nav-menu');
-    
+
+    // Mobile toggle
     if (navToggle && navMenu) {
         navToggle.addEventListener('click', function() {
             navMenu.classList.toggle('active');
             navToggle.classList.toggle('active');
         });
-        
-        // Close menu when clicking on a link
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.addEventListener('click', () => {
-                navMenu.classList.remove('active');
-                navToggle.classList.remove('active');
-            });
-        });
     }
-    
-    // Header scroll effect
+
+    // Dropdown Giới thiệu — preventDefault để không scroll #about
+    document.querySelectorAll('.nav-has-dropdown > .nav-link').forEach(function(toggle) {
+        toggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const item = this.closest('.nav-has-dropdown');
+            const isOpen = item.classList.contains('open');
+            document.querySelectorAll('.nav-has-dropdown').forEach(d => d.classList.remove('open'));
+            if (!isOpen) item.classList.add('open');
+        });
+    });
+
+    // Đóng dropdown khi click ra ngoài
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.nav-has-dropdown')) {
+            document.querySelectorAll('.nav-has-dropdown').forEach(d => d.classList.remove('open'));
+        }
+    });
+
+    // Đóng mobile menu khi click link thường
+    document.querySelectorAll('.nav-link:not(.nav-has-dropdown .nav-link)').forEach(link => {
+        link.addEventListener('click', () => {
+            if (navMenu) navMenu.classList.remove('active');
+            if (navToggle) navToggle.classList.remove('active');
+        });
+    });
+
+    // Scroll effect
     window.addEventListener('scroll', function() {
         const header = document.querySelector('.main-header');
         if (header) {
-            if (window.scrollY > 100) {
-                header.classList.add('scrolled');
-            } else {
-                header.classList.remove('scrolled');
-            }
+            header.classList.toggle('scrolled', window.scrollY > 100);
         }
     });
 });

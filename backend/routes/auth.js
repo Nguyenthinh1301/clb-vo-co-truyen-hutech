@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
+const auditLog = require('../utils/auditLog');
 const { AuthUtils, authenticate, SessionManager } = require('../middleware/auth');
 const { ValidationRules, handleValidationErrors } = require('../middleware/validation');
 const NotificationService = require('../services/notificationService');
@@ -45,16 +46,16 @@ router.post('/register', ValidationRules.userRegistration, handleValidationError
         const userId = await db.insert('users', {
             email,
             username,
-            password_hash: passwordHash,
+            password: passwordHash,
             first_name,
             last_name,
-            full_name: `${first_name} ${last_name}`.trim(), // Combine first and last name
+            full_name: `${first_name} ${last_name}`.trim(),
             phone_number: phone_number || null,
             date_of_birth: date_of_birth || null,
             gender: gender || null,
             address: address || null,
-            role: 'student', // Default role
-            membership_status: 'pending' // Default status
+            role: 'student',
+            membership_status: 'pending'
         });
 
         // Get created user (without password)
@@ -71,7 +72,7 @@ router.post('/register', ValidationRules.userRegistration, handleValidationError
         const session = await SessionManager.createSession(userId, deviceInfo);
 
         // Log successful registration
-        await db.insert('audit_logs', {
+        await auditLog({
             user_id: userId,
             action: 'user_registered',
             table_name: 'users',
@@ -153,8 +154,9 @@ router.post('/login', ValidationRules.userLogin, handleValidationErrors, async (
             });
         }
 
-        // Check password
-        const isValidPassword = await AuthUtils.comparePassword(password, user.password_hash);
+        // Check password - support both 'password' (MSSQL schema) and 'password_hash' (MySQL schema)
+        const passwordField = user.password_hash || user.password;
+        const isValidPassword = await AuthUtils.comparePassword(password, passwordField);
         if (!isValidPassword) {
             return res.status(401).json({
                 success: false,
@@ -202,7 +204,7 @@ router.post('/login', ValidationRules.userLogin, handleValidationErrors, async (
         const { password_hash: userPasswordHash, ...userWithoutPassword } = user;
 
         // Log successful login
-        await db.insert('audit_logs', {
+        await auditLog({
             user_id: user.id,
             action: 'user_login',
             table_name: 'users',
@@ -267,7 +269,7 @@ router.post('/logout', authenticate, async (req, res) => {
         await SessionManager.revokeSession(req.session.id);
 
         // Log logout
-        await db.insert('audit_logs', {
+        await auditLog({
             user_id: req.user.id,
             action: 'user_logout',
             table_name: 'users',
@@ -297,7 +299,7 @@ router.post('/logout-all', authenticate, async (req, res) => {
         await SessionManager.revokeAllUserSessions(req.user.id);
 
         // Log logout all
-        await db.insert('audit_logs', {
+        await auditLog({
             user_id: req.user.id,
             action: 'user_logout_all',
             table_name: 'users',
@@ -358,10 +360,10 @@ router.put('/change-password', authenticate, ValidationRules.changePassword, han
         const { current_password, new_password } = req.body;
 
         // Get current user with password
-        const user = await db.findOne('SELECT password_hash FROM users WHERE id = ?', [req.user.id]);
+        const user = await db.findOne('SELECT password FROM users WHERE id = ?', [req.user.id]);
 
         // Verify current password
-        const isValidPassword = await AuthUtils.comparePassword(current_password, user.password_hash);
+        const isValidPassword = await AuthUtils.comparePassword(current_password, user.password);
         if (!isValidPassword) {
             return res.status(400).json({
                 success: false,
@@ -373,7 +375,7 @@ router.put('/change-password', authenticate, ValidationRules.changePassword, han
         const newPasswordHash = await AuthUtils.hashPassword(new_password);
 
         // Update password
-        await db.update('users', { password_hash: newPasswordHash }, 'id = ?', [req.user.id]);
+        await db.update('users', { password: newPasswordHash }, 'id = ?', [req.user.id]);
 
         // Revoke all sessions except current
         await db.query(
@@ -382,7 +384,7 @@ router.put('/change-password', authenticate, ValidationRules.changePassword, han
         );
 
         // Log password change
-        await db.insert('audit_logs', {
+        await auditLog({
             user_id: req.user.id,
             action: 'password_changed',
             table_name: 'users',

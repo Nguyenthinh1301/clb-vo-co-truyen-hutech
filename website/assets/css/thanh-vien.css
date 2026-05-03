@@ -1,0 +1,352 @@
+/* =============================================
+   Trang: Profile thành viên – Magazine Style
+   ============================================= */
+
+body { font-family: "Open Sans", sans-serif; }
+
+/* ── Hero fullscreen ── */
+.profile-hero {
+    position: relative;
+    height: 520px;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+}
+
+.profile-hero-bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center top;
+    filter: brightness(0.45);
+    transition: transform 6s ease;
+}
+
+.profile-hero:hover .profile-hero-bg {
+    transform: scale(1.04);
+}
+
+.profile-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgba(10,10,20,0.3) 40%,
+        rgba(10,10,20,0.85) 100%
+    );
+}
+
+.profile-hero-content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 32px 48px;
+    display: flex;
+    align-items: flex-end;
+    gap: 28px;
+}
+
+.profile-avatar-wrap {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid rgba(255,255,255,0.5);
+    flex-shrink: 0;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+
+.profile-avatar-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-hero-text { flex: 1; }
+
+.profile-breadcrumb {
+    font-size: 12px;
+    color: rgba(255,255,255,0.55);
+    margin-bottom: 10px;
+}
+
+.profile-breadcrumb a {
+    color: #ffd700;
+    text-decoration: none;
+}
+
+.profile-breadcrumb a:hover { text-decoration: underline; }
+
+.profile-hero h1 {
+    font-size: 38px;
+    font-weight: 800;
+    color: white;
+    margin: 0 0 10px;
+    line-height: 1.1;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.4);
+}
+
+.profile-role-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #c41e3a;
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 16px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+}
+
+.profile-stats-row {
+    display: flex;
+    gap: 28px;
+    margin-top: 16px;
+}
+
+.profile-stat {
+    text-align: center;
+}
+
+.profile-stat strong {
+    display: block;
+    font-size: 22px;
+    font-weight: 800;
+    color: #ffd700;
+    line-height: 1;
+}
+
+.profile-stat span {
+    font-size: 11px;
+    color: rgba(255,255,255,0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ── Body 2 cột ── */
+.profile-body {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 48px 32px 80px;
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 36px;
+    align-items: start;
+}
+
+/* ── Back button ── */
+.profile-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 20px;
+    background: #1a252f;
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 8px;
+    text-decoration: none;
+    margin-bottom: 32px;
+    transition: background 0.2s, transform 0.2s;
+    grid-column: 1 / -1;
+}
+
+.profile-back-btn:hover {
+    background: #c41e3a;
+    transform: translateX(-3px);
+}
+
+/* ── Section block ── */
+.profile-section { margin-bottom: 44px; }
+
+.profile-section-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1a252f;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #c41e3a;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.profile-section-title i { color: #c41e3a; }
+
+/* ── Bio ── */
+.profile-bio {
+    background: white;
+    border-radius: 14px;
+    padding: 26px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    line-height: 1.85;
+    color: #444;
+    font-size: 15px;
+    border-left: 4px solid #c41e3a;
+}
+
+/* ── Timeline thành tích ── */
+.achievement-timeline {
+    position: relative;
+    padding-left: 26px;
+}
+
+.achievement-timeline::before {
+    content: '';
+    position: absolute;
+    left: 7px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, #c41e3a, #1a252f);
+    border-radius: 2px;
+}
+
+.ach-item {
+    position: relative;
+    margin-bottom: 20px;
+    background: white;
+    border-radius: 12px;
+    padding: 16px 18px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.ach-item:hover {
+    transform: translateX(4px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+}
+
+.ach-item::before {
+    content: '';
+    position: absolute;
+    left: -22px;
+    top: 20px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #c41e3a;
+    border: 2px solid white;
+    box-shadow: 0 0 0 2px #c41e3a;
+}
+
+.ach-year {
+    font-size: 11px;
+    font-weight: 700;
+    color: #c41e3a;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+}
+
+.ach-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1a252f;
+    margin-bottom: 4px;
+}
+
+.ach-desc {
+    font-size: 13px;
+    color: #777;
+    line-height: 1.5;
+}
+
+.ach-medal {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 12px;
+    margin-top: 6px;
+}
+
+.ach-medal.gold   { background: #fff8e1; color: #f59e0b; border: 1px solid #f59e0b; }
+.ach-medal.silver { background: #f5f5f5; color: #6b7280; border: 1px solid #9ca3af; }
+.ach-medal.bronze { background: #fff3e0; color: #d97706; border: 1px solid #d97706; }
+
+/* ── Sidebar (cột phải) ── */
+.profile-sidebar { display: flex; flex-direction: column; gap: 24px; }
+
+.sidebar-card {
+    background: white;
+    border-radius: 14px;
+    padding: 22px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+.sidebar-card-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1a252f;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.sidebar-card-title i { color: #c41e3a; }
+
+/* Info list */
+.sidebar-info-list { list-style: none; padding: 0; margin: 0; }
+
+.sidebar-info-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 9px 0;
+    border-bottom: 1px solid #f5f5f5;
+    font-size: 13px;
+    gap: 8px;
+}
+
+.sidebar-info-list li:last-child { border-bottom: none; }
+
+.sil-label { color: #999; flex-shrink: 0; }
+.sil-value { font-weight: 700; color: #1a252f; text-align: right; }
+
+/* Gallery sidebar */
+.sidebar-gallery {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.sidebar-gallery img {
+    width: 100%;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 8px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.sidebar-gallery img:first-child {
+    grid-column: 1 / -1;
+    height: 140px;
+}
+
+.sidebar-gallery img:hover {
+    transform: scale(1.03);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+    .profile-hero { height: 420px; }
+    .profile-hero-content { flex-direction: column; align-items: flex-start; gap: 16px; padding-bottom: 32px; }
+    .profile-hero h1 { font-size: 28px; }
+    .profile-body { grid-template-columns: 1fr; }
+    .profile-stats-row { gap: 18px; }
+}
+
+@media (max-width: 480px) {
+    .profile-hero { height: 360px; }
+    .profile-hero h1 { font-size: 22px; }
+    .profile-avatar-wrap { width: 90px; height: 90px; }
+}

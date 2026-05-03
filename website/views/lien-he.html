@@ -1,0 +1,173 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="../">
+    <title>Liên hệ - CLB Võ Cổ Truyền HUTECH</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <script src="assets/js/config.js"></script>
+    <link rel="stylesheet" href="assets/css/lien-he.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <div class="page-hero">
+        <div class="breadcrumb">
+            <a href="index.html">Trang chủ</a> &rsaquo; Liên hệ
+        </div>
+        <h1>Liên Hệ Với Chúng Tôi</h1>
+        <p>Hãy để lại thông tin, chúng tôi sẽ phản hồi sớm nhất có thể</p>
+    </div>
+
+    <div class="page-body">
+
+        <!-- Info cards -->
+        <div class="lh-info-grid">
+            <div class="lh-info-card">
+                <div class="lh-icon"><i class="fas fa-map-marker-alt"></i></div>
+                <h4>Địa chỉ</h4>
+                <p>475 Điện Biên Phủ, P.25<br>Q. Bình Thạnh, TP.HCM</p>
+            </div>
+            <div class="lh-info-card">
+                <div class="lh-icon"><i class="fas fa-phone"></i></div>
+                <h4>Điện thoại</h4>
+                <p><a href="tel:+84912209095">+84 912 209 095</a></p>
+            </div>
+            <div class="lh-info-card">
+                <div class="lh-icon"><i class="fas fa-envelope"></i></div>
+                <h4>Email</h4>
+                <p><a href="mailto:vctht2026@gmail.com">vctht2026@gmail.com</a></p>
+            </div>
+            <div class="lh-info-card">
+                <div class="lh-icon"><i class="fas fa-clock"></i></div>
+                <h4>Giờ hoạt động</h4>
+                <p>T2–T6: 18:00 – 20:00<br>T7–CN: 08:00 – 11:00</p>
+            </div>
+        </div>
+
+        <!-- Main: Form + Social/Map -->
+        <div class="lh-main">
+
+            <!-- Form liên hệ -->
+            <div class="lh-form-box">
+                <h3><i class="fas fa-paper-plane"></i> Gửi tin nhắn</h3>
+                <div id="lh-status" class="lh-status-bar"></div>
+                <div class="lh-form-group">
+                    <label>Họ và tên *</label>
+                    <input type="text" id="lh-name" placeholder="Nhập họ và tên của bạn">
+                </div>
+                <div class="lh-form-group">
+                    <label>Email *</label>
+                    <input type="email" id="lh-email" placeholder="example@email.com">
+                </div>
+                <div class="lh-form-group">
+                    <label>Số điện thoại *</label>
+                    <input type="tel" id="lh-phone" placeholder="0912 xxx xxx">
+                </div>
+                <div class="lh-form-group">
+                    <label>Nội dung</label>
+                    <textarea id="lh-message" placeholder="Bạn muốn hỏi gì? Chúng tôi luôn sẵn sàng hỗ trợ..."></textarea>
+                </div>
+                <button class="lh-submit-btn" onclick="submitForm()">
+                    <i class="fas fa-paper-plane"></i> Gửi liên hệ
+                </button>
+            </div>
+
+            <!-- Right: Social + Map -->
+            <div class="lh-right">
+                <div class="lh-social-box">
+                    <h3>Theo dõi chúng tôi</h3>
+                    <p>Cập nhật tin tức và hoạt động mới nhất của CLB</p>
+                    <div class="lh-social-links">
+                        <a href="https://www.facebook.com/vocotruyenhutech" target="_blank" class="lh-social-link fb">
+                            <div class="lh-social-icon"><i class="fab fa-facebook-f"></i></div>
+                            <div class="lh-social-text">
+                                Facebook CLB
+                                <small>vocotruyenhutech</small>
+                            </div>
+                        </a>
+                        <a href="https://www.tiktok.com/@1209vcthutech2018" target="_blank" class="lh-social-link tt">
+                            <div class="lh-social-icon"><i class="fab fa-tiktok"></i></div>
+                            <div class="lh-social-text">
+                                TikTok CLB
+                                <small>@1209vcthutech2018</small>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="lh-map-box">
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.063478839445!2d106.71084731476283!3d10.807127192314447!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x317528b2747a81a3%3A0x7e1b3d580a3c8c0d!2zNDc1IMSQaeG7h24gQmnDqm4gUGjhu6UsIFBoxrDhu51uZyAyNSwgQsOsbmggVGjhuqFuaCwgVGjDoG5oIHBo4buRIEjhu5MgQ2jDrSBNaW5oLCBWaeG7h3QgTmFt!5e0!3m2!1svi!2s!4v1705000000000!5m2!1svi!2s"
+                        allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="footer-placeholder"></div>
+    <script src="assets/js/dropdown.js"></script>
+    <script>
+        function showStatus(msg, type) {
+            const bar = document.getElementById('lh-status');
+            bar.textContent = msg;
+            bar.className = 'lh-status-bar ' + type;
+            bar.style.display = 'flex';
+        }
+
+        function submitForm() {
+            const name    = document.getElementById('lh-name').value.trim();
+            const email   = document.getElementById('lh-email').value.trim();
+            const phone   = document.getElementById('lh-phone').value.trim();
+            const message = document.getElementById('lh-message').value.trim();
+
+            if (!name || !email || !phone) {
+                showStatus('Vui lòng điền đầy đủ thông tin bắt buộc!', 'error'); return;
+            }
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                showStatus('Email không hợp lệ!', 'error'); return;
+            }
+            if (!/^[0-9]{9,11}$/.test(phone.replace(/\D/g, ''))) {
+                showStatus('Số điện thoại không hợp lệ!', 'error'); return;
+            }
+
+            showStatus('Đang gửi...', 'online');
+
+            var contactApi = (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || 'http://localhost:3001/api';
+            fetch(contactApi + '/contact', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, phone, message })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    showStatus('Cảm ơn bạn! Chúng tôi sẽ phản hồi sớm nhất.', 'success');
+                    ['lh-name','lh-email','lh-phone','lh-message'].forEach(id => document.getElementById(id).value = '');
+                } else {
+                    showStatus(data.message || 'Gửi thất bại, vui lòng thử lại.', 'error');
+                }
+            })
+            .catch(() => {
+                showStatus('⚠️ Server chưa khởi động. Chạy: cd backend && npm start', 'offline');
+            });
+        }
+
+        async function load(id, path) {
+            try { document.getElementById(id).innerHTML = await (await fetch(path)).text(); } catch(e) {}
+        }
+        document.addEventListener('DOMContentLoaded', async () => {
+            await load('header-placeholder', 'components/header.html');
+            await load('footer-placeholder', 'components/footer.html');
+            initDropdown();
+        });
+    </script>
+</body>
+</html>

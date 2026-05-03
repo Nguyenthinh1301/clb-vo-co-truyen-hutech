@@ -4,92 +4,25 @@
             <h2>Thành Tích & Hoạt Động</h2>
             <p>Những khoảnh khắc đáng nhớ của CLB</p>
         </div>
-        <div class="gallery-grid">
-            <div class="gallery-item">
-                <div class="gallery-placeholder">
-                    <i class="fas fa-trophy fa-3x"></i>
-                    <div class="gallery-info">
-                        <h4>Giải III Toàn Đoàn</h4>
-                        <p>Giải Võ Cổ Truyền Sinh Viên VLU TP.HCM 2024. Thành tích xuất sắc với sự tham gia của toàn thể học viên CLB.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="gallery-item">
-                <div class="gallery-placeholder">
-                    <i class="fas fa-medal fa-3x"></i>
-                    <div class="gallery-info">
-                        <h4>Tham gia thi đấu võ nhạc năm 2022</h4>
-                        <p>Cuộc thi Got Talent tìm kiếm tài năng cấp trường.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="gallery-item">
-                <div class="gallery-placeholder">
-                    <i class="fas fa-award fa-3x"></i>
-                    <div class="gallery-info">
-                        <h4>Giải nhất biểu diễn Quốc tế HUTECH</h4>
-                        <p>HUTECH GLOBAL FESTIVAL.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="gallery-item">
-                <div class="gallery-placeholder">
-                    <i class="fas fa-star fa-3x"></i>
-                    <div class="gallery-info">
-                        <h4>Biểu diễn sinh hoạt đầu khóa</h4>
-                        <p>Tham gia giảo lưu chào đón tân sinh viên. Màn trình diễn ấn tượng và chuyên nghiệp.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="gallery-item">
-                <div class="gallery-placeholder">
-                    <i class="fas fa-fist-raised fa-3x"></i>
-                    <div class="gallery-info">
-                        <h4>Giải Võ cổ truyền Đại hội TP. HCM 2026</h4>
-                        <p>Mục tiêu học hỏi và trải nghiệm giữa đấu trường lớn ở 2026.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="gallery-item">
-                <div class="gallery-placeholder">
-                    <i class="fas fa-users fa-3x"></i>
-                    <div class="gallery-info">
-                        <h4>Team Building 2025</h4>
-                        <p>Hoạt động ngoại khóa gắn kết các thành viên CLB. Tổ chức các trò chơi, thi đấu thể thao và chia sẻ kinh nghiệm.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="gallery-item">
-                <div class="gallery-placeholder">
-                    <i class="fas fa-graduation-cap fa-3x"></i>
-                    <div class="gallery-info">
-                        <h4>Lễ Tổng Kết CLB</h4>
-                        <p>Lễ tổng kết cho các học viên đạt thành tích xuất sắc. Ghi nhận sự nỗ lực và tiến bộ của từng cá nhân.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="gallery-item">
-                <div class="gallery-placeholder">
-                    <i class="fas fa-hands-helping fa-3x"></i>
-                    <div class="gallery-info">
-                        <h4>Hoạt Động Từ Thiện</h4>
-                        <p>Chương trình thiện nguyện hỗ trợ cộng đồng. CLB tham gia các hoạt động xã hội, thể hiện tinh thần trách nhiệm.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="gallery-item">
-                <div class="gallery-placeholder">
-                    <i class="fas fa-dumbbell fa-3x"></i>
-                    <div class="gallery-info">
-                        <h4>Khóa Tập Huấn</h4>
-                        <p>Khóa tập huấn nâng cao kỹ năng cho HLV và học viên. Cập nhật kiến thức mới và phương pháp giảng dạy hiện đại.</p>
-                    </div>
-                </div>
-            </div>
+
+        <!-- Album tabs — hiển thị sau khi JS chạy -->
+        <div id="gallery-album-tabs" style="display:none;margin-bottom:20px;text-align:center;"></div>
+
+        <div class="gallery-grid" id="gallery-grid">
+            <div class="gallery-item gsk"></div>
+            <div class="gallery-item gsk"></div>
+            <div class="gallery-item gsk"></div>
+            <div class="gallery-item gsk"></div>
+            <div class="gallery-item gsk"></div>
+            <div class="gallery-item gsk"></div>
         </div>
+
         <div class="gallery-cta">
             <p>Xem thêm hình ảnh và video của chúng tôi trên</p>
             <div class="gallery-social">
+                <a href="views/thu-vien.html" class="social-btn" style="background:#c41e3a;color:#fff;">
+                    <i class="fas fa-images"></i> Xem thư viện ảnh
+                </a>
                 <a href="https://www.facebook.com/vocotruyenhutech" target="_blank" class="social-btn facebook">
                     <i class="fab fa-facebook"></i> Facebook CLB
                 </a>
@@ -100,3 +33,91 @@
         </div>
     </div>
 </section>
+
+<!-- Lightbox mini -->
+<div id="gs-lightbox" onclick="gsLbClose(event)">
+    <button id="gs-lb-close" onclick="gsLbClose()">&#x2715;</button>
+    <div id="gs-lb-counter"></div>
+    <button id="gs-lb-prev" onclick="gsLbNav(-1)">&#8249;</button>
+    <img id="gs-lb-img" src="" alt="">
+    <button id="gs-lb-next" onclick="gsLbNav(1)">&#8250;</button>
+    <div id="gs-lb-caption"></div>
+</div>
+
+<style>
+@keyframes gSkimmer { 0%{opacity:1} 50%{opacity:0.4} 100%{opacity:1} }
+.gallery-item.gsk {
+    background: #f0f2f5;
+    border-radius: 12px;
+    min-height: 200px;
+    animation: gSkimmer 1.4s infinite;
+}
+.gallery-tab-bar {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    justify-content: center; margin-bottom: 4px;
+}
+.gallery-tab-btn {
+    padding: 6px 16px; border-radius: 20px;
+    border: 1.5px solid #e2e8f0; background: #fff;
+    color: #4a5568; font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: all 0.18s; font-family: inherit;
+}
+.gallery-tab-btn:hover { border-color: #c41e3a; color: #c41e3a; }
+.gallery-tab-btn.active { background: #c41e3a; border-color: #c41e3a; color: #fff; }
+.gallery-item {
+    position: relative; overflow: hidden;
+    border-radius: 12px; cursor: pointer;
+}
+.gallery-item img.gallery-real-img {
+    width: 100%; height: 100%; object-fit: cover;
+    display: block; transition: transform 0.4s;
+}
+.gallery-item:hover img.gallery-real-img { transform: scale(1.06); }
+.gallery-info {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.72));
+    color: #fff; padding: 28px 14px 14px;
+    transform: translateY(100%); transition: transform 0.28s;
+}
+.gallery-item:hover .gallery-info { transform: translateY(0); }
+.gallery-info h4 { font-size: 13px; font-weight: 700; margin: 0 0 3px; line-height: 1.3; }
+.gallery-info p  { font-size: 11px; opacity: 0.82; margin: 0; line-height: 1.4; }
+.gallery-view-all-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-top: 6px; color: #c41e3a; font-size: 13px;
+    font-weight: 600; text-decoration: none; transition: gap 0.18s;
+}
+.gallery-view-all-link:hover { gap: 10px; }
+#gs-lightbox {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.92); z-index: 9999;
+    align-items: center; justify-content: center; flex-direction: column;
+}
+#gs-lightbox.open { display: flex; }
+#gs-lightbox img { max-width: 90vw; max-height: 82vh; border-radius: 8px; object-fit: contain; }
+#gs-lb-close {
+    position: absolute; top: 18px; right: 24px;
+    color: #fff; font-size: 36px; cursor: pointer;
+    background: none; border: none; line-height: 1; transition: color 0.2s;
+}
+#gs-lb-close:hover { color: #c41e3a; }
+#gs-lb-prev, #gs-lb-next {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    background: rgba(255,255,255,0.15); border: none; color: #fff;
+    font-size: 2.2rem; padding: 8px 14px; cursor: pointer;
+    border-radius: 6px; transition: background 0.2s;
+}
+#gs-lb-prev { left: 14px; }
+#gs-lb-next { right: 14px; }
+#gs-lb-prev:hover, #gs-lb-next:hover { background: rgba(255,255,255,0.3); }
+#gs-lb-caption {
+    position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%);
+    color: rgba(255,255,255,0.8); font-size: 13px; text-align: center;
+    background: rgba(0,0,0,0.4); padding: 5px 16px; border-radius: 20px;
+    white-space: nowrap; max-width: 80vw; overflow: hidden; text-overflow: ellipsis;
+}
+#gs-lb-counter {
+    position: absolute; top: 20px; left: 24px;
+    color: rgba(255,255,255,0.6); font-size: 13px;
+}
+</style>

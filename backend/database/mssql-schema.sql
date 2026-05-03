@@ -99,7 +99,7 @@ BEGIN
         location NVARCHAR(255),
         max_students INT DEFAULT 30,
         current_students INT DEFAULT 0,
-        status NVARCHAR(50) DEFAULT 'active' CHECK (status IN ('active', 'completed', 'cancelled')),
+        status NVARCHAR(50) DEFAULT 'active' CHECK (status IN ('active', 'inactive', 'completed', 'cancelled')),
         start_date DATE,
         end_date DATE,
         created_at DATETIME DEFAULT GETDATE(),

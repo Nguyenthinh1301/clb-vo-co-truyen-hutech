@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông báo - Admin CLB Võ Cổ Truyền HUTECH</title>
+    <link rel="stylesheet" href="shared/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+<div class="layout" id="app"></div>
+
+<!-- ===== MODAL THÊM / SỬA ===== -->
+<div class="overlay" id="modal">
+    <div class="modal modal-lg">
+        <div class="modal-head">
+            <h3 id="modal-title">Thêm thông báo mới</h3>
+            <button class="modal-close" onclick="closeModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="f-id">
+
+            <!-- Tiêu đề -->
+            <div class="form-group">
+                <label class="form-label" for="f-title">Tiêu đề <span class="req" aria-hidden="true">*</span></label>
+                <input class="form-control" id="f-title"
+                    aria-label="Tiêu đề thông báo"
+                    aria-required="true"
+                    placeholder="Tiêu đề thông báo">
+            </div>
+
+            <!-- Loại + Độ ưu tiên -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="f-type">Loại thông báo</label>
+                    <select class="form-control" id="f-type" aria-label="Loại thông báo">
+                        <option value="general">📢 Chung</option>
+                        <option value="urgent">🚨 Khẩn cấp</option>
+                        <option value="event">📅 Sự kiện</option>
+                        <option value="training">🥋 Tập luyện</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="f-priority">Độ ưu tiên</label>
+                    <select class="form-control" id="f-priority" aria-label="Độ ưu tiên thông báo">
+                        <option value="normal">🔵 Bình thường</option>
+                        <option value="high">🔴 Cao</option>
+                        <option value="low">⚪ Thấp</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Nội dung -->
+            <div class="form-group">
+                <label class="form-label" for="f-content">Nội dung <span class="req" aria-hidden="true">*</span></label>
+                <textarea class="form-control" id="f-content" rows="5"
+                    aria-label="Nội dung thông báo"
+                    aria-required="true"
+                    placeholder="Nội dung thông báo..."></textarea>
+            </div>
+
+            <!-- Đối tượng + Hết hạn -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="f-audience">Đối tượng nhận</label>
+                    <select class="form-control" id="f-audience" aria-label="Đối tượng nhận thông báo">
+                        <option value="all">👥 Tất cả</option>
+                        <option value="members">🧑 Thành viên</option>
+                        <option value="coaches">👨‍🏫 Huấn luyện viên</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="f-expires">Ngày hết hạn <span style="color:#a0aec0;font-size:0.8rem;">(tùy chọn)</span></label>
+                    <input class="form-control" id="f-expires" type="date"
+                        aria-label="Ngày hết hạn thông báo">
+                </div>
+            </div>
+        </div>
+        <div class="modal-foot">
+            <button class="btn btn-outline" onclick="closeModal()">
+                <i class="fas fa-times"></i> Hủy
+            </button>
+            <button class="btn btn-primary" id="save-btn" onclick="save()">
+                <i class="fas fa-save"></i> Lưu thông báo
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== MODAL XÓA ===== -->
+<div class="overlay" id="del-modal">
+    <div class="modal modal-sm">
+        <div class="modal-head">
+            <h3><i class="fas fa-exclamation-triangle" style="color:#e74c3c"></i> Xác nhận xóa</h3>
+            <button class="modal-close" onclick="closeDel()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p style="margin-bottom:8px;">Bạn có chắc muốn xóa thông báo:</p>
+            <p><b id="del-name" style="color:#1a252f;"></b></p>
+            <p style="color:#e74c3c; font-size:0.82rem; margin-top:12px;">
+                <i class="fas fa-exclamation-triangle"></i>
+                Hành động này không thể hoàn tác.
+            </p>
+        </div>
+        <div class="modal-foot">
+            <button class="btn btn-outline" onclick="closeDel()">
+                <i class="fas fa-arrow-left"></i> Hủy
+            </button>
+            <button class="btn btn-danger" id="del-btn" onclick="confirmDel()">
+                <i class="fas fa-trash"></i> Xóa thông báo
+            </button>
+        </div>
+    </div>
+</div>
+
+<script src="../assets/js/config.js"></script>
+<script src="shared/auth.js"></script>
+<script src="shared/api.js"></script>
+<script src="shared/ui.js"></script>
+<script>
+'use strict';
+
+var page = initLayout('<i class="fas fa-bell"></i> Quản lý Thông báo', 'thong-bao.html');
+if (!page) throw new Error('Auth failed');
+
+var delId = null;
+
+var PRI_CLS = { high: 'b-danger', normal: 'b-info', low: 'b-secondary' };
+var PRI_LBL = { high: 'Cao',      normal: 'Bình thường', low: 'Thấp' };
+var TYP_LBL = { general: 'Chung', urgent: 'Khẩn cấp', event: 'Sự kiện', training: 'Tập luyện' };
+var TYP_ICN = { general: 'bullhorn', urgent: 'exclamation-circle', event: 'calendar-alt', training: 'dumbbell' };
+var AUD_LBL = { all: 'Tất cả', members: 'Thành viên', coaches: 'HLV' };
+
+// ── Render trang ──
+page.innerHTML = [
+    '<div class="card">',
+    '  <div class="card-head">',
+    '    <h3><i class="fas fa-list"></i> Danh sách thông báo</h3>',
+    '    <button class="btn btn-primary" onclick="openModal()">',
+    '      <i class="fas fa-plus"></i> Thêm thông báo',
+    '    </button>',
+    '  </div>',
+    '  <div class="card-body" style="padding-bottom:0;">',
+    '    <div class="toolbar">',
+    '      <div class="search-wrap">',
+    '        <i class="fas fa-search"></i>',
+    '        <input class="form-control" id="q" placeholder="Tìm kiếm tiêu đề, nội dung...">',
+    '      </div>',
+    '      <select class="form-control" id="flt-type" style="width:155px;">',
+    '        <option value="">Tất cả loại</option>',
+    '        <option value="general">Chung</option>',
+    '        <option value="urgent">Khẩn cấp</option>',
+    '        <option value="event">Sự kiện</option>',
+    '        <option value="training">Tập luyện</option>',
+    '      </select>',
+    '      <select class="form-control" id="flt-priority" style="width:155px;">',
+    '        <option value="">Tất cả ưu tiên</option>',
+    '        <option value="high">Ưu tiên cao</option>',
+    '        <option value="normal">Bình thường</option>',
+    '        <option value="low">Thấp</option>',
+    '      </select>',
+    '      <select class="form-control" id="flt-status" style="width:155px;">',
+    '        <option value="">Tất cả trạng thái</option>',
+    '        <option value="active">Đang hiển thị</option>',
+    '        <option value="inactive">Đã ẩn</option>',
+    '      </select>',
+    '      <button class="btn btn-outline" onclick="loadList()" title="Làm mới">',
+    '        <i class="fas fa-sync-alt"></i>',
+    '      </button>',
+    '    </div>',
+    '  </div>',
+    '  <div id="tbl"></div>',
+    '  <div id="tbl-footer" style="display:none; padding:10px 16px; background:#fafbfc;',
+    '       border-top:1px solid #e2e8f0; font-size:0.82rem; color:#718096;"></div>',
+    '</div>'
+].join('');
+
+// ── Event listeners ──
+$('flt-type').addEventListener('change',     function () { loadList(); });
+$('flt-priority').addEventListener('change', function () { loadList(); });
+$('flt-status').addEventListener('change',   function () { loadList(); });
+
+var searchTimer;
+$('q').addEventListener('input', function () {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(loadList, 400);
+});
+
+loadList();
+
+// ════════════════════════════════════════
+// LOAD LIST
+// ════════════════════════════════════════
+async function loadList() {
+    loading('tbl');
+    $('tbl-footer').style.display = 'none';
+
+    var status   = $('flt-status')   ? $('flt-status').value   : '';
+    var type     = $('flt-type')     ? $('flt-type').value     : '';
+    var priority = $('flt-priority') ? $('flt-priority').value : '';
+    var q        = $('q')            ? $('q').value.trim()     : '';
+
+    try {
+        var r    = await API.announcements.list(status, type, priority, q);
+        var list = r.data || [];
+
+        if (!list.length) {
+            var hasFilter = status || type || priority || q;
+            empty('tbl', 'bell', hasFilter
+                ? 'Không tìm thấy thông báo phù hợp. Thử thay đổi bộ lọc.'
+                : 'Chưa có thông báo nào. Hãy thêm thông báo đầu tiên!');
+            return;
+        }
+
+        var rows = list.map(function (a, i) {
+            var safeJson = encodeURIComponent(JSON.stringify(a));
+
+            // Badge loại
+            var typeBadge = '<span style="display:inline-flex;align-items:center;gap:4px;' +
+                'font-size:0.78rem;color:#4a5568;">' +
+                '<i class="fas fa-' + (TYP_ICN[a.type] || 'bell') + '" style="color:#718096;"></i> ' +
+                (TYP_LBL[a.type] || a.type || '—') + '</span>';
+
+            // Ngày hết hạn
+            var expiredHtml = '';
+            if (a.expires_at) {
+                var expDate  = new Date(a.expires_at);
+                var isExpired = expDate < new Date();
+                expiredHtml = '<br><span style="font-size:0.75rem;color:' + (isExpired ? '#e74c3c' : '#718096') + ';">' +
+                    '<i class="fas fa-clock"></i> ' +
+                    (isExpired ? 'Hết hạn: ' : 'Hạn: ') + fmtDate(a.expires_at) +
+                    '</span>';
+            }
+
+            return '<tr>' +
+                '<td style="color:#718096;font-size:0.8rem;">' + (i + 1) + '</td>' +
+                '<td>' +
+                    '<b style="color:#1a252f;">' + safe(a.title, 45) + '</b>' +
+                    (a.content ? '<br><span style="color:#718096;font-size:0.78rem;">' + safe(a.content, 60) + '</span>' : '') +
+                '</td>' +
+                '<td>' + typeBadge + '</td>' +
+                '<td><span class="badge ' + (PRI_CLS[a.priority] || 'b-secondary') + '">' +
+                    (PRI_LBL[a.priority] || a.priority || '—') + '</span></td>' +
+                '<td style="font-size:0.82rem;color:#4a5568;">' + (AUD_LBL[a.target_audience] || a.target_audience || 'Tất cả') + '</td>' +
+                '<td>' +
+                    '<span class="badge b-' + (a.status === 'active' ? 'success' : 'secondary') + '">' +
+                        (a.status === 'active' ? 'Hiển thị' : 'Đã ẩn') +
+                    '</span>' +
+                    expiredHtml +
+                '</td>' +
+                '<td style="color:#718096;font-size:0.82rem;">' + fmtDate(a.created_at) + '</td>' +
+                '<td>' +
+                    '<div style="display:flex;gap:6px;">' +
+                        '<button class="btn btn-sm btn-outline js-edit" data-item="' + safeJson + '" title="Chỉnh sửa">' +
+                            '<i class="fas fa-edit"></i> Sửa' +
+                        '</button>' +
+                        '<button class="btn btn-sm ' + (a.status === 'active' ? 'btn-outline' : 'btn-success') + ' js-toggle" ' +
+                            'data-id="' + a.id + '" data-status="' + a.status + '" ' +
+                            'title="' + (a.status === 'active' ? 'Ẩn thông báo' : 'Hiện thông báo') + '">' +
+                            '<i class="fas fa-' + (a.status === 'active' ? 'eye-slash' : 'eye') + '"></i>' +
+                        '</button>' +
+                        '<button class="btn btn-sm btn-danger js-del" data-id="' + a.id + '" data-name="' + encodeURIComponent(a.title) + '" title="Xóa">' +
+                            '<i class="fas fa-trash"></i>' +
+                        '</button>' +
+                    '</div>' +
+                '</td>' +
+            '</tr>';
+        }).join('');
+
+        setHTML('tbl',
+            '<div class="tbl"><table>' +
+            '<thead><tr>' +
+                '<th style="width:40px;">#</th>' +
+                '<th>Tiêu đề</th>' +
+                '<th style="width:110px;">Loại</th>' +
+                '<th style="width:110px;">Ưu tiên</th>' +
+                '<th style="width:100px;">Đối tượng</th>' +
+                '<th style="width:110px;">Trạng thái</th>' +
+                '<th style="width:90px;">Ngày tạo</th>' +
+                '<th style="width:140px;">Thao tác</th>' +
+            '</tr></thead>' +
+            '<tbody>' + rows + '</tbody>' +
+            '</table></div>'
+        );
+
+        // Gắn event delegation cho các nút trong bảng
+        var tblEl = document.querySelector('#tbl .tbl');
+        if (tblEl) {
+            tblEl.addEventListener('click', function (e) {
+                var btn = e.target.closest('button');
+                if (!btn) return;
+
+                if (btn.classList.contains('js-edit')) {
+                    editItem(btn.dataset.item);
+                } else if (btn.classList.contains('js-toggle')) {
+                    toggleStatus(btn.dataset.id, btn.dataset.status);
+                } else if (btn.classList.contains('js-del')) {
+                    openDel(btn.dataset.id, decodeURIComponent(btn.dataset.name));
+                }
+            });
+        }
+
+        // Footer tổng kết
+        var activeCount   = list.filter(function (a) { return a.status === 'active';   }).length;
+        var inactiveCount = list.filter(function (a) { return a.status === 'inactive'; }).length;
+        var hasFilter = status || type || priority || q;
+        $('tbl-footer').style.display = 'block';
+        setHTML('tbl-footer',
+            'Tổng: <b>' + list.length + '</b> thông báo' +
+            (hasFilter ? ' (đã lọc)' : '') +
+            ' &nbsp;·&nbsp; ' +
+            '<span style="color:#38a169;">' + activeCount + ' đang hiển thị</span>' +
+            (inactiveCount ? ' &nbsp;·&nbsp; ' + inactiveCount + ' đã ẩn' : '')
+        );
+
+    } catch (e) {
+        empty('tbl', 'exclamation-circle', 'Lỗi tải dữ liệu: ' + e.message);
+    }
+}
+
+// ════════════════════════════════════════
+// MODAL THÊM / SỬA
+// ════════════════════════════════════════
+function openModal() {
+    $('f-id').value       = '';
+    $('f-title').value    = '';
+    $('f-content').value  = '';
+    $('f-expires').value  = '';
+    $('f-type').value     = 'general';
+    $('f-priority').value = 'normal';
+    $('f-audience').value = 'all';
+    setHTML('modal-title',
+        '<i class="fas fa-plus-circle" style="color:#e74c3c;margin-right:8px;"></i>Thêm thông báo mới');
+    $('modal').classList.add('open');
+    setTimeout(function () { $('f-title').focus(); }, 100);
+}
+
+function closeModal() {
+    $('modal').classList.remove('open');
+}
+
+function editItem(encodedJson) {
+    var a;
+    try { a = JSON.parse(decodeURIComponent(encodedJson)); }
+    catch (e) { toast('Lỗi đọc dữ liệu thông báo', 'danger'); return; }
+
+    $('f-id').value       = a.id;
+    $('f-title').value    = a.title           || '';
+    $('f-type').value     = a.type            || 'general';
+    $('f-priority').value = a.priority        || 'normal';
+    $('f-content').value  = a.content         || '';
+    $('f-audience').value = a.target_audience || 'all';
+    $('f-expires').value  = (a.expires_at     || '').substring(0, 10);
+
+    setHTML('modal-title',
+        '<i class="fas fa-edit" style="color:#e74c3c;margin-right:8px;"></i>Chỉnh sửa thông báo');
+    $('modal').classList.add('open');
+    setTimeout(function () { $('f-title').focus(); }, 100);
+}
+
+// ════════════════════════════════════════
+// LƯU
+// ════════════════════════════════════════
+async function save() {
+    var id      = $('f-id').value.trim();
+    var title   = $('f-title').value.trim();
+    var content = $('f-content').value.trim();
+
+    if (!title) {
+        toast('Vui lòng nhập tiêu đề thông báo', 'danger');
+        $('f-title').focus();
+        return;
+    }
+    if (!content) {
+        toast('Vui lòng nhập nội dung thông báo', 'danger');
+        $('f-content').focus();
+        return;
+    }
+
+    var body = {
+        title:           title,
+        content:         content,
+        type:            $('f-type').value,
+        priority:        $('f-priority').value,
+        target_audience: $('f-audience').value,
+        expires_at:      $('f-expires').value || null
+    };
+
+    var btn = $('save-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang lưu...';
+
+    try {
+        if (id) {
+            await API.announcements.update(id, body);
+            toast('✅ Cập nhật thông báo thành công!');
+        } else {
+            await API.announcements.create(body);
+            toast('✅ Thêm thông báo thành công!');
+        }
+        closeModal();
+        loadList();
+    } catch (e) {
+        toast('Lỗi: ' + e.message, 'danger');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-save"></i> Lưu thông báo';
+    }
+}
+
+// ════════════════════════════════════════
+// TOGGLE TRẠNG THÁI
+// ════════════════════════════════════════
+async function toggleStatus(id, currentStatus) {
+    var newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+    try {
+        await API.announcements.update(id, { status: newStatus });
+        toast(newStatus === 'active'
+            ? '👁️ Đã hiện thông báo'
+            : '🙈 Đã ẩn thông báo');
+        loadList();
+    } catch (e) {
+        toast('Lỗi: ' + e.message, 'danger');
+    }
+}
+
+// ════════════════════════════════════════
+// XÓA
+// ════════════════════════════════════════
+function openDel(id, name) {
+    delId = id;
+    setHTML('del-name', name);
+    $('del-modal').classList.add('open');
+}
+
+function closeDel() {
+    $('del-modal').classList.remove('open');
+    delId = null;
+}
+
+async function confirmDel() {
+    if (!delId) return;
+
+    var btn = $('del-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xóa...';
+
+    try {
+        await API.announcements.delete(delId);
+        toast('🗑️ Đã xóa thông báo thành công');
+        closeDel();
+        loadList();
+    } catch (e) {
+        toast('Lỗi xóa: ' + e.message, 'danger');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-trash"></i> Xóa thông báo';
+    }
+}
+
+// ── Đóng modal khi click backdrop ──
+$('modal').addEventListener('click', function (e) {
+    if (e.target === this) closeModal();
+});
+$('del-modal').addEventListener('click', function (e) {
+    if (e.target === this) closeDel();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,194 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập - Admin CLB Võ Cổ Truyền HUTECH</title>
+    <link rel="stylesheet" href="shared/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="../assets/js/config.js"></script>
+    <style>
+        .login-logo img {
+            width: 90px;
+            height: 90px;
+            border-radius: 12px;
+            object-fit: contain;
+            border: 1.5px solid #e2e8f0;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            background: #fff;
+            padding: 6px;
+        }
+        .login-box .form-control {
+            background: #f8fafc;
+            border-color: #e2e8f0;
+            font-size: 0.95rem;
+            padding: 11px 14px;
+        }
+        .login-box .form-control:focus {
+            background: #fff;
+        }
+        .login-box .btn-primary {
+            background: linear-gradient(135deg, #1a252f, #2c3e50);
+            padding: 12px;
+            font-size: 1rem;
+            letter-spacing: 0.3px;
+            box-shadow: 0 4px 15px rgba(26,37,47,0.3);
+        }
+        .login-box .btn-primary:hover {
+            background: linear-gradient(135deg, #2c3e50, #1a252f);
+            box-shadow: 0 6px 20px rgba(26,37,47,0.4);
+            transform: translateY(-1px);
+        }
+        .login-divider {
+            text-align: center;
+            margin: 20px 0 16px;
+            font-size: 0.78rem;
+            color: #a0aec0;
+        }
+        .login-hint {
+            background: #f0f4f8;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 0.8rem;
+            color: #718096;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .login-hint i { color: #e74c3c; }
+    </style>
+</head>
+<body class="login-page">
+
+<div class="login-box">
+    <div class="login-logo">
+        <!-- Logo HUTECH từ CDN chính thức, fallback về logo local -->
+        <img src="https://www.hutech.edu.vn/images/logo-hutech.png"
+             alt="Logo HUTECH"
+             style="width:90px;height:90px;border-radius:12px;object-fit:contain;border:none;box-shadow:none;background:transparent;"
+             onerror="this.onerror=null;this.src='https://upload.wikimedia.org/wikipedia/vi/thumb/8/8e/Logo_HUTECH.png/200px-Logo_HUTECH.png';this.onerror=function(){this.src='../assets/images_Logo/Logo.jpg';this.style.borderRadius='50%';this.style.objectFit='cover';}">
+        <h2>Admin HUTECH</h2>
+        <p>CLB Võ Cổ Truyền HUTECH</p>
+    </div>
+
+    <div id="msg"></div>
+
+    <div class="login-hint">
+        <i class="fas fa-info-circle"></i>
+        Chỉ tài khoản Admin mới có thể truy cập
+    </div>
+
+    <form id="frm">
+        <div class="form-group">
+            <label class="form-label">
+                <i class="fas fa-envelope" style="color:#e74c3c;margin-right:6px;font-size:0.85rem;"></i>
+                Email
+            </label>
+            <input class="form-control" type="email" id="email"
+                value="admin@vocotruyenhutech.edu.vn"
+                placeholder="Nhập email admin"
+                required autocomplete="username">
+        </div>
+        <div class="form-group">
+            <label class="form-label">
+                <i class="fas fa-lock" style="color:#e74c3c;margin-right:6px;font-size:0.85rem;"></i>
+                Mật khẩu
+            </label>
+            <input class="form-control" type="password" id="pw"
+                placeholder="Nhập mật khẩu"
+                required autocomplete="current-password">
+        </div>
+
+        <button class="btn btn-primary" type="submit" id="btn"
+            style="width:100%; justify-content:center; margin-top:8px;">
+            <i class="fas fa-sign-in-alt"></i> Đăng nhập
+        </button>
+    </form>
+
+    <div class="login-divider">
+        <a href="../index.html" style="color:#718096; font-size:0.82rem;">
+            <i class="fas fa-arrow-left"></i> Về trang chủ
+        </a>
+    </div>
+</div>
+
+<script>
+(function () {
+    var API = (window.APP_CONFIG && window.APP_CONFIG.API_BASE)
+        ? window.APP_CONFIG.API_BASE
+        : (function() {
+            var h = window.location.hostname;
+            if (h === 'localhost' || h === '127.0.0.1' || h === '') return 'http://localhost:3001/api';
+            return 'https://api.' + h + '/api';
+          })();
+    var TOKEN_KEY = 'adm_tk';
+    var USER_KEY  = 'adm_usr';
+
+    var msgEl = document.getElementById('msg');
+    var btn   = document.getElementById('btn');
+
+    function showMsg(html, type) {
+        msgEl.innerHTML = '<div class="alert alert-' + type + '">' + html + '</div>';
+    }
+
+    document.getElementById('frm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        var email = document.getElementById('email').value.trim();
+        var pw    = document.getElementById('pw').value;
+
+        if (!email || !pw) return;
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang đăng nhập...';
+        msgEl.innerHTML = '';
+
+        fetch(API + '/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email, password: pw })
+        })
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+            if (!data.success) {
+                throw new Error(data.message || 'Sai email hoặc mật khẩu');
+            }
+
+            var user  = data.data && data.data.user;
+            var token = data.data && data.data.token;
+
+            if (!token) throw new Error('Server không trả về token');
+            if (!user)  throw new Error('Server không trả về thông tin user');
+
+            // Normalize role — trim whitespace phòng trường hợp DB trả về có khoảng trắng
+            var role = (user.role || '').toString().trim().toLowerCase();
+            if (role !== 'admin') {
+                throw new Error('Tài khoản không có quyền Admin (role: "' + user.role + '")');
+            }
+
+            // Lưu user với role đã normalize
+            user.role = role;
+            localStorage.setItem(TOKEN_KEY, token);
+            localStorage.setItem(USER_KEY, JSON.stringify(user));
+
+            showMsg('<i class="fas fa-check-circle"></i> Đăng nhập thành công! Đang chuyển trang...', 'success');
+            btn.disabled = true;
+
+            // Redirect ngay — không dùng setTimeout để tránh Live Server reload can thiệp
+            window.location.replace('dashboard.html');
+        })
+        .catch(function (err) {
+            var msg = err.message || 'Lỗi không xác định';
+            if (msg.indexOf('fetch') !== -1 || msg.indexOf('Failed') !== -1 || msg.indexOf('Network') !== -1) {
+                msg = 'Không kết nối được backend. Hãy chắc backend đang chạy.';
+            }
+            showMsg('<i class="fas fa-exclamation-circle"></i> ' + msg, 'danger');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Đăng nhập';
+        });
+    });
+}());
+</script>
+</body>
+</html>

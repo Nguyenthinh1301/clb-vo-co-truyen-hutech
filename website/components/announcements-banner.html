@@ -1,0 +1,316 @@
+<section id="announcements-banner" class="ann-strip-section">
+    <div class="container">
+
+        <!-- Header row -->
+        <div class="ann-strip-header">
+            <div class="ann-strip-title">
+                <span class="ann-strip-icon"><i class="fas fa-bell"></i></span>
+                <div>
+                    <h2>Thông Báo Mới Nhất</h2>
+                    <p>Cập nhật thông tin từ CLB Võ Cổ Truyền HUTECH</p>
+                </div>
+            </div>
+            <a href="views/thong-bao.html" class="ann-strip-viewall">
+                Xem tất cả <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <!-- Cards -->
+        <div id="ann-banner-list">
+            <!-- Skeleton — thay bằng cards thật sau khi JS chạy -->
+            <div class="ann-strip-grid ann-strip-skeleton">
+                <div class="ann-sk-card"><div class="ann-sk-line w60"></div><div class="ann-sk-line w100"></div><div class="ann-sk-line w80"></div></div>
+                <div class="ann-sk-card"><div class="ann-sk-line w40"></div><div class="ann-sk-line w100"></div><div class="ann-sk-line w70"></div></div>
+                <div class="ann-sk-card"><div class="ann-sk-line w50"></div><div class="ann-sk-line w100"></div><div class="ann-sk-line w90"></div></div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<style>
+/* ════════════════════════════════════════
+   SECTION WRAPPER
+   Nền trắng, padding vừa phải — hòa vào trang
+   ════════════════════════════════════════ */
+.ann-strip-section {
+    background: #fff;
+    padding: 64px 0 72px;
+    border-top: 1px solid #f0f0f0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+/* ── Header row ── */
+.ann-strip-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+}
+.ann-strip-title {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+.ann-strip-icon {
+    width: 48px; height: 48px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #c41e3a, #e74c3c);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 14px rgba(196,30,58,0.25);
+}
+.ann-strip-icon i {
+    color: #fff;
+    font-size: 1.1rem;
+    animation: bellRing 4s ease-in-out infinite;
+}
+@keyframes bellRing {
+    0%, 85%, 100% { transform: rotate(0deg); }
+    88%  { transform: rotate(-18deg); }
+    92%  { transform: rotate(18deg); }
+    96%  { transform: rotate(-10deg); }
+    98%  { transform: rotate(6deg); }
+}
+.ann-strip-title h2 {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #2c3e50;
+    margin: 0 0 4px;
+    line-height: 1.2;
+    font-family: 'Open Sans', sans-serif;
+    letter-spacing: -0.3px;
+}
+.ann-strip-title p {
+    font-size: 13px;
+    color: #999;
+    margin: 0;
+}
+
+/* Nút "Xem tất cả" */
+.ann-strip-viewall {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #c41e3a;
+    text-decoration: none;
+    padding: 9px 20px;
+    border: 2px solid #c41e3a;
+    border-radius: 24px;
+    transition: all 0.22s ease;
+    white-space: nowrap;
+    align-self: center;
+}
+.ann-strip-viewall:hover {
+    background: #c41e3a;
+    color: #fff;
+    transform: translateX(3px);
+    box-shadow: 0 4px 14px rgba(196,30,58,0.25);
+}
+.ann-strip-viewall i {
+    transition: transform 0.22s ease;
+}
+.ann-strip-viewall:hover i {
+    transform: translateX(3px);
+}
+
+/* ════════════════════════════════════════
+   CARDS GRID
+   ════════════════════════════════════════ */
+.ann-strip-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+/* ── Single card ── */
+.ann-strip-card {
+    background: #fafbfc;
+    border: 1.5px solid #edf0f4;
+    border-radius: 16px;
+    padding: 22px 24px 20px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.25s ease;
+    cursor: pointer;
+    text-decoration: none;
+    display: block;
+}
+.ann-strip-card:hover {
+    border-color: #c41e3a;
+    background: #fff;
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(196,30,58,0.10);
+}
+
+/* Accent line trên cùng theo priority */
+.ann-strip-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: 16px 16px 0 0;
+    background: #e2e8f0;
+    transition: background 0.25s;
+}
+.ann-strip-card.pri-high::before   { background: linear-gradient(90deg, #c41e3a, #e74c3c); }
+.ann-strip-card.pri-urgent::before { background: linear-gradient(90deg, #f39c12, #e67e22); }
+.ann-strip-card.pri-normal::before { background: linear-gradient(90deg, #3498db, #2980b9); }
+.ann-strip-card.pri-low::before    { background: #cbd5e0; }
+
+/* ── Card top: type + date ── */
+.ann-card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+.ann-type-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: #f0f4f8;
+    color: #4a5568;
+}
+.ann-type-chip i { color: #c41e3a; font-size: 10px; }
+.ann-type-chip.urgent { background: #fff8e1; color: #856404; }
+.ann-type-chip.urgent i { color: #f39c12; }
+
+.ann-card-date-lbl {
+    font-size: 11px;
+    color: #b0b8c4;
+    white-space: nowrap;
+}
+
+/* ── Priority pill ── */
+.ann-pri-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 9px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    letter-spacing: 0.3px;
+}
+.ann-pri-pill.high   { background: #fef2f2; color: #c41e3a; }
+.ann-pri-pill.urgent { background: #fffbeb; color: #92400e; }
+.ann-pri-pill.normal { background: #eff6ff; color: #1d4ed8; }
+.ann-pri-pill.low    { background: #f8fafc; color: #94a3b8; }
+
+/* ── Title & excerpt ── */
+.ann-strip-card h4 {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1a252f;
+    margin: 0 0 8px;
+    line-height: 1.45;
+    transition: color 0.2s;
+}
+.ann-strip-card:hover h4 { color: #c41e3a; }
+
+.ann-strip-card p {
+    font-size: 13px;
+    color: #718096;
+    line-height: 1.65;
+    margin: 0;
+}
+
+/* ── Expiry footer ── */
+.ann-card-expiry {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: #b0b8c4;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid #f0f0f0;
+}
+.ann-card-expiry i { color: #c41e3a; }
+
+/* ── Read more arrow ── */
+.ann-card-arrow {
+    position: absolute;
+    bottom: 18px; right: 20px;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: #f0f4f8;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+    color: #c41e3a;
+    transition: all 0.22s ease;
+    opacity: 0;
+}
+.ann-strip-card:hover .ann-card-arrow {
+    opacity: 1;
+    background: #c41e3a;
+    color: #fff;
+    transform: translateX(2px);
+}
+
+/* ── Empty state ── */
+.ann-strip-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 48px 20px;
+    color: #b0b8c4;
+}
+.ann-strip-empty i { font-size: 2.4rem; margin-bottom: 12px; display: block; }
+.ann-strip-empty p { font-size: 14px; }
+
+/* ════════════════════════════════════════
+   SKELETON
+   ════════════════════════════════════════ */
+.ann-sk-card {
+    background: #fafbfc;
+    border: 1.5px solid #edf0f4;
+    border-radius: 16px;
+    padding: 22px 24px;
+}
+.ann-sk-line {
+    height: 12px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    background: linear-gradient(90deg, #edf0f4 25%, #f5f7fa 50%, #edf0f4 75%);
+    background-size: 200% 100%;
+    animation: skShimmer 1.5s infinite;
+}
+.ann-sk-line.w40  { width: 40%; }
+.ann-sk-line.w50  { width: 50%; }
+.ann-sk-line.w60  { width: 60%; }
+.ann-sk-line.w70  { width: 70%; }
+.ann-sk-line.w80  { width: 80%; }
+.ann-sk-line.w90  { width: 90%; }
+.ann-sk-line.w100 { width: 100%; }
+@keyframes skShimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* ════════════════════════════════════════
+   RESPONSIVE
+   ════════════════════════════════════════ */
+@media (max-width: 900px) {
+    .ann-strip-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 580px) {
+    .ann-strip-grid { grid-template-columns: 1fr; }
+    .ann-strip-header { flex-direction: column; align-items: flex-start; }
+    .ann-strip-title h2 { font-size: 1.3rem; }
+    .ann-strip-viewall { align-self: flex-start; }
+}
+</style>
+<!-- Script được gọi từ index.html sau khi component đã inject xong -->
+<!-- Xem hàm loadAnnouncementsBanner() trong index.html -->
