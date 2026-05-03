@@ -55,7 +55,7 @@ router.get('/news', async (req, res) => {
         const rows = await db.find(
             `SELECT id, title, excerpt, category, tags, featured_image, status, published_at, created_at
              FROM news WHERE ${where} ORDER BY created_at DESC
-             OFFSET ${offset} ROWS FETCH NEXT ${limit} ROWS ONLY`,
+             LIMIT ${limit} OFFSET ${offset}`,
             params
         );
         const total = await db.findOne(`SELECT COUNT(*) as cnt FROM news WHERE ${where}`, params);
@@ -165,7 +165,7 @@ router.get('/events', async (req, res) => {
 
         const rows = await db.find(
             `SELECT * FROM events WHERE ${where} ORDER BY date DESC
-             OFFSET ${offset} ROWS FETCH NEXT ${limit} ROWS ONLY`,
+             LIMIT ${limit} OFFSET ${offset}`,
             params
         );
         const total = await db.findOne(`SELECT COUNT(*) as cnt FROM events WHERE ${where}`, params);

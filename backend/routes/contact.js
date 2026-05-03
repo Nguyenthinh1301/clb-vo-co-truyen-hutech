@@ -91,7 +91,7 @@ router.get('/', authenticate, authorize('admin'), async (req, res) => {
              LEFT JOIN users u ON cm.replied_by = u.id
              WHERE ${whereClause}
              ORDER BY cm.created_at DESC
-             OFFSET ${offset} ROWS FETCH NEXT ${limit} ROWS ONLY`,
+             LIMIT ${limit} OFFSET ${offset}`,
             params
         );
 

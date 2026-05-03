@@ -33,8 +33,8 @@ router.get('/my-notifications', authenticate, async (req, res) => {
              LEFT JOIN users u ON n.created_by = u.id
              ${whereClause}
              ORDER BY n.created_at DESC
-             OFFSET ? ROWS FETCH NEXT ? ROWS ONLY`,
-            [...params, offset, parseInt(limit)]
+             LIMIT ? OFFSET ?`,
+            [...params, parseInt(limit), offset]
         );
 
         res.json({

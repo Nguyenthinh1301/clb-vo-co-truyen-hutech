@@ -222,8 +222,8 @@ router.get('/notifications', authenticateToken, async (req, res) => {
             FROM notifications
             WHERE user_id = ?
             ORDER BY created_at DESC
-            OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
-        `, [userId, parseInt(offset), parseInt(limit)]);
+            LIMIT ? OFFSET ?
+        `, [userId, parseInt(limit), parseInt(offset)]);
         
         // Get unread count
         const unreadCount = await db.query(`

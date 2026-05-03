@@ -46,7 +46,7 @@ router.get('/', authenticate, authorize('admin'), async (req, res) => {
              created_at, last_login_at
              FROM users ${where}
              ORDER BY created_at DESC
-             OFFSET ${offset} ROWS FETCH NEXT ${limit} ROWS ONLY`,
+             LIMIT ${limit} OFFSET ${offset}`,
             params
         );
 
