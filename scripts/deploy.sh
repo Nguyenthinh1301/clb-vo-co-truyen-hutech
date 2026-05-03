@@ -25,6 +25,12 @@ if ! grep -q "NODE_ENV=production" backend/.env; then
     echo "⚠️  CẢNH BÁO: NODE_ENV chưa được set thành 'production' trong .env"
 fi
 
+# Kiểm tra SMTP_PASS chưa được thay
+if grep -q "GMAIL_APP_PASSWORD_MOI" backend/.env; then
+    echo "⚠️  CẢNH BÁO: SMTP_PASS vẫn là placeholder — email sẽ không hoạt động"
+    echo "   Tạo Gmail App Password tại: https://myaccount.google.com/apppasswords"
+fi
+
 # ── 3. Cài dependencies backend ─────────────────────────────
 echo "📦 Cài dependencies backend..."
 cd backend

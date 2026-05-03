@@ -10,14 +10,26 @@ class EmailService {
 
     // Initialize email transporter
     init() {
+        const smtpPass = process.env.SMTP_PASS;
+        const smtpUser = process.env.SMTP_USER;
+
+        // Không khởi tạo nếu chưa cấu hình SMTP (placeholder hoặc thiếu)
+        if (!smtpPass || !smtpUser
+            || smtpPass.startsWith('<')
+            || smtpPass === 'wgfuxklwpmrtxxgg') {
+            console.warn('⚠️  Email service: SMTP_PASS chưa được cấu hình — email sẽ bị bỏ qua');
+            this.initialized = false;
+            return;
+        }
+
         try {
             this.transporter = nodemailer.createTransport({
                 host: process.env.SMTP_HOST || 'smtp.gmail.com',
                 port: parseInt(process.env.SMTP_PORT) || 587,
                 secure: false, // true for 465, false for other ports
                 auth: {
-                    user: process.env.SMTP_USER,
-                    pass: process.env.SMTP_PASS
+                    user: smtpUser,
+                    pass: smtpPass
                 },
                 tls: {
                     rejectUnauthorized: false
