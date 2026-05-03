@@ -45,8 +45,13 @@ coverage/
 temp/
 tmp/
 
-# VS Code Local History
-.history/
+# Videos lớn — không commit lên GitHub
+website/assets/videos/
+*.mp4
+*.avi
+*.mov
+*.mkv
+
 
 # Backup folders
 backup_before_auth_removal_*/
