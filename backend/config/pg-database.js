@@ -27,6 +27,20 @@ function convertPlaceholders(sql) {
   return sql.replace(/\?/g, () => `$${++i}`);
 }
 
+// ── Helper: fix boolean comparisons for PostgreSQL ───────────
+// PostgreSQL boolean columns can't compare with integers (= 1, = 0)
+function fixBooleans(sql) {
+  // is_active = 1 → is_active = true
+  // is_active = 0 → is_active = false
+  // is_read = 1 → is_read = true
+  // is_read = 0 → is_read = false
+  return sql
+    .replace(/\b(is_active|is_read|is_verified|email_verified|two_factor_enabled|success|certificate_issued)\s*=\s*1\b/gi,
+      (_, col) => `${col} = true`)
+    .replace(/\b(is_active|is_read|is_verified|email_verified|two_factor_enabled|success|certificate_issued)\s*=\s*0\b/gi,
+      (_, col) => `${col} = false`);
+}
+
 // ── Helper: convert MSSQL-specific syntax → PostgreSQL ───────
 function convertToPostgres(sql) {
   let q = sql;
@@ -88,7 +102,7 @@ function convertToPostgres(sql) {
 
 // ── Core query ───────────────────────────────────────────────
 async function rawQuery(sql, params = []) {
-  const converted = convertToPostgres(convertPlaceholders(sql));
+  const converted = fixBooleans(convertToPostgres(convertPlaceholders(sql)));
   if (process.env.NODE_ENV === 'development') {
     logger.debug('PG Query:', { query: converted, params });
   }
