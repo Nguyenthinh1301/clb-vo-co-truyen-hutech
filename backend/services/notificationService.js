@@ -30,7 +30,7 @@ class NotificationService {
             
             // Get all admin users
             const admins = await db.query(
-                'SELECT id FROM users WHERE role = ? AND is_active = 1',
+                'SELECT id FROM users WHERE role = ? AND is_active = true',
                 ['admin']
             );
             
@@ -46,7 +46,7 @@ class NotificationService {
                     type: notificationType,
                     title: title,
                     message: message,
-                    is_read: 0
+                    is_read: false
                 };
                 
                 return db.insert('notifications', notificationData);
@@ -219,7 +219,7 @@ class NotificationService {
                 type: notificationType,
                 title: title,
                 message: message,
-                is_read: 0
+                is_read: false
             };
             
             await db.insert('notifications', notificationData);

@@ -29,7 +29,7 @@ router.post('/', authenticate, authorize('instructor', 'admin'), ValidationRules
 
         // Check if user is enrolled in the class
         const enrollment = await db.findOne(
-            'SELECT * FROM class_enrollments WHERE user_id = ? AND class_id = ? AND status = "enrolled"',
+            "SELECT * FROM class_enrollments WHERE user_id = ? AND class_id = ? AND status = 'enrolled'",
             [user_id, class_id]
         );
 
@@ -321,7 +321,7 @@ router.post('/bulk', authenticate, authorize('instructor', 'admin'), async (req,
 
             // Check if user is enrolled
             const enrollment = await db.findOne(
-                'SELECT * FROM class_enrollments WHERE user_id = ? AND class_id = ? AND status = "enrolled"',
+                "SELECT * FROM class_enrollments WHERE user_id = ? AND class_id = ? AND status = 'enrolled'",
                 [user_id, class_id]
             );
 

@@ -34,7 +34,7 @@ router.get('/profile', authenticateToken, async (req, res) => {
                 belt_level,
                 created_at
             FROM users
-            WHERE id = ? AND is_active = 1
+            WHERE id = ? AND is_active = true
         `, [userId]);
         
         if (users.length === 0) {

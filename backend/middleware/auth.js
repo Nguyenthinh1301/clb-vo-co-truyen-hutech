@@ -81,7 +81,7 @@ const authenticate = async (req, res, next) => {
         
         // Support both 'token' (MySQL schema) and 'token_hash' (MSSQL schema)
         const session = await db.findOne(
-            `SELECT * FROM user_sessions WHERE user_id = ? AND token = ? AND is_active = 1 AND ${dateCheck}`,
+            `SELECT * FROM user_sessions WHERE user_id = ? AND token = ? AND is_active = true AND ${dateCheck}`,
             [decoded.userId, token]
         );
 
@@ -94,7 +94,7 @@ const authenticate = async (req, res, next) => {
 
         // Get user details
         const user = await db.findOne(
-            'SELECT id, email, username, first_name, last_name, role, membership_status, is_active FROM users WHERE id = ? AND is_active = 1',
+            'SELECT id, email, username, first_name, last_name, role, membership_status, is_active FROM users WHERE id = ? AND is_active = true',
             [decoded.userId]
         );
 
@@ -150,7 +150,7 @@ const optionalAuth = async (req, res, next) => {
             const decoded = AuthUtils.verifyToken(token);
 
             const user = await db.findOne(
-                'SELECT id, email, username, first_name, last_name, role, membership_status FROM users WHERE id = ? AND is_active = 1',
+                'SELECT id, email, username, first_name, last_name, role, membership_status FROM users WHERE id = ? AND is_active = true',
                 [decoded.userId]
             );
 
@@ -225,7 +225,7 @@ class SessionManager {
             const decoded = AuthUtils.verifyRefreshToken(refreshToken);
 
             const session = await db.findOne(
-                'SELECT * FROM user_sessions WHERE user_id = ? AND refresh_token = ? AND is_active = 1',
+                'SELECT * FROM user_sessions WHERE user_id = ? AND refresh_token = ? AND is_active = true',
                 [decoded.userId, refreshToken]
             );
 
@@ -280,11 +280,9 @@ class SessionManager {
 
     // Clean expired sessions
     static async cleanExpiredSessions() {
-        const dbType = process.env.DB_TYPE || 'mysql';
-        const dateFunc = dbType === 'mssql' ? 'GETDATE()' : 'NOW()';
         return await db.delete(
             'user_sessions',
-            `expires_at < ${dateFunc} OR is_active = 0`,
+            `expires_at < NOW() OR is_active = false`,
             []
         );
     }
@@ -292,7 +290,7 @@ class SessionManager {
     // Get user sessions
     static async getUserSessions(userId) {
         return await db.query(
-            'SELECT id, device_info, ip_address, created_at, expires_at FROM user_sessions WHERE user_id = ? AND is_active = 1',
+            'SELECT id, device_info, ip_address, created_at, expires_at FROM user_sessions WHERE user_id = ? AND is_active = true',
             [userId]
         );
     }
@@ -344,7 +342,7 @@ const authenticateJwt = async (req, res, next) => {
 
         // Chỉ lấy user từ DB, không check session
         const user = await db.findOne(
-            'SELECT id, email, username, first_name, last_name, role, membership_status, is_active FROM users WHERE id = ? AND is_active = 1',
+            'SELECT id, email, username, first_name, last_name, role, membership_status, is_active FROM users WHERE id = ? AND is_active = true',
             [decoded.userId]
         );
 

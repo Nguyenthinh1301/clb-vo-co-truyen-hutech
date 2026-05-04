@@ -152,7 +152,7 @@ router.post('/', authenticateToken, requireAdmin, async (req, res) => {
                 is_active,
                 created_at,
                 updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, GETDATE(), GETDATE())
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
         `, [
             email,
             hashedPassword,
@@ -163,7 +163,7 @@ router.post('/', authenticateToken, requireAdmin, async (req, res) => {
             gender || null,
             address || null,
             role || 'member',
-            is_active !== undefined ? is_active : 1
+            is_active !== undefined ? Boolean(is_active) : true
         ]);
         
         // Get the newly created member
@@ -246,7 +246,7 @@ router.put('/:id', authenticateToken, requireAdmin, async (req, res) => {
                 address = ?,
                 role = COALESCE(?, role),
                 is_active = COALESCE(?, is_active),
-                updated_at = GETDATE()
+                updated_at = NOW()
             WHERE id = ?
         `, [
             email,
@@ -303,9 +303,9 @@ router.delete('/:id', authenticateToken, requireAdmin, async (req, res) => {
             });
         }
         
-        // Soft delete (set is_active = 0) instead of hard delete
+        // Soft delete (set is_active = false) instead of hard delete
         await db.query(
-            'UPDATE users SET is_active = 0, updated_at = GETDATE() WHERE id = ?',
+            'UPDATE users SET is_active = false, updated_at = NOW() WHERE id = ?',
             [id]
         );
         
@@ -332,7 +332,7 @@ router.get('/stats/summary', authenticateToken, requireAdmin, async (req, res) =
         const stats = await db.query(`
             SELECT 
                 COUNT(*) as total_members,
-                SUM(CASE WHEN is_active = 1 THEN 1 ELSE 0 END) as active_members,
+                SUM(CASE WHEN is_active = true THEN 1 ELSE 0 END) as active_members,
                 SUM(CASE WHEN role = 'member' THEN 1 ELSE 0 END) as regular_members,
                 SUM(CASE WHEN role = 'instructor' THEN 1 ELSE 0 END) as instructors,
                 SUM(CASE WHEN role = 'admin' THEN 1 ELSE 0 END) as admins

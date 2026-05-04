@@ -245,7 +245,7 @@ router.get('/profile/notifications', authenticate, async (req, res) => {
 
         const notifications = await db.find(
             `SELECT * FROM notifications WHERE ${where}
-             AND (expires_at IS NULL OR expires_at > GETDATE())
+             AND (expires_at IS NULL OR expires_at > NOW())
              ORDER BY created_at DESC`,
             params
         );
@@ -289,7 +289,7 @@ router.put('/:id', authenticate, authorize('admin'), async (req, res) => {
         const upd = { updated_at: new Date() };
         if (role              !== undefined) upd.role              = role;
         if (membership_status !== undefined) upd.membership_status = membership_status;
-        if (is_active         !== undefined) upd.is_active         = is_active ? 1 : 0;
+        if (is_active         !== undefined) upd.is_active         = is_active ? true : false;
         if (belt_level        !== undefined) upd.belt_level        = belt_level;
         if (first_name        !== undefined) upd.first_name        = first_name;
         if (last_name         !== undefined) upd.last_name         = last_name;
@@ -346,12 +346,12 @@ router.delete('/:id', authenticate, authorize('admin'), async (req, res) => {
             return res.status(403).json({ success: false, message: 'Không thể khóa tài khoản Admin' });
         }
 
-        const newActive = existing.is_active ? 0 : 1;
+        const newActive = existing.is_active ? false : true;
         await db.update('users', { is_active: newActive, updated_at: new Date() }, 'id = ?', [numId]);
         invalidateUserCache();
 
         // Khi khóa tài khoản → revoke tất cả sessions ngay lập tức
-        // Token JWT sẽ bị từ chối ở middleware authenticate (check is_active = 1)
+        // Token JWT sẽ bị từ chối ở middleware authenticate (check is_active = true)
         if (!newActive) {
             await db.update('user_sessions', { is_active: false }, 'user_id = ?', [numId]);
         }
@@ -438,7 +438,7 @@ router.get('/:id', async (req, res) => {
         const user = await db.findOne(
             `SELECT id, username, first_name, last_name, full_name,
              profile_image, role, belt_level, join_date
-             FROM users WHERE id = ? AND is_active = 1`,
+             FROM users WHERE id = ? AND is_active = true`,
             [numId]
         );
         if (!user) return res.status(404).json({ success: false, message: 'Người dùng không tồn tại' });

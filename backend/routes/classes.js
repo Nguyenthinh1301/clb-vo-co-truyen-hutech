@@ -162,7 +162,7 @@ router.post('/:id/enroll', authenticate, async (req, res) => {
 
         // Check if class exists and is active
         const classInfo = await db.findOne(
-            'SELECT * FROM classes WHERE id = ? AND status = "active"',
+            "SELECT * FROM classes WHERE id = ? AND status = 'active'",
             [numId]
         );
 
@@ -257,7 +257,7 @@ router.post('/', authenticate, authorize('instructor', 'admin'), ValidationRules
 
         // Verify instructor exists and has correct role
         const instructor = await db.findOne(
-            'SELECT id FROM users WHERE id = ? AND role IN ("instructor", "admin") AND is_active = 1',
+            "SELECT id FROM users WHERE id = ? AND role IN ('instructor', 'admin') AND is_active = true",
             [instructor_id]
         );
 
@@ -506,7 +506,7 @@ router.delete('/:id', authenticate, authorize('admin'), async (req, res) => {
 
         // Check if class has students
         const enrollmentCount = await db.findOne(
-            'SELECT COUNT(*) as count FROM class_enrollments WHERE class_id = ? AND status = "enrolled"',
+            "SELECT COUNT(*) as count FROM class_enrollments WHERE class_id = ? AND status = 'enrolled'",
             [numId]
         );
 

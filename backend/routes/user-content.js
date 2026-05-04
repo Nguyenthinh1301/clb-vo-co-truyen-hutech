@@ -17,35 +17,18 @@ router.get('/announcements', async (req, res) => {
         const offset = (page - 1) * limit;
         
         const dbType = process.env.DB_TYPE || 'mysql';
-        let dateCheck;
+        let dateCheck = '(expires_at IS NULL OR expires_at > NOW())';
         
-        if (dbType === 'mssql') {
-            dateCheck = '(expires_at IS NULL OR expires_at > GETDATE())';
-        } else {
-            dateCheck = '(expires_at IS NULL OR expires_at > NOW())';
-        }
-        
-        let query;
         const params = [req.user.role];
         
-        if (dbType === 'mssql') {
-            query = `SELECT TOP ${parseInt(limit)} id, title, content, type, priority, created_at, expires_at
-                     FROM announcements 
-                     WHERE status = 'active' 
-                     AND ${dateCheck}
-                     AND (target_audience = 'all' OR target_audience = ?)
-                     ORDER BY priority DESC, created_at DESC 
-                     OFFSET ${offset} ROWS`;
-        } else {
-            query = `SELECT id, title, content, type, priority, created_at, expires_at
+        const query = `SELECT id, title, content, type, priority, created_at, expires_at
                      FROM announcements 
                      WHERE status = 'active' 
                      AND ${dateCheck}
                      AND (target_audience = 'all' OR target_audience = ?)
                      ORDER BY priority DESC, created_at DESC 
                      LIMIT ? OFFSET ?`;
-            params.push(parseInt(limit), offset);
-        }
+        params.push(parseInt(limit), offset);
         
         const announcements = await db.query(query, params);
         
@@ -132,28 +115,15 @@ router.get('/news', async (req, res) => {
             params.push(category);
         }
         
-        // Use database-agnostic query
-        const dbType = process.env.DB_TYPE || 'mysql';
-        let query;
-        
-        if (dbType === 'mssql') {
-            query = `SELECT TOP ${parseInt(limit)} n.id, n.title, n.excerpt, n.category, n.tags, n.featured_image, 
-                            n.published_at, n.views, u.first_name, u.last_name
-                     FROM news n
-                     LEFT JOIN users u ON n.author_id = u.id
-                     WHERE ${whereClause}
-                     ORDER BY n.published_at DESC 
-                     OFFSET ${offset} ROWS`;
-        } else {
-            query = `SELECT n.id, n.title, n.excerpt, n.category, n.tags, n.featured_image, 
+        // Use PostgreSQL-compatible query
+        const query = `SELECT n.id, n.title, n.excerpt, n.category, n.tags, n.featured_image, 
                             n.published_at, n.views, u.first_name, u.last_name
                      FROM news n
                      LEFT JOIN users u ON n.author_id = u.id
                      WHERE ${whereClause}
                      ORDER BY n.published_at DESC 
                      LIMIT ? OFFSET ?`;
-            params.push(parseInt(limit), offset);
-        }
+        params.push(parseInt(limit), offset);
         
         const news = await db.query(query, params);
         
@@ -243,19 +213,10 @@ router.get('/dashboard-stats', async (req, res) => {
         );
         
         // Get user's upcoming events
-        const dbType = process.env.DB_TYPE || 'mysql';
-        let dateCheck;
-        
-        if (dbType === 'mssql') {
-            dateCheck = 'date >= CAST(GETDATE() AS DATE)';
-        } else {
-            dateCheck = 'event_date >= CURDATE()';
-        }
-        
         const upcomingEvents = await db.findOne(
             `SELECT COUNT(*) as count FROM event_registrations er
              JOIN events e ON er.event_id = e.id
-             WHERE er.user_id = ? AND e.${dateCheck}`,
+             WHERE er.user_id = ? AND e.date >= CURRENT_DATE`,
             [userId]
         );
         
@@ -276,7 +237,7 @@ router.get('/dashboard-stats', async (req, res) => {
         // Get unread notifications count
         const unreadNotifications = await db.findOne(
             `SELECT COUNT(*) as count FROM notifications 
-             WHERE user_id = ? AND is_read = 0`,
+             WHERE user_id = ? AND is_read = false`,
             [userId]
         );
         
@@ -310,35 +271,8 @@ router.get('/recent-activities', async (req, res) => {
         const userId = req.user.id;
         const { limit = 10 } = req.query;
         
-        // Use database-agnostic query
-        const dbType = process.env.DB_TYPE || 'mysql';
-        let query;
-        
-        if (dbType === 'mssql') {
-            query = `SELECT TOP ${parseInt(limit)} * FROM (
-                        SELECT 
-                            'attendance' as type,
-                            a.id,
-                            a.created_at as date,
-                            c.name as title,
-                            a.status as status
-                        FROM attendance a
-                        JOIN classes c ON a.class_id = c.id
-                        WHERE a.user_id = ?
-                        UNION ALL
-                        SELECT 
-                            'event' as type,
-                            er.id,
-                            er.registered_at as date,
-                            e.name as title,
-                            er.status as status
-                        FROM event_registrations er
-                        JOIN events e ON er.event_id = e.id
-                        WHERE er.user_id = ?
-                    ) AS combined
-                    ORDER BY date DESC`;
-        } else {
-            query = `SELECT 
+        // Use PostgreSQL-compatible query
+        const query = `SELECT 
                         'attendance' as type,
                         a.id,
                         a.created_at as date,
@@ -359,11 +293,8 @@ router.get('/recent-activities', async (req, res) => {
                      WHERE er.user_id = ?
                      ORDER BY date DESC
                      LIMIT ?`;
-        }
         
-        const params = dbType === 'mssql' 
-            ? [userId, userId]
-            : [userId, userId, parseInt(limit)];
+        const params = [userId, userId, parseInt(limit)];
         
         const activities = await db.query(query, params);
         

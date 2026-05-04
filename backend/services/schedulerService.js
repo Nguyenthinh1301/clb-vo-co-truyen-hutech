@@ -201,10 +201,9 @@ class SchedulerService {
     // Job: Clean expired notifications
     async cleanExpiredNotifications() {
         try {
-            // Use GETDATE() for MSSQL instead of NOW()
             const result = await db.delete(
                 'notifications',
-                'expires_at IS NOT NULL AND expires_at < GETDATE()'
+                'expires_at IS NOT NULL AND expires_at < NOW()'
             );
 
             console.log(`   Cleaned ${result} expired notifications`);
@@ -228,14 +227,14 @@ class SchedulerService {
 
             const report = {
                 date: today,
-                new_users: userStats[0].new_users,
-                new_classes: classStats[0].new_classes,
-                new_events: eventStats[0].new_events,
-                total_attendance: attendanceStats[0].total_attendance
+                new_users: (Array.isArray(userStats[0]) ? userStats[0] : userStats)[0]?.new_users || 0,
+                new_classes: (Array.isArray(classStats[0]) ? classStats[0] : classStats)[0]?.new_classes || 0,
+                new_events: (Array.isArray(eventStats[0]) ? eventStats[0] : eventStats)[0]?.new_events || 0,
+                total_attendance: (Array.isArray(attendanceStats[0]) ? attendanceStats[0] : attendanceStats)[0]?.total_attendance || 0
             };
 
             // Send report to admins
-            const admins = await db.query('SELECT email FROM users WHERE role = "admin" AND is_active = 1');
+            const admins = await db.query('SELECT email FROM users WHERE role = ? AND is_active = true', ['admin']);
             
             for (const admin of admins) {
                 await emailService.sendEmail({
@@ -263,10 +262,9 @@ class SchedulerService {
     async cleanOldAuditLogs() {
         try {
             // Keep logs for 90 days
-            // Use DATEADD for MSSQL instead of DATE_SUB
             const result = await db.delete(
                 'audit_logs',
-                'created_at < DATEADD(DAY, -90, GETDATE())'
+                "created_at < NOW() - INTERVAL '90 days'"
             );
 
             console.log(`   Cleaned ${result} old audit logs`);
@@ -279,12 +277,11 @@ class SchedulerService {
     async updateMembershipStatus() {
         try {
             // Find users with expired memberships
-            // Use DATEADD for MSSQL instead of DATE_SUB
             const result = await db.query(`
                 UPDATE users 
                 SET membership_status = 'expired'
                 WHERE membership_status = 'active'
-                AND last_login_at < DATEADD(MONTH, -6, GETDATE())
+                AND last_login_at < NOW() - INTERVAL '6 months'
             `);
 
             console.log(`   Updated ${result.affectedRows || result.rowsAffected || 0} membership statuses`);
