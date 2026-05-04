@@ -226,17 +226,18 @@ router.get('/notifications', authenticateToken, async (req, res) => {
         `, [userId, parseInt(limit), parseInt(offset)]);
         
         // Get unread count
-        const unreadCount = await db.query(`
+        const unreadCountResult = await db.query(`
             SELECT COUNT(*) as count
             FROM notifications
-            WHERE user_id = ? AND is_read = 0
+            WHERE user_id = ? AND is_read = false
         `, [userId]);
+        const unreadRows = Array.isArray(unreadCountResult[0]) ? unreadCountResult[0] : unreadCountResult;
         
         res.json({
             success: true,
             data: {
                 notifications,
-                unreadCount: unreadCount[0]?.count || 0
+                unreadCount: unreadRows[0]?.count || 0
             }
         });
     } catch (error) {
@@ -259,12 +260,13 @@ router.put('/notifications/:id/read', authenticateToken, async (req, res) => {
         const notificationId = req.params.id;
         
         // Check if notification belongs to user
-        const notification = await db.query(
+        const notifResult = await db.query(
             'SELECT id FROM notifications WHERE id = ? AND user_id = ?',
             [notificationId, userId]
         );
+        const notifRows = Array.isArray(notifResult[0]) ? notifResult[0] : notifResult;
         
-        if (notification.length === 0) {
+        if (notifRows.length === 0) {
             return res.status(404).json({
                 success: false,
                 message: 'Không tìm thấy thông báo'
@@ -273,7 +275,7 @@ router.put('/notifications/:id/read', authenticateToken, async (req, res) => {
         
         await db.update(
             'notifications',
-            { is_read: 1 },
+            { is_read: true },
             'id = ?',
             [notificationId]
         );
@@ -301,7 +303,7 @@ router.get('/stats', authenticateToken, async (req, res) => {
         const userId = req.user.id;
         
         // Count enrolled classes
-        const classCount = await db.query(`
+        const classCountResult = await db.query(`
             SELECT COUNT(*) as count
             FROM class_enrollments
             WHERE user_id = ? AND status = 'active'
@@ -310,21 +312,21 @@ router.get('/stats', authenticateToken, async (req, res) => {
         // Count upcoming events - use current date as parameter
         const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
         
-        const eventCount = await db.query(`
+        const eventCountResult = await db.query(`
             SELECT COUNT(*) as count
             FROM events e
             WHERE e.date >= ? AND e.status IN ('upcoming', 'ongoing')
         `, [today]);
         
         // Count unread notifications
-        const notificationCount = await db.query(`
+        const notificationCountResult = await db.query(`
             SELECT COUNT(*) as count
             FROM notifications
-            WHERE user_id = ? AND is_read = 0
+            WHERE user_id = ? AND is_read = false
         `, [userId]);
         
         // Get attendance stats
-        const attendanceStats = await db.query(`
+        const attendanceStatsResult = await db.query(`
             SELECT 
                 COUNT(*) as total_sessions,
                 SUM(CASE WHEN status = 'present' THEN 1 ELSE 0 END) as present_count,
@@ -333,6 +335,13 @@ router.get('/stats', authenticateToken, async (req, res) => {
             FROM attendance
             WHERE user_id = ?
         `, [userId]);
+
+        // Normalize db.query results (PostgreSQL returns rows directly, MySQL returns [rows, fields])
+        const toRows = (r) => Array.isArray(r[0]) ? r[0] : r;
+        const classCount       = toRows(classCountResult);
+        const eventCount       = toRows(eventCountResult);
+        const notificationCount = toRows(notificationCountResult);
+        const attendanceStats  = toRows(attendanceStatsResult);
         
         res.json({
             success: true,

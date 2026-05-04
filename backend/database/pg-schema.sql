@@ -38,8 +38,8 @@ CREATE INDEX IF NOT EXISTS idx_users_active ON users(is_active);
 CREATE TABLE IF NOT EXISTS user_sessions (
     id                  SERIAL PRIMARY KEY,
     user_id             INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    token_hash          VARCHAR(500) NOT NULL UNIQUE,
-    refresh_token_hash  VARCHAR(500),
+    token               VARCHAR(500) NOT NULL UNIQUE,
+    refresh_token       VARCHAR(500),
     device_info         TEXT,
     ip_address          VARCHAR(45),
     user_agent          VARCHAR(500),

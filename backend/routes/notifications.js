@@ -13,7 +13,7 @@ router.get('/my-notifications', authenticate, async (req, res) => {
         let params = [req.user.id];
 
         if (unread_only === 'true') {
-            whereClause += ' AND is_read = 0';
+            whereClause += ' AND is_read = false';
         }
 
         // Get total count
@@ -76,7 +76,7 @@ router.patch('/:id/read', authenticate, async (req, res) => {
         }
 
         // Mark as read
-        await db.update('notifications', { is_read: 1 }, 'id = ?', [id]);
+        await db.update('notifications', { is_read: true }, 'id = ?', [id]);
 
         res.json({
             success: true,
@@ -97,8 +97,8 @@ router.patch('/mark-all-read', authenticate, async (req, res) => {
     try {
         await db.update(
             'notifications', 
-            { is_read: 1 }, 
-            'user_id = ? AND is_read = 0', 
+            { is_read: true }, 
+            'user_id = ? AND is_read = false', 
             [req.user.id]
         );
 
@@ -120,7 +120,7 @@ router.patch('/mark-all-read', authenticate, async (req, res) => {
 router.get('/unread-count', authenticate, async (req, res) => {
     try {
         const result = await db.findOne(
-            'SELECT COUNT(*) as count FROM notifications WHERE user_id = ? AND is_read = 0',
+            'SELECT COUNT(*) as count FROM notifications WHERE user_id = ? AND is_read = false',
             [req.user.id]
         );
 

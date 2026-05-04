@@ -262,7 +262,7 @@ class SessionManager {
     static async revokeSession(sessionId) {
         return await db.update(
             'user_sessions',
-            { is_active: 0 },
+            { is_active: false },
             'id = ?',
             [sessionId]
         );
@@ -272,7 +272,7 @@ class SessionManager {
     static async revokeAllUserSessions(userId) {
         return await db.update(
             'user_sessions',
-            { is_active: 0 },
+            { is_active: false },
             'user_id = ?',
             [userId]
         );

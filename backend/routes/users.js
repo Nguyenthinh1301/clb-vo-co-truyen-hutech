@@ -101,7 +101,7 @@ router.post('/', authenticate, authorize('admin'), ValidationRules.userRegistrat
             address:      address       || null,
             role,
             membership_status: 'pending',
-            is_active: 1
+            is_active: true
         });
 
         const user = await db.findOne(
@@ -241,7 +241,7 @@ router.get('/profile/notifications', authenticate, async (req, res) => {
         const { unread_only = false } = req.query;
         let where  = '(user_id = ? OR user_id IS NULL)';
         let params = [req.user.id];
-        if (unread_only === 'true') { where += ' AND is_read = 0'; }
+        if (unread_only === 'true') { where += ' AND is_read = false'; }
 
         const notifications = await db.find(
             `SELECT * FROM notifications WHERE ${where}
@@ -264,7 +264,7 @@ router.put('/profile/notifications/:id/read', authenticate, async (req, res) => 
             [id, req.user.id]
         );
         if (!notification) return res.status(404).json({ success: false, message: 'Thông báo không tồn tại' });
-        await db.update('notifications', { is_read: 1, read_at: new Date() }, 'id = ?', [id]);
+        await db.update('notifications', { is_read: true, read_at: new Date() }, 'id = ?', [id]);
         res.json({ success: true, message: 'Đã đánh dấu đã đọc' });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Lỗi server khi cập nhật thông báo' });
@@ -353,7 +353,7 @@ router.delete('/:id', authenticate, authorize('admin'), async (req, res) => {
         // Khi khóa tài khoản → revoke tất cả sessions ngay lập tức
         // Token JWT sẽ bị từ chối ở middleware authenticate (check is_active = 1)
         if (!newActive) {
-            await db.update('user_sessions', { is_active: 0 }, 'user_id = ?', [numId]);
+            await db.update('user_sessions', { is_active: false }, 'user_id = ?', [numId]);
         }
 
         try {

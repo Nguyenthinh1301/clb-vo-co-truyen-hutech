@@ -177,12 +177,14 @@ router.post('/login', ValidationRules.userLogin, handleValidationErrors, async (
             }
             
             const recentAttempts = await db.query(recentAttemptsQuery, [email, clientIP]);
+            // db.query trả về [rows, null] — lấy rows[0]
+            const attemptsRows = Array.isArray(recentAttempts[0]) ? recentAttempts[0] : recentAttempts;
             
-            if (recentAttempts && recentAttempts.length > 0) {
+            if (attemptsRows && attemptsRows.length > 0) {
                 await db.update('login_attempts', 
-                    { success: 1, failure_reason: null }, 
+                    { success: true, failure_reason: null }, 
                     'id = ?', 
-                    [recentAttempts[0].id]
+                    [attemptsRows[0].id]
                 );
             }
         } catch (updateError) {
@@ -379,7 +381,7 @@ router.put('/change-password', authenticate, ValidationRules.changePassword, han
 
         // Revoke all sessions except current
         await db.query(
-            'UPDATE user_sessions SET is_active = 0 WHERE user_id = ? AND id != ?',
+            'UPDATE user_sessions SET is_active = false WHERE user_id = $1 AND id != $2',
             [req.user.id, req.session.id]
         );
 
