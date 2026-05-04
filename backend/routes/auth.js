@@ -228,6 +228,8 @@ router.post('/login', ValidationRules.userLogin, handleValidationErrors, async (
 
     } catch (error) {
         console.error('Login error:', error);
+        console.error('Login error stack:', error.stack);
+        console.error('Login error detail:', JSON.stringify({ message: error.message, code: error.code, detail: error.detail }));
         res.status(500).json({
             success: false,
             message: 'Lỗi server khi đăng nhập'
