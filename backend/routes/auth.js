@@ -129,7 +129,7 @@ router.post('/login', ValidationRules.userLogin, handleValidationErrors, async (
 
         // Find user by email or username (email can be used as username too)
         const user = await db.findOne(
-            'SELECT * FROM users WHERE (email = ? OR username = ?) AND is_active = 1',
+            'SELECT * FROM users WHERE (email = ? OR username = ?) AND is_active = true',
             [email, email] // Using email for both email and username search
         );
 
@@ -202,8 +202,8 @@ router.post('/login', ValidationRules.userLogin, handleValidationErrors, async (
         };
         const session = await SessionManager.createSession(user.id, deviceInfo);
 
-        // Remove password_hash from response
-        const { password_hash: userPasswordHash, ...userWithoutPassword } = user;
+        // Remove password fields from response (cả 'password' lẫn 'password_hash')
+        const { password: _pw, password_hash: _pwh, ...userWithoutPassword } = user;
 
         // Log successful login
         await auditLog({

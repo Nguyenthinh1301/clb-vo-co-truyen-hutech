@@ -11,9 +11,21 @@ const preparedStatements = new Map();
 
 // Adapter to make MSSQL work like MySQL
 const adapter = {
+  // Sanitize params: convert JS boolean → 1/0 cho MSSQL
+  _sanitizeParams(params) {
+    if (!Array.isArray(params)) return params;
+    return params.map(p => {
+      if (p === true)  return 1;
+      if (p === false) return 0;
+      return p;
+    });
+  },
+
   // Query method compatible với MySQL và tối ưu hóa
   async query(sql, params = []) {
     try {
+      params = this._sanitizeParams(params);
+
       // Convert MySQL ? placeholders to MSSQL @param0, @param1
       let mssqlQuery = sql;
       let paramIndex = 0;
@@ -46,21 +58,35 @@ const adapter = {
   // Convert MySQL syntax to MSSQL
   convertMySQLToMSSQL(query) {
     let mssqlQuery = query;
-    
-    // 1. Convert LIMIT to TOP
-    const limitMatch = mssqlQuery.match(/LIMIT\s+(\d+)(?:\s+OFFSET\s+(\d+))?$/i);
+
+    // 0. Convert boolean literals: = true → = 1, = false → = 0
+    //    Áp dụng cho WHERE clause và SET clause
+    mssqlQuery = mssqlQuery.replace(/=\s*true\b/gi,  '= 1');
+    mssqlQuery = mssqlQuery.replace(/=\s*false\b/gi, '= 0');
+    // Cũng xử lý dạng IS TRUE / IS FALSE (ít gặp nhưng an toàn)
+    mssqlQuery = mssqlQuery.replace(/\bIS\s+TRUE\b/gi,  '= 1');
+    mssqlQuery = mssqlQuery.replace(/\bIS\s+FALSE\b/gi, '= 0');
+
+    // 1. Convert LIMIT/OFFSET to MSSQL syntax
+    // Xử lý cả dạng: LIMIT n, LIMIT n OFFSET m, OFFSET m ROWS FETCH NEXT n ROWS ONLY
+    const limitMatch = mssqlQuery.match(/LIMIT\s+(\d+)(?:\s+OFFSET\s+(\d+))?/i);
     if (limitMatch) {
-      const limit = limitMatch[1];
-      const offset = limitMatch[2] || 0;
-      
+      const limit  = parseInt(limitMatch[1]);
+      const offset = parseInt(limitMatch[2] || 0);
+
+      // Xóa toàn bộ LIMIT ... OFFSET ... khỏi query
+      mssqlQuery = mssqlQuery.replace(/\s*LIMIT\s+\d+(?:\s+OFFSET\s+\d+)?/i, '');
+
       if (offset > 0) {
-        // Sử dụng OFFSET/FETCH cho SQL Server 2012+
-        mssqlQuery = mssqlQuery.replace(/LIMIT\s+\d+(?:\s+OFFSET\s+\d+)?$/i, '');
+        // Dùng OFFSET/FETCH cho SQL Server 2012+
+        // Cần có ORDER BY trước OFFSET — nếu chưa có thì thêm ORDER BY (SELECT NULL)
+        if (!/ORDER\s+BY/i.test(mssqlQuery)) {
+          mssqlQuery += ' ORDER BY (SELECT NULL)';
+        }
         mssqlQuery += ` OFFSET ${offset} ROWS FETCH NEXT ${limit} ROWS ONLY`;
       } else {
-        // Sử dụng TOP cho simple LIMIT
-        mssqlQuery = mssqlQuery.replace(/LIMIT\s+\d+$/i, '');
-        mssqlQuery = mssqlQuery.replace(/^SELECT/i, `SELECT TOP ${limit}`);
+        // Dùng TOP cho LIMIT không có OFFSET
+        mssqlQuery = mssqlQuery.replace(/^(\s*SELECT\s)/i, `$1TOP ${limit} `);
       }
     }
     
@@ -92,7 +118,11 @@ const adapter = {
         // Raw SQL query
         let sql = tableOrSql;
         let params = Array.isArray(conditionsOrParams) ? conditionsOrParams : [];
+        params = this._sanitizeParams(params);
         
+        // Convert boolean literals trước khi convert ?
+        sql = this.convertMySQLToMSSQL(sql);
+
         // Convert MySQL ? to MSSQL @param
         let paramIndex = 0;
         sql = sql.replace(/\?/g, () => `@param${paramIndex++}`);
@@ -170,7 +200,7 @@ const adapter = {
         const table = tableOrSql;
         const data = dataOrParams;
         const keys = Object.keys(data);
-        const values = Object.values(data);
+        const values = Object.values(data).map(v => v === true ? 1 : v === false ? 0 : v);
         const columns = keys.join(', ');
         const placeholders = keys.map((_, index) => `@param${index}`).join(', ');
         
@@ -193,7 +223,7 @@ const adapter = {
     try {
       const dataKeys = Object.keys(data);
       const setClause = dataKeys.map((key, index) => `${key} = @param${index}`).join(', ');
-      const dataValues = Object.values(data);
+      const dataValues = Object.values(data).map(v => v === true ? 1 : v === false ? 0 : v);
       
       let sql;
       let values;
@@ -208,7 +238,7 @@ const adapter = {
         whereClause = whereClause.replace(/\?/g, () => `@param${paramIndex++}`);
         
         sql = `UPDATE ${table} SET ${setClause} WHERE ${whereClause}`;
-        values = [...dataValues, ...conditionValues];
+        values = [...dataValues, ...this._sanitizeParams(conditionValues)];
       } else {
         // Object conditions format: update('users', {data}, {id: userId})
         const conditionKeys = Object.keys(conditionsOrWhere);
@@ -239,7 +269,7 @@ const adapter = {
         let paramIndex = 0;
         whereClause = whereClause.replace(/\?/g, () => `@param${paramIndex++}`);
         sql = `DELETE FROM ${table} WHERE ${whereClause}`;
-        values = conditionValues;
+        values = this._sanitizeParams(conditionValues);
       } else {
         // Object conditions: delete('table', { id: 1 })
         const keys = Object.keys(conditionsOrWhere);
@@ -281,7 +311,11 @@ const adapter = {
       // Raw SQL
       let sql = sqlOrTable;
       let params = Array.isArray(paramsOrConditions) ? paramsOrConditions : [];
+      params = this._sanitizeParams(params);
       
+      // Convert boolean literals + MySQL syntax
+      sql = this.convertMySQLToMSSQL(sql);
+
       let paramIndex = 0;
       sql = sql.replace(/\?/g, () => `@param${paramIndex++}`);
       
