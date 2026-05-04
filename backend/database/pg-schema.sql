@@ -241,6 +241,7 @@ CREATE TABLE IF NOT EXISTS gallery_albums (
     name        VARCHAR(255) NOT NULL,
     description TEXT,
     cover_image VARCHAR(500),
+    sort_order  INT DEFAULT 0,
     status      VARCHAR(50) DEFAULT 'active',
     created_by  INT REFERENCES users(id) ON DELETE SET NULL,
     created_at  TIMESTAMP DEFAULT NOW(),
