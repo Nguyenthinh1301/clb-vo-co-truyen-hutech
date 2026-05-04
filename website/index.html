@@ -257,9 +257,14 @@
                 container.innerHTML = '<div class="ann-strip-grid">' + list.map(renderCard).join('') + '</div>';
 
             } catch(e) {
-                // Ẩn section nếu API không khả dụng — không hiện lỗi trên trang chủ
-                var section = document.getElementById('announcements-banner');
-                if (section) section.style.display = 'none';
+                // Khi API lỗi: hiện empty state thay vì ẩn section hoàn toàn
+                container.innerHTML =
+                    '<div class="ann-strip-grid">' +
+                        '<div class="ann-strip-empty">' +
+                            '<i class="fas fa-bell-slash"></i>' +
+                            '<p>Hiện chưa có thông báo mới.</p>' +
+                        '</div>' +
+                    '</div>';
             }
         }
 
