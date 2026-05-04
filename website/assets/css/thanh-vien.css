@@ -336,6 +336,16 @@ body { font-family: "Open Sans", sans-serif; }
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
+/* Avatar placeholder (khi không có ảnh) */
+.profile-avatar-placeholder {
+    background: linear-gradient(135deg, #1a252f, #c41e3a);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255,255,255,0.5);
+    font-size: 48px;
+}
+
 /* ── Responsive ── */
 @media (max-width: 768px) {
     .profile-hero { height: 420px; }

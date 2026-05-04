@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="../../">
+    <title>Xuân Giang – CLB Võ Cổ Truyền HUTECH</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="assets/css/thanh-vien.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <div class="profile-hero">
+        <div class="profile-hero-bg" style="background-image: url('assets/images_Avatar/giang.jpg'); background-position: center 20%;"></div>
+        <div class="profile-hero-overlay"></div>
+        <div class="profile-hero-content">
+            <div class="profile-avatar-wrap">
+                <img src="assets/images_Avatar/giang.jpg" alt="Xuân Giang">
+            </div>
+            <div class="profile-hero-text">
+                <div class="profile-breadcrumb">
+                    <a href="index.html">Trang chủ</a> &rsaquo;
+                    <a href="views/doi-ngu.html">Đội ngũ CLB</a> &rsaquo;
+                    Xuân Giang
+                </div>
+                <h1>Xuân Giang</h1>
+                <span class="profile-role-badge"><i class="fas fa-bullhorn"></i> Trưởng Ban Truyền Thông</span>
+                <div class="profile-stats-row">
+                    <div class="profile-stat"><strong>Ban</strong><span>Truyền thông</span></div>
+                    <div class="profile-stat"><strong>Trưởng</strong><span>Vai trò</span></div>
+                    <div class="profile-stat"><strong>CLB</strong><span>HUTECH</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="profile-body">
+        <a href="views/doi-ngu.html" class="profile-back-btn">
+            <i class="fas fa-arrow-left"></i> Quay lại Đội ngũ
+        </a>
+
+        <div class="profile-main">
+            <div class="profile-section">
+                <div class="profile-section-title"><i class="fas fa-user-circle"></i> Giới thiệu</div>
+                <div class="profile-bio">
+                    Xuân Giang là Trưởng Ban Truyền Thông của CLB Võ Cổ Truyền HUTECH, người chịu trách nhiệm xây dựng và phát triển hình ảnh CLB trên các nền tảng truyền thông.
+                    <br><br>
+                    Với niềm đam mê võ thuật và khả năng sáng tạo nội dung, Xuân Giang đã góp phần đưa hình ảnh CLB đến gần hơn với cộng đồng sinh viên HUTECH và các bạn yêu thích võ cổ truyền.
+                </div>
+            </div>
+
+            <div class="profile-section">
+                <div class="profile-section-title"><i class="fas fa-tasks"></i> Nhiệm vụ</div>
+                <div class="achievement-timeline">
+                    <div class="ach-item">
+                        <div class="ach-title">Quản lý truyền thông</div>
+                        <div class="ach-desc">Phụ trách fanpage, website và các kênh mạng xã hội của CLB.</div>
+                    </div>
+                    <div class="ach-item">
+                        <div class="ach-title">Sản xuất nội dung</div>
+                        <div class="ach-desc">Lên kế hoạch và sản xuất nội dung ảnh, video cho các hoạt động CLB.</div>
+                    </div>
+                    <div class="ach-item">
+                        <div class="ach-title">Truyền thông sự kiện</div>
+                        <div class="ach-desc">Đảm bảo các sự kiện, giải đấu của CLB được truyền thông rộng rãi.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-sidebar">
+            <div class="sidebar-card">
+                <div class="sidebar-card-title"><i class="fas fa-id-card"></i> Thông tin</div>
+                <ul class="sidebar-info-list">
+                    <li><span class="sil-label">Vai trò</span><span class="sil-value">Trưởng ban</span></li>
+                    <li><span class="sil-label">Ban</span><span class="sil-value">Truyền thông</span></li>
+                    <li><span class="sil-label">Đơn vị</span><span class="sil-value">CLB VCT HUTECH</span></li>
+                </ul>
+            </div>
+            <div class="sidebar-card">
+                <div class="sidebar-card-title"><i class="fas fa-images"></i> Hình ảnh</div>
+                <div class="sidebar-gallery">
+                    <img src="assets/images_CLB/Hinh_CLB_1.jpg" alt="CLB HUTECH">
+                    <img src="assets/images_CLB/Hinh_CLB_2.jpg" alt="CLB HUTECH">
+                    <img src="assets/images_CLB/Hinh_CLB_3.jpg" alt="CLB HUTECH">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer-placeholder"></div>
+    <script src="assets/js/dropdown.js"></script>
+    <script>
+        async function load(id, path) {
+            try { document.getElementById(id).innerHTML = await (await fetch(path)).text(); } catch(e) {}
+        }
+        document.addEventListener('DOMContentLoaded', async () => {
+            await load('header-placeholder', 'components/header.html');
+            await load('footer-placeholder', 'components/footer.html');
+            initDropdown();
+        });
+    </script>
+</body>
+</html>
