@@ -50,7 +50,7 @@ app.use(cors(corsOptions));
 // General API rate limiting
 const generalLimiter = rateLimit({
     windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000,
-    max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || (process.env.NODE_ENV === 'production' ? 50 : 100),
+    max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || (process.env.NODE_ENV === 'production' ? 500 : 1000),
     message: {
         success: false,
         message: 'Quá nhiều yêu cầu từ IP này, vui lòng thử lại sau.'
@@ -58,10 +58,14 @@ const generalLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
     skip: (req) => {
+        // Bỏ qua rate limit cho localhost (development)
         if (process.env.NODE_ENV === 'development') {
             const ip = req.ip || req.connection.remoteAddress;
             return ip === '127.0.0.1' || ip === '::1' || ip === 'localhost' || ip.includes('127.0.0.1');
         }
+        // Bỏ qua rate limit cho admin đã xác thực
+        const auth = req.headers.authorization;
+        if (auth && auth.startsWith('Bearer ')) return true;
         return false;
     }
 });
@@ -69,7 +73,7 @@ const generalLimiter = rateLimit({
 // Strict rate limiting for login endpoint
 const loginLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: process.env.NODE_ENV === 'production' ? 5 : 10000,
+    max: process.env.NODE_ENV === 'production' ? 20 : 10000,
     skipSuccessfulRequests: true,
     message: {
         success: false,
