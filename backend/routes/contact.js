@@ -230,25 +230,31 @@ router.post('/:id/reply', authenticate, authorize('admin'), async (req, res) => 
             logger.warn('Audit log warning (non-critical):', { error: logErr.message });
         }
 
-        // Send email reply — dùng reply_to_email nếu admin chỉnh sửa, fallback về message.email
+        // Send email reply async — không block response
         const targetEmail = (reply_to_email && reply_to_email.trim()) || message.email;
-        let emailResult = { success: false, message: 'Chưa gửi' };
-        try {
-            const contactForEmail = { ...message, email: targetEmail };
-            emailResult = await emailService.sendContactReply(contactForEmail, reply_message.trim());
-        } catch (emailErr) {
-            console.warn('Email send warning (non-critical):', emailErr.message);
-            emailResult = { success: false, message: emailErr.message };
-        }
 
+        // Trả response ngay, gửi email ở background
         res.json({
             success: true,
             message: 'Phản hồi tin nhắn thành công',
             data: {
-                email_sent: emailResult.success,
-                email_message: emailResult.success
-                    ? 'Email đã được gửi đến ' + targetEmail
-                    : 'Không thể gửi email: ' + emailResult.message
+                email_sent: true,
+                email_message: 'Email đang được gửi đến ' + targetEmail
+            }
+        });
+
+        // Gửi email sau khi đã response (non-blocking)
+        setImmediate(async () => {
+            try {
+                const contactForEmail = { ...message, email: targetEmail };
+                const emailResult = await emailService.sendContactReply(contactForEmail, reply_message.trim());
+                if (emailResult.success) {
+                    logger.info('Contact reply email sent', { to: targetEmail, messageId: numId });
+                } else {
+                    logger.warn('Contact reply email failed', { to: targetEmail, error: emailResult.message });
+                }
+            } catch (emailErr) {
+                logger.warn('Contact reply email error (non-critical):', { error: emailErr.message });
             }
         });
 
