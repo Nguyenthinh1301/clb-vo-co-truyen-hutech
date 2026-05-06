@@ -5067,13 +5067,15 @@ section {
         transform: none !important;
         flex-direction: column;
         width: 100%;
+        overflow-y: auto;
+        max-height: calc(100vh - 70px);
     }
 
     .nav-menu.active {
         left: 0 !important;
     }
 
-    /* Dropdown trên mobile: hiển thị dạng list */
+    /* Dropdown trên mobile: dùng max-height để expand mượt */
     .nav-dropdown-menu {
         position: static !important;
         box-shadow: none !important;
@@ -5081,8 +5083,19 @@ section {
         background: rgba(255,255,255,0.05) !important;
         border-radius: 8px;
         margin: 4px 0;
-        padding: 4px 0;
+        padding: 0;
         animation: none !important;
+        /* Thay display:none bằng max-height để không bị cắt */
+        display: block !important;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease, padding 0.3s ease;
+    }
+
+    /* Khi dropdown mở: expand đủ chiều cao */
+    .nav-has-dropdown.open .nav-dropdown-menu {
+        max-height: 400px !important;
+        padding: 4px 0 !important;
     }
 
     .nav-dropdown-menu a {
