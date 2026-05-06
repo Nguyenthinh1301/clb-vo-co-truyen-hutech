@@ -4,21 +4,35 @@ require('dotenv').config();
 class EmailService {
     constructor() {
         this.transporter = null;
+        this.resend = null;
         this.initialized = false;
+        this.mode = null; // 'resend' | 'smtp'
         this.init();
     }
 
-    // Initialize email transporter
+    // Initialize email service
     init() {
-        const smtpPass = process.env.SMTP_PASS;
-        const smtpUser = process.env.SMTP_USER;
+        const resendKey = process.env.RESEND_API_KEY;
+        const smtpPass  = process.env.SMTP_PASS;
+        const smtpUser  = process.env.SMTP_USER;
 
-        // Không khởi tạo nếu chưa cấu hình SMTP (placeholder hoặc thiếu)
-        if (!smtpPass || !smtpUser
-            || smtpPass.startsWith('<')
-            || smtpPass === 'wgfuxklwpmrtxxgg') {
-            console.warn('⚠️  Email service: SMTP_PASS chưa được cấu hình — email sẽ bị bỏ qua');
-            this.initialized = false;
+        // Ưu tiên Resend (HTTP API — hoạt động trên Render free tier)
+        if (resendKey && !resendKey.startsWith('<')) {
+            try {
+                const { Resend } = require('resend');
+                this.resend = new Resend(resendKey);
+                this.initialized = true;
+                this.mode = 'resend';
+                console.log('✅ Email service initialized (Resend HTTP API)');
+                return;
+            } catch(e) {
+                console.warn('⚠️  Resend init failed:', e.message);
+            }
+        }
+
+        // Fallback: SMTP (nodemailer)
+        if (!smtpPass || !smtpUser || smtpPass.startsWith('<')) {
+            console.warn('⚠️  Email service: không có RESEND_API_KEY và SMTP chưa cấu hình — email bị bỏ qua');
             return;
         }
 
@@ -26,24 +40,18 @@ class EmailService {
             this.transporter = nodemailer.createTransport({
                 host: process.env.SMTP_HOST || 'smtp.gmail.com',
                 port: parseInt(process.env.SMTP_PORT) || 465,
-                secure: true, // SSL trên port 465
-                auth: {
-                    user: smtpUser,
-                    pass: smtpPass
-                },
-                tls: {
-                    rejectUnauthorized: false
-                },
+                secure: true,
+                auth: { user: smtpUser, pass: smtpPass },
+                tls: { rejectUnauthorized: false },
                 connectionTimeout: 10000,
                 greetingTimeout: 10000,
                 socketTimeout: 15000
             });
-
             this.initialized = true;
-            console.log('✅ Email service initialized');
+            this.mode = 'smtp';
+            console.log('✅ Email service initialized (SMTP)');
         } catch (error) {
             console.error('❌ Email service initialization failed:', error.message);
-            this.initialized = false;
         }
     }
 
@@ -52,10 +60,12 @@ class EmailService {
         if (!this.initialized) {
             return { success: false, message: 'Email service not initialized' };
         }
-
+        if (this.mode === 'resend') {
+            return { success: true, message: 'Resend API ready' };
+        }
         try {
             await this.transporter.verify();
-            return { success: true, message: 'Email service is ready' };
+            return { success: true, message: 'SMTP ready' };
         } catch (error) {
             return { success: false, message: error.message };
         }
@@ -68,6 +78,31 @@ class EmailService {
             return { success: false, message: 'Email service not initialized' };
         }
 
+        // ── Resend HTTP API ──────────────────────────────────
+        if (this.mode === 'resend') {
+            try {
+                const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
+                const fromName  = process.env.FROM_NAME || 'CLB Võ Cổ Truyền HUTECH';
+                const { data, error } = await this.resend.emails.send({
+                    from: `${fromName} <${fromEmail}>`,
+                    to: Array.isArray(to) ? to : [to],
+                    subject,
+                    html,
+                    text: text || this.stripHtml(html)
+                });
+                if (error) {
+                    console.error('❌ Resend error:', error);
+                    return { success: false, message: error.message };
+                }
+                console.log('✅ Email sent via Resend:', data?.id);
+                return { success: true, messageId: data?.id, message: 'Email sent via Resend' };
+            } catch (error) {
+                console.error('❌ Resend send failed:', error.message);
+                return { success: false, message: error.message };
+            }
+        }
+
+        // ── SMTP (nodemailer) ────────────────────────────────
         try {
             const mailOptions = {
                 from: `${process.env.FROM_NAME || 'CLB Võ Cổ Truyền HUTECH'} <${process.env.FROM_EMAIL || process.env.SMTP_USER}>`,
@@ -77,21 +112,12 @@ class EmailService {
                 text: text || this.stripHtml(html),
                 attachments
             };
-
             const info = await this.transporter.sendMail(mailOptions);
-            
-            console.log('✅ Email sent:', info.messageId);
-            return { 
-                success: true, 
-                messageId: info.messageId,
-                message: 'Email sent successfully' 
-            };
+            console.log('✅ Email sent via SMTP:', info.messageId);
+            return { success: true, messageId: info.messageId, message: 'Email sent via SMTP' };
         } catch (error) {
-            console.error('❌ Email send failed:', error.message);
-            return { 
-                success: false, 
-                message: error.message 
-            };
+            console.error('❌ SMTP send failed:', error.message);
+            return { success: false, message: error.message };
         }
     }
 
