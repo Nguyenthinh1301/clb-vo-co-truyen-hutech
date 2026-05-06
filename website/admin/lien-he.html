@@ -501,7 +501,7 @@ async function sendReply(id) {
 
         var badgeHtml = emailSent
             ? '<div class="email-badge sent"><i class="fas fa-check-circle"></i>' + emailMsg + '</div>'
-            : '<div class="email-badge failed"><i class="fas fa-exclamation-triangle"></i>' + emailMsg + '</div>';
+            : '<div class="email-badge failed"><i class="fas fa-exclamation-triangle"></i> Không thể gửi email tự động (server đang cấu hình). Vui lòng gửi email thủ công đến: <b>' + replyEmail + '</b></div>';
 
         // Thay form reply bằng thông báo kết quả
         var replyBox = document.querySelector('.reply-box');
@@ -517,7 +517,7 @@ async function sendReply(id) {
         if (emailSent) {
             toast('✅ Đã gửi trả lời & email đến ' + replyEmail);
         } else {
-            toast('⚠️ Đã lưu trả lời nhưng gửi email thất bại', 'warning');
+            toast('⚠️ Đã lưu trả lời. Email chưa gửi được — vui lòng gửi thủ công', 'info');
         }
 
         loadList();
