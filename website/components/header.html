@@ -24,7 +24,7 @@
                     </a>
                 </li>
                 <li class="nav-item nav-has-dropdown">
-                    <a href="#about" class="nav-link" onclick="(function(el,e){e.preventDefault();e.stopPropagation();var item=el.closest('.nav-has-dropdown');var open=item.classList.contains('open');document.querySelectorAll('.nav-has-dropdown').forEach(function(d){d.classList.remove('open');});if(!open)item.classList.add('open');})(this,event)">
+                    <a href="#about" class="nav-link" onclick="event.preventDefault();event.stopPropagation();var li=this.parentElement;var isOpen=li.classList.contains('open');document.querySelectorAll('.nav-has-dropdown').forEach(function(d){d.classList.remove('open');});if(!isOpen)li.classList.add('open');">
                         <span>Giới thiệu</span>
                         <i class="fas fa-chevron-down nav-chevron"></i>
                     </a>
@@ -45,7 +45,7 @@
                     </a>
                 </li>
                 <li class="nav-item nav-has-dropdown">
-                    <a href="#events" class="nav-link" onclick="(function(el,e){e.preventDefault();e.stopPropagation();var item=el.closest('.nav-has-dropdown');var open=item.classList.contains('open');document.querySelectorAll('.nav-has-dropdown').forEach(function(d){d.classList.remove('open');});if(!open)item.classList.add('open');})(this,event)">
+                    <a href="#events" class="nav-link" onclick="event.preventDefault();event.stopPropagation();var li=this.parentElement;var isOpen=li.classList.contains('open');document.querySelectorAll('.nav-has-dropdown').forEach(function(d){d.classList.remove('open');});if(!isOpen)li.classList.add('open');">
                         <span>Tin tức</span>
                         <i class="fas fa-chevron-down nav-chevron"></i>
                     </a>

@@ -38,20 +38,19 @@ function initDropdown() {
     }
 
     // ── Dropdown Giới thiệu / Tin tức ───────────────────────
-    document.querySelectorAll('.nav-has-dropdown > .nav-link').forEach(function(toggle) {
-        // Xóa listener cũ bằng cách clone
-        var newToggle = toggle.cloneNode(true);
-        toggle.parentNode.replaceChild(newToggle, toggle);
+    document.querySelectorAll('.nav-has-dropdown > .nav-link').forEach(function(link) {
+        var newLink = link.cloneNode(true);
+        link.parentNode.replaceChild(newLink, link);
 
-        newToggle.addEventListener('click', function(e) {
+        newLink.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            var item = this.closest('.nav-has-dropdown');
-            var isOpen = item.classList.contains('open');
+            var li = this.parentElement; // <li class="nav-has-dropdown">
+            var isOpen = li.classList.contains('open');
             document.querySelectorAll('.nav-has-dropdown').forEach(function(d) {
                 d.classList.remove('open');
             });
-            if (!isOpen) item.classList.add('open');
+            if (!isOpen) li.classList.add('open');
         });
     });
 
