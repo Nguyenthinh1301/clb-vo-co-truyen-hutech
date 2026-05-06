@@ -68,51 +68,73 @@
 </header>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const navToggle = document.getElementById('nav-toggle');
-    const navMenu = document.getElementById('nav-menu');
+(function() {
+    function initNav() {
+        const navToggle = document.getElementById('nav-toggle');
+        const navMenu   = document.getElementById('nav-menu');
+        if (!navToggle || !navMenu) return;
 
-    // Mobile toggle
-    if (navToggle && navMenu) {
-        navToggle.addEventListener('click', function() {
+        // Xóa listener cũ bằng cách clone node
+        const newToggle = navToggle.cloneNode(true);
+        navToggle.parentNode.replaceChild(newToggle, navToggle);
+
+        // Mobile toggle
+        newToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
             navMenu.classList.toggle('active');
-            navToggle.classList.toggle('active');
+            newToggle.classList.toggle('active');
+        });
+
+        // Dropdown
+        document.querySelectorAll('.nav-has-dropdown > .nav-link').forEach(function(toggle) {
+            toggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                const item = this.closest('.nav-has-dropdown');
+                const isOpen = item.classList.contains('open');
+                document.querySelectorAll('.nav-has-dropdown').forEach(d => d.classList.remove('open'));
+                if (!isOpen) item.classList.add('open');
+            });
+        });
+
+        // Đóng dropdown khi click ra ngoài
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.nav-has-dropdown')) {
+                document.querySelectorAll('.nav-has-dropdown').forEach(d => d.classList.remove('open'));
+            }
+            // Đóng mobile menu khi click ra ngoài
+            if (!e.target.closest('.nav-menu') && !e.target.closest('#nav-toggle')) {
+                navMenu.classList.remove('active');
+                newToggle.classList.remove('active');
+            }
+        });
+
+        // Đóng mobile menu khi click link thường
+        document.querySelectorAll('.nav-menu .nav-link').forEach(link => {
+            if (!link.closest('.nav-has-dropdown')) {
+                link.addEventListener('click', () => {
+                    navMenu.classList.remove('active');
+                    newToggle.classList.remove('active');
+                });
+            }
+        });
+
+        // Scroll effect
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('.main-header');
+            if (header) header.classList.toggle('scrolled', window.scrollY > 100);
         });
     }
 
-    // Dropdown Giới thiệu — preventDefault để không scroll #about
-    document.querySelectorAll('.nav-has-dropdown > .nav-link').forEach(function(toggle) {
-        toggle.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            const item = this.closest('.nav-has-dropdown');
-            const isOpen = item.classList.contains('open');
-            document.querySelectorAll('.nav-has-dropdown').forEach(d => d.classList.remove('open'));
-            if (!isOpen) item.classList.add('open');
-        });
-    });
+    // Chạy ngay nếu DOM đã sẵn sàng, hoặc đợi DOMContentLoaded
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initNav);
+    } else {
+        // DOM đã sẵn sàng (header được inject sau DOMContentLoaded)
+        initNav();
+    }
 
-    // Đóng dropdown khi click ra ngoài
-    document.addEventListener('click', function(e) {
-        if (!e.target.closest('.nav-has-dropdown')) {
-            document.querySelectorAll('.nav-has-dropdown').forEach(d => d.classList.remove('open'));
-        }
-    });
-
-    // Đóng mobile menu khi click link thường
-    document.querySelectorAll('.nav-link:not(.nav-has-dropdown .nav-link)').forEach(link => {
-        link.addEventListener('click', () => {
-            if (navMenu) navMenu.classList.remove('active');
-            if (navToggle) navToggle.classList.remove('active');
-        });
-    });
-
-    // Scroll effect
-    window.addEventListener('scroll', function() {
-        const header = document.querySelector('.main-header');
-        if (header) {
-            header.classList.toggle('scrolled', window.scrollY > 100);
-        }
-    });
-});
+    // Export để index.html có thể gọi lại sau khi inject
+    window.initDropdown = initNav;
+})();
 </script>

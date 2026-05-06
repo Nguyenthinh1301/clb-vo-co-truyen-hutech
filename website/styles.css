@@ -209,8 +209,17 @@ h1, h2, h3, h4, h5, h6 {
     flex-direction: column;
     gap: 5px;
     cursor: pointer;
-    z-index: 1001;
+    z-index: 1100;
     position: relative;
+    padding: 8px;
+    margin: -8px;
+    /* Đảm bảo vùng tap đủ lớn trên mobile */
+    min-width: 44px;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
 }
 
 .nav-toggle .bar {
@@ -1763,6 +1772,10 @@ section {
         backdrop-filter: blur(10px);
         gap: 0;
         padding: 20px 0;
+        z-index: 1050;
+        /* Không che header/toggle */
+        max-height: calc(100vh - 70px);
+        overflow-y: auto;
     }
     
     .nav-menu.active {
