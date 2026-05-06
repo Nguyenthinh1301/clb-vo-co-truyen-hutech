@@ -96,6 +96,16 @@ function logout() {
 function buildSidebar(user, activePage) {
     const name = ((user.first_name || '') + ' ' + (user.last_name || '')).trim() || user.email;
 
+    // Ảnh avatar: ưu tiên profile_image → avatar → fallback chữ cái đầu
+    const avatarUrl = user.profile_image || user.avatar || null;
+    const initial   = (user.first_name || user.email || 'A').charAt(0).toUpperCase();
+
+    const avatarHtml = avatarUrl
+        ? `<img src="${resolveImgUrl(avatarUrl)}" alt="${name}"
+               style="width:42px;height:42px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,0.3);"
+               onerror="this.outerHTML='<div style=\\'width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#c41e3a,#e74c3c);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:18px;flex-shrink:0;\\'>${initial}</div>'">`
+        : `<div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#c41e3a,#e74c3c);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:18px;flex-shrink:0;">${initial}</div>`;
+
     let navHTML = '<div class="sb-section">Tổng quan</div>';
     navHTML += `<a href="dashboard.html" class="sb-link${activePage==='dashboard.html'?' active':''}"><i class="fas fa-tachometer-alt"></i> Dashboard</a>`;
     navHTML += '<div class="sb-section">Nội dung</div>';
@@ -116,11 +126,10 @@ function buildSidebar(user, activePage) {
     return `
     <aside class="sidebar">
         <div class="sb-brand">
-            <img src="../assets/images_Logo/Logo_CLB.png" alt="Logo"
-                onerror="this.src='../assets/images_Avatar/Avatar_An.jpg'">
+            ${avatarHtml}
             <div class="sb-brand-text">
-                <h3>Admin CMS</h3>
-                <span>${name}</span>
+                <h3>${name}</h3>
+                <span>${user.role === 'admin' ? 'Quản Trị Viên' : (user.role || 'Admin')}</span>
             </div>
         </div>
         <nav class="sb-nav">${navHTML}</nav>
