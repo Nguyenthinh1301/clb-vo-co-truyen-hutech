@@ -49,6 +49,45 @@ router.post('/', contactLimiter, ValidationRules.contactMessage, handleValidatio
             action_url: `/admin/contact-messages/${messageId}`
         });
 
+        // Gửi email thông báo đến admin khi có liên hệ mới (async, không block)
+        setImmediate(async () => {
+            try {
+                const adminEmail = process.env.ADMIN_NOTIFY_EMAIL || process.env.FROM_EMAIL || 'vctht2026@gmail.com';
+                await emailService.sendEmail({
+                    to: adminEmail,
+                    subject: `[Liên hệ mới] ${name} - ${subject || 'Liên hệ từ website'}`,
+                    html: `
+                        <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;">
+                            <div style="background:linear-gradient(135deg,#1a252f,#c41e3a);color:#fff;padding:24px;border-radius:10px 10px 0 0;">
+                                <h2 style="margin:0;">📩 Tin nhắn liên hệ mới</h2>
+                                <p style="margin:6px 0 0;opacity:0.8;font-size:13px;">CLB Võ Cổ Truyền HUTECH</p>
+                            </div>
+                            <div style="background:#f9f9f9;padding:24px;border-radius:0 0 10px 10px;border:1px solid #e2e8f0;">
+                                <table style="width:100%;border-collapse:collapse;">
+                                    <tr><td style="padding:8px 0;color:#718096;width:120px;">Người gửi</td><td style="padding:8px 0;font-weight:700;color:#1a252f;">${name}</td></tr>
+                                    <tr><td style="padding:8px 0;color:#718096;">Email</td><td style="padding:8px 0;"><a href="mailto:${email}" style="color:#c41e3a;">${email}</a></td></tr>
+                                    ${phone ? `<tr><td style="padding:8px 0;color:#718096;">Điện thoại</td><td style="padding:8px 0;">${phone}</td></tr>` : ''}
+                                    <tr><td style="padding:8px 0;color:#718096;">Chủ đề</td><td style="padding:8px 0;">${subject || 'Liên hệ từ website'}</td></tr>
+                                </table>
+                                <div style="margin-top:16px;padding:16px;background:#fff;border-left:4px solid #c41e3a;border-radius:4px;">
+                                    <p style="margin:0;color:#444;line-height:1.7;">${message}</p>
+                                </div>
+                                <div style="margin-top:20px;text-align:center;">
+                                    <a href="https://vocotruyenhutech.netlify.app/admin/lien-he.html"
+                                       style="display:inline-block;padding:12px 28px;background:#c41e3a;color:#fff;text-decoration:none;border-radius:8px;font-weight:700;">
+                                        Xem & Trả lời trong Admin
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    `
+                });
+                logger.info('Admin notification email sent', { to: adminEmail, from: email });
+            } catch(err) {
+                logger.warn('Admin notification email failed:', { error: err.message });
+            }
+        });
+
         res.status(201).json({
             success: true,
             message: 'Gửi tin nhắn thành công. Chúng tôi sẽ phản hồi sớm nhất có thể.',
