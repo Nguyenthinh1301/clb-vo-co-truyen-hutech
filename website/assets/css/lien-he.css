@@ -233,6 +233,19 @@ body { font-family: "Open Sans", sans-serif; }
     flex: 1;
 }
 
+.lh-map-label {
+    background: linear-gradient(135deg, #1a252f, #2c3e50);
+    color: #fff;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.lh-map-label i { color: #c41e3a; }
+
 .lh-map-box iframe {
     width: 100%;
     height: 100%;
