@@ -150,7 +150,15 @@ page.innerHTML = [
 
 $('flt-type').addEventListener('change', loadList);
 $('flt-status').addEventListener('change', loadList);
-loadList();
+
+// Wake up server trước khi load (Render free tier ngủ sau 15 phút)
+(async function wakeAndLoad() {
+    try {
+        var API_BASE_URL = (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || 'http://localhost:3001/api';
+        await fetch(API_BASE_URL.replace('/api', '/health'), { method: 'GET' });
+    } catch(e) { /* ignore */ }
+    loadList();
+})();
 
 // ── Load list ──
 async function loadList() {
@@ -226,7 +234,13 @@ async function loadList() {
         }
 
     } catch(e) {
-        empty('tbl', 'exclamation-circle', 'Lỗi tải dữ liệu: ' + e.message);
+        // Nếu lỗi network/404, thử lại 1 lần sau 3 giây (server có thể đang wake up)
+        if (e.message && (e.message.includes('404') || e.message.includes('kết nối'))) {
+            setHTML('tbl', '<div class="loading"><div class="spinner"></div><p style="margin-top:12px;color:#718096;font-size:0.85rem;">Server đang khởi động, vui lòng chờ...</p></div>');
+            setTimeout(loadList, 4000);
+        } else {
+            empty('tbl', 'exclamation-circle', 'Lỗi tải dữ liệu: ' + e.message);
+        }
     }
 }
 
