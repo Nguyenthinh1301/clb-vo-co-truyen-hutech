@@ -153,5 +153,17 @@ const API = {
         addPhotos:   (id,photos) => API.post(`/gallery/albums/${id}/photos`, { photos }),
         deletePhoto: id        => API.delete(`/gallery/photos/${id}`),
         updatePhoto: (id,data) => API.put(`/gallery/photos/${id}`, data)
+    },
+
+    activities: {
+        list:   (type='', year='', all='1') => API.get(
+            `/activities?all=${all}` +
+            (type ? '&type=' + type : '') +
+            (year ? '&year=' + year : '')
+        ),
+        get:    id   => API.get(`/activities/${id}`),
+        create: data => API.post('/activities', data),
+        update: (id, data) => API.put(`/activities/${id}`, data),
+        delete: id   => API.delete(`/activities/${id}`)
     }
 };

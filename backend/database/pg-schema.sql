@@ -344,6 +344,27 @@ CREATE TABLE IF NOT EXISTS user_achievements (
 );
 CREATE INDEX IF NOT EXISTS idx_user_achievements_user ON user_achievements(user_id);
 
+-- Activities (Hoạt động / Thành tích)
+CREATE TABLE IF NOT EXISTS activities (
+    id          SERIAL PRIMARY KEY,
+    title       VARCHAR(255) NOT NULL,
+    description TEXT,
+    type        VARCHAR(50)  DEFAULT 'achievement'
+                    CHECK (type IN ('achievement','performance','event','training','other')),
+    medal       VARCHAR(100),
+    year        INT          DEFAULT EXTRACT(YEAR FROM NOW()),
+    image       VARCHAR(500),
+    sort_order  INT          DEFAULT 0,
+    status      VARCHAR(50)  DEFAULT 'active'
+                    CHECK (status IN ('active','inactive')),
+    created_by  INT REFERENCES users(id) ON DELETE SET NULL,
+    created_at  TIMESTAMP    DEFAULT NOW(),
+    updated_at  TIMESTAMP    DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_activities_type   ON activities(type);
+CREATE INDEX IF NOT EXISTS idx_activities_year   ON activities(year DESC);
+CREATE INDEX IF NOT EXISTS idx_activities_status ON activities(status);
+
 -- Audit Logs
 CREATE TABLE IF NOT EXISTS audit_logs (
     id          SERIAL PRIMARY KEY,

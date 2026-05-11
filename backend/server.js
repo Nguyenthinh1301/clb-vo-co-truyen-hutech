@@ -213,6 +213,7 @@ app.use('/api/public', require('./routes/public-content'));
 app.use('/api/cms', require('./routes/admin-cms'));
 app.use('/api/upload', require('./routes/upload'));
 app.use('/api/gallery', require('./routes/gallery'));
+app.use('/api/activities', require('./routes/activities'));
 
 // Serve static files (uploads) — dùng absolute path để tránh lỗi khi chạy từ thư mục khác
 // Thêm security headers để ngăn browser thực thi file HTML/SVG được upload

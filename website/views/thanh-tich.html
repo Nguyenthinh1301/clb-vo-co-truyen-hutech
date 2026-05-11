@@ -11,6 +11,16 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="assets/css/thanh-tich.css">
+    <style>
+        @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+        .tt-skeleton {
+            background: linear-gradient(90deg,#f0f2f5 25%,#fafafa 50%,#f0f2f5 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.4s infinite;
+            border-radius: 14px;
+            height: 280px;
+        }
+    </style>
 </head>
 <body>
     <div id="header-placeholder"></div>
@@ -32,7 +42,7 @@
                 <div class="tt-stat-label">Năm hoạt động</div>
             </div>
             <div class="tt-stat-card">
-                <div class="tt-stat-num">10+</div>
+                <div class="tt-stat-num" id="stat-achievements">—</div>
                 <div class="tt-stat-label">Giải thưởng</div>
             </div>
             <div class="tt-stat-card">
@@ -40,136 +50,18 @@
                 <div class="tt-stat-label">Học viên đào tạo</div>
             </div>
             <div class="tt-stat-card">
-                <div class="tt-stat-num">10+</div>
+                <div class="tt-stat-num" id="stat-intl">—</div>
                 <div class="tt-stat-label">Giải quốc tế</div>
             </div>
         </div>
 
-        <!-- Thành tích thi đấu -->
-        <div class="tt-section-title"><i class="fas fa-trophy"></i> Thành tích thi đấu</div>
-        <div class="tt-achieve-grid">
-            <div class="tt-achieve-card">
-                <img class="tt-achieve-img" src="assets/images_Thi_dau_vo/Giai_SV3.jpg" alt="Giải III Toàn Đoàn 2024">
-                <div class="tt-achieve-body">
-                    <div class="tt-achieve-year">2024</div>
-                    <div class="tt-medal bronze"><i class="fas fa-medal"></i> Giải III Toàn Đoàn</div>
-                    <h4>Giải Võ Cổ Truyền Sinh Viên VLU TP.HCM 2024</h4>
-                    <p>Thành tích xuất sắc với sự tham gia của toàn thể học viên CLB.</p>
-                </div>
-            </div>
-            <div class="tt-achieve-card">
-                <img class="tt-achieve-img" src="assets/images_Thi_dau_vo/Hinh_Thi_Dau_2.jpg" alt="HCV HCB Quốc tế 2024">
-                <div class="tt-achieve-body">
-                    <div class="tt-achieve-year">2025</div>
-                    <div class="tt-medal gold"><i class="fas fa-medal"></i> HCV & HCB</div>
-                    <h4>Giải Liên hoan Võ cổ truyền Quốc tế TP.HCM 2024</h4>
-                    <p>Thành tích vượt trội tại đấu trường quốc tế, khẳng định đẳng cấp của CLB.</p>
-                </div>
-            </div>
-            <div class="tt-achieve-card">
-                <img class="tt-achieve-img" src="assets/images_Thi_dau_vo/Hinh_thi_Dau_4.jpg" alt="HCV Quốc tế 2022">
-                <div class="tt-achieve-body">
-                    <div class="tt-achieve-year">2022</div>
-                    <div class="tt-medal gold"><i class="fas fa-medal"></i> HCV</div>
-                    <h4>Giải Liên hoan Võ cổ truyền Đất Phương Nam TP.HCM 2022</h4>
-                    <p>Cột mốc lịch sử — lần đầu tiên CLB đạt huy chương vàng tại giải quốc tế.</p>
-                </div>
-            </div>
-            <div class="tt-achieve-card">
-                <img class="tt-achieve-img" src="assets/images_Thi_dau_vo/Thi_Vo_Nhac.jpg" alt="Võ nhạc 2022">
-                <div class="tt-achieve-body">
-                    <div class="tt-achieve-year">2025</div>
-                    <div class="tt-medal special"><i class="fas fa-star"></i> Tham gia</div>
-                    <h4>Thi đấu Võ nhạc Đất Phương Nam 2025</h4>
-                    <p>Cuộc thi đấu đại diện Trường Đại học Công nghệ TP. HCM — màn trình diễn ấn tượng.</p>
-                </div>
-            </div>
-            <div class="tt-achieve-card">
-                <img class="tt-achieve-img" src="assets/images_Thi_dau_vo/Hinh_Thi_DK.jpg" alt="Giải sinh viên">
-                <div class="tt-achieve-body">
-                    <div class="tt-achieve-year">2023</div>
-                    <div class="tt-medal silver"><i class="fas fa-medal"></i> Huy chương</div>
-                    <h4>Giải Võ cổ truyền Sinh viên TP.HCM</h4>
-                    <p>Tham gia và đạt thành tích tại giải đấu đối kháng.</p>
-                </div>
-            </div>
-            <div class="tt-achieve-card">
-                <img class="tt-achieve-img" src="assets/images_Thi_dau_vo/Hinh_Thi_Dau.jpg" alt="Thi đấu">
-                <div class="tt-achieve-body">
-                    <div class="tt-achieve-year">2026</div>
-                    <div class="tt-medal special"><i class="fas fa-bullseye"></i> Mục tiêu</div>
-                    <h4>Giải Võ cổ truyền Đại hội TP.HCM 2026</h4>
-                    <p>Mục tiêu học hỏi và trải nghiệm tại đấu trường lớn nhất thành phố.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Hoạt động nổi bật -->
-        <div class="tt-section-title"><i class="fas fa-star"></i> Hoạt động nổi bật</div>
-        <div class="tt-achieve-grid">
-            <div class="tt-achieve-card">
-                <img class="tt-achieve-img" src="assets/images_Dien_Show/Show_Quoc_Te.jpg" alt="Biểu diễn quốc tế">
-                <div class="tt-achieve-body">
-                    <div class="tt-achieve-year">2023</div>
-                    <div class="tt-medal gold"><i class="fas fa-award"></i> Giải nhất</div>
-                    <h4>Biểu diễn Quốc tế HUTECH Global Festival</h4>
-                    <p>Đạt giải nhất biểu diễn tại HUTECH Global Festival — sự kiện quốc tế lớn của trường.</p>
-                </div>
-            </div>
-            <div class="tt-achieve-card">
-                <img class="tt-achieve-img" src="assets/images_Dien_Show/Show.jpg" alt="Diễn show">
-                <div class="tt-achieve-body">
-                    <div class="tt-achieve-year">2024</div>
-                    <div class="tt-medal special"><i class="fas fa-theater-masks"></i> Biểu diễn</div>
-                    <h4>Biểu diễn sinh hoạt đầu khóa</h4>
-                    <p>Tham gia giao lưu chào đón tân sinh viên — màn trình diễn ấn tượng và chuyên nghiệp.</p>
-                </div>
-            </div>
-            <div class="tt-achieve-card">
-                <img class="tt-achieve-img" src="assets/images_Team_Building/Hinh_Team_BuilDing_1.jpg" alt="Team Building">
-                <div class="tt-achieve-body">
-                    <div class="tt-achieve-year">2025</div>
-                    <div class="tt-medal special"><i class="fas fa-users"></i> Hoạt động</div>
-                    <h4>Team Building 2025</h4>
-                    <p>Hoạt động ngoại khóa gắn kết thành viên CLB với các trò chơi và chia sẻ kinh nghiệm.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Hình ảnh thi đấu -->
-        <div class="tt-section-title"><i class="fas fa-images"></i> Hình ảnh thi đấu</div>
-        <div class="tt-photo-grid" style="margin-bottom: 52px;">
-            <div class="tt-photo-item" onclick="openLb('assets/images_Thi_dau_vo/Hinh_Thi_Dau.jpg')">
-                <img src="assets/images_Thi_dau_vo/Hinh_Thi_Dau.jpg" alt="Thi đấu">
-                <div class="tt-photo-overlay"><i class="fas fa-expand"></i></div>
-            </div>
-            <div class="tt-photo-item" onclick="openLb('assets/images_Thi_dau_vo/Hinh_Thi_Dau_2.jpg')">
-                <img src="assets/images_Thi_dau_vo/Hinh_Thi_Dau_2.jpg" alt="Thi đấu 2">
-                <div class="tt-photo-overlay"><i class="fas fa-expand"></i></div>
-            </div>
-            <div class="tt-photo-item" onclick="openLb('assets/images_Thi_dau_vo/Hinh_thi_Dau_4.jpg')">
-                <img src="assets/images_Thi_dau_vo/Hinh_thi_Dau_4.jpg" alt="Thi đấu 4">
-                <div class="tt-photo-overlay"><i class="fas fa-expand"></i></div>
-            </div>
-            <div class="tt-photo-item" onclick="openLb('assets/images_Thi_dau_vo/Hinh_Thi_DK.jpg')">
-                <img src="assets/images_Thi_dau_vo/Hinh_Thi_DK.jpg" alt="Thi đấu đối kháng">
-                <div class="tt-photo-overlay"><i class="fas fa-expand"></i></div>
-            </div>
-            <div class="tt-photo-item" onclick="openLb('assets/images_Thi_dau_vo/HInh_nhan_thuong_DK.jpg')">
-                <img src="assets/images_Thi_dau_vo/HInh_nhan_thuong_DK.jpg" alt="Nhận thưởng ĐK">
-                <div class="tt-photo-overlay"><i class="fas fa-expand"></i></div>
-            </div>
-            <div class="tt-photo-item" onclick="openLb('assets/images_Thi_dau_vo/Giai_SV2.jpg')">
-                <img src="assets/images_Thi_dau_vo/Giai_SV2.jpg" alt="Giải SV">
-                <div class="tt-photo-overlay"><i class="fas fa-expand"></i></div>
-            </div>
-            <div class="tt-photo-item" onclick="openLb('assets/images_Dien_Show/Show_Quoc_Te_2.jpg')">
-                <img src="assets/images_Dien_Show/Show_Quoc_Te_2.jpg" alt="Show quốc tế 2">
-                <div class="tt-photo-overlay"><i class="fas fa-expand"></i></div>
-            </div>
-            <div class="tt-photo-item" onclick="openLb('assets/images_Dien_Show/Show_Quoc_Te_3.jpg')">
-                <img src="assets/images_Dien_Show/Show_Quoc_Te_3.jpg" alt="Show quốc tế 3">
-                <div class="tt-photo-overlay"><i class="fas fa-expand"></i></div>
+        <!-- Nội dung từ API — skeleton khi đang tải -->
+        <div id="activities-container">
+            <div class="tt-section-title"><i class="fas fa-trophy"></i> Đang tải...</div>
+            <div class="tt-achieve-grid">
+                <div class="tt-skeleton"></div>
+                <div class="tt-skeleton"></div>
+                <div class="tt-skeleton"></div>
             </div>
         </div>
 
@@ -196,27 +88,139 @@
     </div>
 
     <div id="footer-placeholder"></div>
+    <script src="assets/js/config.js"></script>
     <script src="assets/js/dropdown.js"></script>
     <script>
-        function openLb(src) {
-            document.getElementById('lb-img').src = src;
-            document.getElementById('lightbox').classList.add('open');
-        }
-        function closeLb(e) {
-            if (!e || e.target === document.getElementById('lightbox') || e.target.classList.contains('lb-close')) {
-                document.getElementById('lightbox').classList.remove('open');
-            }
-        }
-        document.addEventListener('keydown', e => { if (e.key === 'Escape') document.getElementById('lightbox').classList.remove('open'); });
+    'use strict';
 
-        async function load(id, path) {
-            try { document.getElementById(id).innerHTML = await (await fetch(path)).text(); } catch(e) {}
+    var API_BASE = (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || 'http://localhost:3001/api';
+
+    var TYPE_LBL = {
+        achievement: 'Thành tích thi đấu',
+        performance: 'Biểu diễn',
+        event:       'Sự kiện & Hoạt động',
+        training:    'Tập luyện',
+        other:       'Khác'
+    };
+    var TYPE_ICN = {
+        achievement: 'trophy',
+        performance: 'theater-masks',
+        event:       'star',
+        training:    'dumbbell',
+        other:       'tag'
+    };
+    var MEDAL_MAP = {
+        gold:    { cls: 'gold',    icon: 'medal',   label: 'HCV / Giải nhất' },
+        silver:  { cls: 'silver',  icon: 'medal',   label: 'HCB / Giải nhì' },
+        bronze:  { cls: 'bronze',  icon: 'medal',   label: 'HCĐ / Giải ba' },
+        special: { cls: 'special', icon: 'star',    label: 'Tham gia / Đặc biệt' }
+    };
+
+    function resolveImg(url) {
+        if (!url) return null;
+        if (url.startsWith('http')) return url;
+        return API_BASE.replace('/api', '') + (url.startsWith('/') ? url : '/' + url);
+    }
+
+    function renderCard(a) {
+        var medal   = MEDAL_MAP[a.medal] || null;
+        var imgSrc  = a.image ? resolveImg(a.image) : null;
+        var imgHtml = imgSrc
+            ? '<img class="tt-achieve-img" src="' + imgSrc + '" alt="' + (a.title||'') + '" loading="lazy" onerror="this.style.display=\'none\'">'
+            : '<div class="tt-achieve-img" style="background:linear-gradient(135deg,#1a252f,#c41e3a);display:flex;align-items:center;justify-content:center;">' +
+              '<i class="fas fa-' + (TYPE_ICN[a.type]||'trophy') + '" style="font-size:2.5rem;color:rgba(255,255,255,0.3);"></i></div>';
+
+        return '<div class="tt-achieve-card">' +
+            imgHtml +
+            '<div class="tt-achieve-body">' +
+                '<div class="tt-achieve-year">' + (a.year || '') + '</div>' +
+                (medal ? '<div class="tt-medal ' + medal.cls + '"><i class="fas fa-' + medal.icon + '"></i> ' + medal.label + '</div>' : '') +
+                '<h4>' + (a.title || '') + '</h4>' +
+                (a.description ? '<p>' + a.description + '</p>' : '') +
+            '</div>' +
+        '</div>';
+    }
+
+    async function loadActivities() {
+        try {
+            var res  = await fetch(API_BASE + '/activities');
+            var data = await res.json();
+            if (!data.success) throw new Error(data.message);
+
+            var all = data.data || [];
+
+            // Cập nhật stats
+            var achievements = all.filter(function(a) { return a.type === 'achievement'; });
+            var intl = all.filter(function(a) { return a.medal === 'gold' || a.medal === 'silver'; });
+            var elAch  = document.getElementById('stat-achievements');
+            var elIntl = document.getElementById('stat-intl');
+            if (elAch)  elAch.textContent  = achievements.length + '+';
+            if (elIntl) elIntl.textContent = intl.length + '+';
+
+            if (!all.length) {
+                document.getElementById('activities-container').innerHTML =
+                    '<div style="text-align:center;padding:60px;color:#aaa;">' +
+                    '<i class="fas fa-trophy" style="font-size:3rem;margin-bottom:16px;display:block;opacity:0.3;"></i>' +
+                    '<p>Chưa có hoạt động nào.</p></div>';
+                return;
+            }
+
+            // Nhóm theo type
+            var groups = {};
+            all.forEach(function(a) {
+                if (!groups[a.type]) groups[a.type] = [];
+                groups[a.type].push(a);
+            });
+
+            var html = '';
+            var typeOrder = ['achievement', 'performance', 'event', 'training', 'other'];
+            typeOrder.forEach(function(type) {
+                if (!groups[type] || !groups[type].length) return;
+                html += '<div class="tt-section-title">' +
+                    '<i class="fas fa-' + (TYPE_ICN[type]||'tag') + '"></i> ' +
+                    (TYPE_LBL[type]||type) + '</div>';
+                html += '<div class="tt-achieve-grid">';
+                groups[type].forEach(function(a) { html += renderCard(a); });
+                html += '</div>';
+            });
+
+            document.getElementById('activities-container').innerHTML = html;
+
+        } catch(e) {
+            console.warn('[Activities] API lỗi:', e.message);
+            document.getElementById('activities-container').innerHTML =
+                '<div style="text-align:center;padding:40px;color:#aaa;">' +
+                '<i class="fas fa-exclamation-circle" style="font-size:2rem;margin-bottom:12px;display:block;"></i>' +
+                '<p>Không thể tải dữ liệu. Vui lòng thử lại sau.</p></div>';
         }
-        document.addEventListener('DOMContentLoaded', async () => {
-            await load('header-placeholder', 'components/header.html');
-            await load('footer-placeholder', 'components/footer.html');
-            initDropdown();
-        });
+    }
+
+    // Lightbox
+    function openLb(src) {
+        document.getElementById('lb-img').src = src;
+        document.getElementById('lightbox').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeLb(e) {
+        if (!e || e.target === document.getElementById('lightbox') || e.target.classList.contains('lb-close')) {
+            document.getElementById('lightbox').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+    }
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeLb({ target: document.getElementById('lightbox') });
+    });
+
+    // Init
+    async function load(id, path) {
+        try { document.getElementById(id).innerHTML = await (await fetch(path)).text(); } catch(e) {}
+    }
+    document.addEventListener('DOMContentLoaded', async function() {
+        await load('header-placeholder', 'components/header.html');
+        await load('footer-placeholder', 'components/footer.html');
+        initDropdown();
+        loadActivities();
+    });
     </script>
 </body>
 </html>
