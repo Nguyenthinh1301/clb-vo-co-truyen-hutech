@@ -31,14 +31,18 @@ const setHTML = (id, html) => { const el = $(id); if (el) el.innerHTML = html; }
  * Hiển thị spinner loading với timeout tự động
  * Nếu sau `timeoutMs` ms vẫn còn spinner → hiện thông báo lỗi
  * @param {string} id - element ID
- * @param {number} timeoutMs - timeout tính bằng ms (mặc định 15 giây)
+ * @param {number} timeoutMs - timeout tính bằng ms (mặc định 90 giây cho Render free tier)
  * @returns {Function} cancelFn - gọi để hủy timeout khi load xong
  */
-function loading(id, timeoutMs = 15000) {
-    setHTML(id, '<div class="loading"><div class="spinner"></div></div>');
+function loading(id, timeoutMs = 90000) {
+    setHTML(id,
+        '<div class="loading">' +
+        '<div class="spinner"></div>' +
+        '<p style="margin-top:12px;color:#718096;font-size:0.82rem;">Đang kết nối server...</p>' +
+        '</div>'
+    );
     const timer = setTimeout(() => {
         const el = $(id);
-        // Chỉ thay thế nếu vẫn đang hiện spinner (chưa bị ghi đè bởi data)
         if (el && el.querySelector('.spinner')) {
             el.innerHTML =
                 '<div class="empty" style="color:#e74c3c;">' +
@@ -49,7 +53,6 @@ function loading(id, timeoutMs = 15000) {
                 '</div>';
         }
     }, timeoutMs);
-    // Trả về hàm hủy timeout — gọi khi data đã load xong
     return () => clearTimeout(timer);
 }
 
