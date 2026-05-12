@@ -58,6 +58,20 @@ class SchedulerService {
             await this.backupDatabase();
         });
 
+        // Self keep-alive ping mỗi 14 phút — tránh Render free tier sleep
+        // Chỉ chạy trên production
+        if (process.env.NODE_ENV === 'production') {
+            this.scheduleJob('keepAlive', '*/14 * * * *', async () => {
+                try {
+                    const https = require('https');
+                    const url = process.env.RENDER_EXTERNAL_URL || 'https://clb-vo-co-truyen-hutech.onrender.com';
+                    https.get(url + '/health', (res) => {
+                        console.log(`[Keep-alive] Ping OK: ${res.statusCode}`);
+                    }).on('error', () => {});
+                } catch(e) {}
+            });
+        }
+
         this.isRunning = true;
         console.log('✅ Scheduler service started with', this.jobs.size, 'jobs');
     }
