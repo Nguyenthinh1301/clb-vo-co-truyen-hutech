@@ -151,12 +151,19 @@ page.innerHTML = [
 $('flt-type').addEventListener('change', loadList);
 $('flt-status').addEventListener('change', loadList);
 
-// Wake up server trước khi load (Render free tier ngủ sau 15 phút)
+// Ping health trước để đảm bảo server đã thức, rồi mới load data
 (async function wakeAndLoad() {
-    try {
-        var API_BASE_URL = (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || 'http://localhost:3001/api';
-        await fetch(API_BASE_URL.replace('/api', '/health'), { method: 'GET' });
-    } catch(e) { /* ignore */ }
+    var API_BASE_URL = (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || 'http://localhost:3001/api';
+    var healthUrl = API_BASE_URL.replace('/api', '/health');
+
+    // Thử ping tối đa 3 lần, mỗi lần cách 3 giây
+    for (var i = 0; i < 3; i++) {
+        try {
+            var res = await fetch(healthUrl, { method: 'GET' });
+            if (res.ok) break; // Server đã thức
+        } catch(e) { /* server chưa thức */ }
+        if (i < 2) await new Promise(function(r) { setTimeout(r, 3000); });
+    }
     loadList();
 })();
 
@@ -243,10 +250,10 @@ async function loadList() {
             loadList._retried = true;
             setHTML('tbl',
                 '<div class="loading"><div class="spinner"></div>' +
-                '<p style="margin-top:12px;color:#718096;font-size:0.82rem;">Server đang khởi động, vui lòng chờ...</p>' +
+                '<p style="margin-top:12px;color:#718096;font-size:0.82rem;">Server đang khởi động, vui lòng chờ (30-60 giây)...</p>' +
                 '</div>'
             );
-            setTimeout(function() { loadList._retried = false; loadList(); }, 5000);
+            setTimeout(function() { loadList._retried = false; loadList(); }, 10000);
         } else {
             loadList._retried = false;
             empty('tbl', 'exclamation-circle', 'Lỗi tải dữ liệu: ' + e.message);
