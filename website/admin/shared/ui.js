@@ -158,6 +158,7 @@ function buildTopbar(title, user) {
 
 /**
  * Khởi tạo layout cho trang admin
+ * Tự động wake up server nếu đang sleep (Render free tier)
  */
 function initLayout(title, activePage) {
     const user = Auth.check();
@@ -169,6 +170,10 @@ function initLayout(title, activePage) {
             ${buildTopbar(title, user)}
             <div class="page" id="page"></div>
         </div>`;
+
+    // Wake up server ngầm ngay khi trang load (không block UI)
+    const apiBase = (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || 'http://localhost:3001/api';
+    fetch(apiBase.replace('/api', '/health'), { method: 'GET' }).catch(() => {});
 
     return $('page');
 }

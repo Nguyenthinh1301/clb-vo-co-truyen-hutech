@@ -151,18 +151,33 @@ page.innerHTML = [
 $('flt-type').addEventListener('change', loadList);
 $('flt-status').addEventListener('change', loadList);
 
-// Ping health trước để đảm bảo server đã thức, rồi mới load data
+// Ping health để wake up server, rồi load data
 (async function wakeAndLoad() {
     var API_BASE_URL = (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || 'http://localhost:3001/api';
     var healthUrl = API_BASE_URL.replace('/api', '/health');
 
-    // Thử ping tối đa 3 lần, mỗi lần cách 3 giây
-    for (var i = 0; i < 3; i++) {
+    // Hiện thông báo đang kết nối
+    setHTML('tbl',
+        '<div class="loading"><div class="spinner"></div>' +
+        '<p style="margin-top:12px;color:#718096;font-size:0.82rem;">Đang kết nối server...</p>' +
+        '</div>'
+    );
+
+    // Ping health tối đa 5 lần, mỗi lần cách 5 giây
+    var serverReady = false;
+    for (var i = 0; i < 5; i++) {
         try {
             var res = await fetch(healthUrl, { method: 'GET' });
-            if (res.ok) break; // Server đã thức
+            if (res.ok) { serverReady = true; break; }
         } catch(e) { /* server chưa thức */ }
-        if (i < 2) await new Promise(function(r) { setTimeout(r, 3000); });
+        if (i < 4) {
+            setHTML('tbl',
+                '<div class="loading"><div class="spinner"></div>' +
+                '<p style="margin-top:12px;color:#718096;font-size:0.82rem;">Đang kết nối server... (' + (i+1) + '/5)</p>' +
+                '</div>'
+            );
+            await new Promise(function(r) { setTimeout(r, 5000); });
+        }
     }
     loadList();
 })();
