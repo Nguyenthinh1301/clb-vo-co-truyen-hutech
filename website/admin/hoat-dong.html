@@ -238,11 +238,17 @@ async function loadList() {
 
     } catch(e) {
         cancelTimeout();
-        // Nếu lỗi network/404, thử lại 1 lần sau 3 giây (server có thể đang wake up)
-        if (e.message && (e.message.includes('404') || e.message.includes('kết nối'))) {
-            setHTML('tbl', '<div class="loading"><div class="spinner"></div><p style="margin-top:12px;color:#718096;font-size:0.85rem;">Server đang khởi động, vui lòng chờ...</p></div>');
-            setTimeout(loadList, 4000);
+        // Auto-retry lần đầu — server có thể đang wake up (Render free tier)
+        if (!loadList._retried) {
+            loadList._retried = true;
+            setHTML('tbl',
+                '<div class="loading"><div class="spinner"></div>' +
+                '<p style="margin-top:12px;color:#718096;font-size:0.82rem;">Server đang khởi động, vui lòng chờ...</p>' +
+                '</div>'
+            );
+            setTimeout(function() { loadList._retried = false; loadList(); }, 5000);
         } else {
+            loadList._retried = false;
             empty('tbl', 'exclamation-circle', 'Lỗi tải dữ liệu: ' + e.message);
         }
     }
