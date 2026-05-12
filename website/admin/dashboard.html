@@ -77,6 +77,14 @@ async function load() {
                     <div class="stat-change" id="s-rv-sub"></div>
                 </div>
             </div>
+            <div class="stat" onclick="location.href='hoat-dong.html'" style="cursor:pointer;" title="Quản lý hoạt động & thành tích">
+                <div class="stat-icon si-red"><i class="fas fa-trophy"></i></div>
+                <div>
+                    <div class="stat-val" id="s-act"><i class="fas fa-spinner fa-spin" style="font-size:1rem;color:#cbd5e0;"></i></div>
+                    <div class="stat-lbl">Hoạt động</div>
+                    <div class="stat-change" id="s-act-sub"></div>
+                </div>
+            </div>
         </div>
 
         <!-- Thao tác nhanh -->
@@ -94,6 +102,9 @@ async function load() {
                 </a>
                 <a href="lien-he.html" class="btn btn-outline">
                     <i class="fas fa-envelope"></i> Xem liên hệ
+                </a>
+                <a href="hoat-dong.html" class="btn btn-outline">
+                    <i class="fas fa-trophy"></i> Quản lý hoạt động
                 </a>
             </div>
         </div>
@@ -122,7 +133,8 @@ async function load() {
         loadEventStats(),
         loadUserStats(),
         loadAnnouncementStats(),
-        loadReviewStats()
+        loadReviewStats(),
+        loadActivityStats()
     ]);
 }
 
@@ -259,6 +271,24 @@ async function loadReviewStats() {
     } catch (e) {
         setHTML('s-rv', '<span style="color:#e74c3c;font-size:0.9rem;">Lỗi</span>');
         setHTML('s-rv-sub', '');
+    }
+}
+
+// ── Hoạt động & Thành tích ──
+async function loadActivityStats() {
+    try {
+        var r   = await API.activities.list('', '', '1');
+        var all = r.data || [];
+        var active = all.filter(function(a) { return a.status === 'active'; }).length;
+        var gold   = all.filter(function(a) { return a.medal === 'gold'; }).length;
+        setHTML('s-act', all.length);
+        setHTML('s-act-sub',
+            active + ' đang hiển thị' +
+            (gold ? ' · 🥇 ' + gold + ' HCV' : '')
+        );
+    } catch (e) {
+        setHTML('s-act', '<span style="color:#e74c3c;font-size:0.9rem;">Lỗi</span>');
+        setHTML('s-act-sub', '');
     }
 }</script>
 </body>
