@@ -325,16 +325,22 @@ async function save() {
     var title = $('f-title').value.trim();
     if (!title) { toast('Vui lòng nhập tiêu đề', 'danger'); $('f-title').focus(); return; }
 
+    var imgVal = $('f-img') ? $('f-img').value.trim() : null;
+
     var body = {
         title,
         description: $('f-desc').value.trim()  || null,
         type:        $('f-type').value,
         medal:       $('f-medal').value         || null,
         year:        parseInt($('f-year').value) || new Date().getFullYear(),
-        image:       $('f-img') ? ($('f-img').value.trim() || null) : null,
+        image:       imgVal || null,
         sort_order:  parseInt($('f-sort').value) || 0,
         status:      $('f-status').value
     };
+
+    // Debug log
+    console.log('[Save] body:', JSON.stringify(body));
+    console.log('[Save] API.activities:', typeof API !== 'undefined' && API.activities ? 'OK' : 'MISSING');
 
     var btn = $('save-btn');
     btn.disabled = true;
@@ -351,6 +357,7 @@ async function save() {
         closeModal();
         loadList();
     } catch(e) {
+        console.error('[Save] Error:', e.message, e);
         toast('Lỗi: ' + e.message, 'danger');
     } finally {
         btn.disabled = false;
