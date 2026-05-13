@@ -325,6 +325,13 @@ async function save() {
     var title = $('f-title').value.trim();
     if (!title) { toast('Vui lòng nhập tiêu đề', 'danger'); $('f-title').focus(); return; }
 
+    // Kiểm tra upload đang chạy
+    var progEl = document.getElementById('f-img_prog');
+    if (progEl && progEl.style.display !== 'none') {
+        toast('Đang upload ảnh, vui lòng chờ...', 'info');
+        return;
+    }
+
     var imgVal = $('f-img') ? $('f-img').value.trim() : null;
 
     var body = {
@@ -341,6 +348,21 @@ async function save() {
     // Debug log
     console.log('[Save] body:', JSON.stringify(body));
     console.log('[Save] API.activities:', typeof API !== 'undefined' && API.activities ? 'OK' : 'MISSING');
+
+    // Kiểm tra token còn hạn không
+    var token = Auth.getToken();
+    if (token) {
+        try {
+            var payload = JSON.parse(atob(token.split('.')[1]));
+            var expiresIn = (payload.exp * 1000) - Date.now();
+            if (expiresIn < 0) {
+                toast('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.', 'danger');
+                setTimeout(function() { window.location.replace('index.html'); }, 2000);
+                return;
+            }
+            console.log('[Save] Token expires in:', Math.round(expiresIn/1000) + 's');
+        } catch(e) { /* ignore */ }
+    }
 
     var btn = $('save-btn');
     btn.disabled = true;
