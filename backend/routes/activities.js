@@ -61,7 +61,7 @@ router.post('/', adminOnly, async (req, res) => {
         const { title, description, type, medal, year, image, sort_order, status } = req.body;
         if (!title) return res.status(400).json({ success: false, message: 'Thiếu tiêu đề' });
 
-        const id = await db.insert('activities', {
+        const insertData = {
             title,
             description: description || null,
             type:        type        || 'achievement',
@@ -71,12 +71,15 @@ router.post('/', adminOnly, async (req, res) => {
             sort_order:  sort_order  ? parseInt(sort_order) : 0,
             status:      status      || 'active',
             created_by:  req.user.id
-        });
+        };
+
+        logger.info('Creating activity:', { data: insertData });
+        const id = await db.insert('activities', insertData);
         invalidateCache();
         res.status(201).json({ success: true, message: 'Tạo hoạt động thành công', data: { id } });
     } catch (e) {
-        logger.error('Create activity error:', { error: e.message });
-        res.status(500).json({ success: false, message: 'Lỗi server khi tạo hoạt động' });
+        logger.error('Create activity error:', { error: e.message, stack: e.stack });
+        res.status(500).json({ success: false, message: 'Lỗi server khi tạo hoạt động: ' + e.message });
     }
 });
 
