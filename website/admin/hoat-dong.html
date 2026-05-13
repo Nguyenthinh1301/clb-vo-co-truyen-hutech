@@ -114,6 +114,7 @@ var page = initLayout('<i class="fas fa-trophy"></i> Quản lý Hoạt động',
 if (!page) throw new Error('Auth failed');
 
 var delId = null;
+var deleting = false;
 
 var TYPE_LBL  = { achievement:'Thành tích', performance:'Biểu diễn', event:'Sự kiện', training:'Tập luyện', other:'Khác' };
 var TYPE_ICN  = { achievement:'trophy', performance:'theater-masks', event:'star', training:'dumbbell', other:'tag' };
@@ -403,21 +404,40 @@ function openDel(id, name) {
     setHTML('del-name', name);
     $('del-modal').classList.add('open');
 }
-function closeDel() { $('del-modal').classList.remove('open'); delId = null; }
+function closeDel() {
+    $('del-modal').classList.remove('open');
+    delId = null;
+    deleting = false;
+}
 
 async function confirmDel() {
-    if (!delId) return;
+    if (!delId || deleting) return;
+    var idNum = parseInt(delId, 10);
+    if (!Number.isFinite(idNum) || idNum <= 0) {
+        toast('ID hoạt động không hợp lệ', 'danger');
+        return;
+    }
+
+    deleting = true;
     var btn = $('del-btn');
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xóa...';
     try {
-        await API.activities.delete(delId);
+        await API.activities.delete(idNum);
         toast('🗑️ Đã xóa thành công');
         closeDel();
         loadList();
     } catch(e) {
+        // Nếu bản ghi đã bị xóa trước đó, coi như đã thành công để UI đồng bộ lại.
+        if ((e.message || '').toLowerCase().includes('không tìm thấy')) {
+            toast('Mục này đã được xóa trước đó', 'info');
+            closeDel();
+            loadList();
+            return;
+        }
         toast('Lỗi: ' + e.message, 'danger');
     } finally {
+        deleting = false;
         btn.disabled = false;
         btn.innerHTML = '<i class="fas fa-trash"></i> Xóa';
     }
