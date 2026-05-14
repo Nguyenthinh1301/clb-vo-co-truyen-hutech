@@ -78,8 +78,8 @@ router.post('/', adminOnly, async (req, res) => {
         invalidateCache();
         res.status(201).json({ success: true, message: 'Tạo hoạt động thành công', data: { id } });
     } catch (e) {
-        logger.error('Create activity error:', { error: e.message, stack: e.stack });
-        res.status(500).json({ success: false, message: 'Lỗi server khi tạo hoạt động: ' + e.message });
+        logger.error('Create activity error:', { error: e.message });
+        res.status(500).json({ success: false, message: 'Lỗi server khi tạo hoạt động' });
     }
 });
 

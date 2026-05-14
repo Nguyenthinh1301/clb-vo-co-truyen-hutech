@@ -346,25 +346,6 @@ async function save() {
         status:      $('f-status').value
     };
 
-    // Debug log
-    console.log('[Save] body:', JSON.stringify(body));
-    console.log('[Save] API.activities:', typeof API !== 'undefined' && API.activities ? 'OK' : 'MISSING');
-
-    // Kiểm tra token còn hạn không
-    var token = Auth.getToken();
-    if (token) {
-        try {
-            var payload = JSON.parse(atob(token.split('.')[1]));
-            var expiresIn = (payload.exp * 1000) - Date.now();
-            if (expiresIn < 0) {
-                toast('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.', 'danger');
-                setTimeout(function() { window.location.replace('index.html'); }, 2000);
-                return;
-            }
-            console.log('[Save] Token expires in:', Math.round(expiresIn/1000) + 's');
-        } catch(e) { /* ignore */ }
-    }
-
     var btn = $('save-btn');
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang lưu...';
