@@ -10,7 +10,7 @@ const { cacheService } = require('../services/cacheService');
 const logger = require('../services/loggerService');
 
 const adminOnly = [authenticateJwt, requireAdmin];
-const CACHE_TTL = 120;
+const CACHE_TTL = 0; // Không cache activities — luôn lấy data mới nhất
 
 function invalidateCache() {
     cacheService.deletePattern('^activities:');
@@ -26,17 +26,13 @@ router.get('/', async (req, res) => {
         if (type) { where += ' AND type = ?'; params.push(type); }
         if (year) { where += ' AND year = ?'; params.push(parseInt(year)); }
 
-        const cacheKey = `activities:list:${all||'0'}:${type||''}:${year||''}`;
-        const cached = cacheService.get(cacheKey);
-        if (cached) return res.json(cached);
-
+        // Không dùng cache cho activities — luôn lấy data mới nhất
         const rows = await db.find(
             `SELECT * FROM activities WHERE ${where} ORDER BY year DESC, sort_order ASC, created_at DESC`,
             params
         );
         const result = { success: true, data: rows, total: rows.length };
-        cacheService.set(cacheKey, result, CACHE_TTL);
-        res.set('Cache-Control', 'public, max-age=60');
+        res.set('Cache-Control', 'no-cache');
         res.json(result);
     } catch (e) {
         logger.error('Get activities error:', { error: e.message });
