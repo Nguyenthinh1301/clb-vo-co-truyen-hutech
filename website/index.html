@@ -492,22 +492,33 @@
                     { src: 'assets/images_Thi_dau_vo/Giai_SV3.jpg',        title: 'Giải III Toàn Đoàn',                     desc: 'Giải Võ Cổ Truyền Sinh Viên VLU TP.HCM 2024.' },
                     { src: 'assets/images_Thi_dau_vo/Thi_Vo_Nhac.jpg',     title: 'Thi đấu võ nhạc Đất phương nam 2025',    desc: 'Cuộc thi Liên hoan Võ Việt đất phương nam 2026.' },
                     { src: 'assets/images_Thi_dau_vo/Hinh_Thi_Dau.jpg',    title: 'Giải Võ cổ truyền Quốc tế TP.HCM 2026', desc: 'Mục tiêu học hỏi và trải nghiệm tại đấu trường lớn.' },
-                    { src: 'assets/images_Thi_dau_vo/Hinh_Nhan_thuong.jpg', title: 'Lễ Tổng Kết Giải Liên Hoan Quốc Tế',   desc: 'Ghi nhận sự nỗ lực và tiến bộ của từng cá nhân.' }
+                    { src: 'assets/images_Thi_dau_vo/Hinh_Nhan_thuong.jpg', title: 'Lễ Tổng Kết Giải Liên Hoan Quốc Tế',   desc: 'Ghi nhận sự nỗ lực và tiến bộ của từng cá nhân.' },
+                    { src: 'assets/images_Thi_dau_vo/Giai_SV2.jpg',        title: 'Giải Sinh Viên 2024',                    desc: 'Thi đấu võ cổ truyền sinh viên TP.HCM.' },
+                    { src: 'assets/images_Thi_dau_vo/Hinh_Thi_Dau_2.jpg',  title: 'Thi đấu đối kháng',                     desc: 'Các trận đấu đối kháng tại giải liên hoan.' }
                 ]},
                 { name: 'Diễn show', photos: [
-                    { src: 'assets/images_Dien_Show/Show_Quoc_Te.jpg', title: 'Giải nhất biểu diễn Quốc tế HUTECH', desc: 'HUTECH GLOBAL FESTIVAL.' },
-                    { src: 'assets/images_Dien_Show/Show.jpg',         title: 'Biểu diễn Nam Kỳ Lục Tỉnh',         desc: 'Tham gia giao lưu chào đón tân sinh viên.' }
+                    { src: 'assets/images_Dien_Show/Show_Quoc_Te.jpg',   title: 'Giải nhất biểu diễn Quốc tế HUTECH', desc: 'HUTECH GLOBAL FESTIVAL.' },
+                    { src: 'assets/images_Dien_Show/Show.jpg',           title: 'Biểu diễn Nam Kỳ Lục Tỉnh',         desc: 'Tham gia giao lưu chào đón tân sinh viên.' },
+                    { src: 'assets/images_Dien_Show/Show_2.jpeg',        title: 'Biểu diễn sân khấu lớn',            desc: 'Màn trình diễn ấn tượng của CLB.' },
+                    { src: 'assets/images_Dien_Show/Show_Quoc_Te_2.jpg', title: 'Liên hoan Quốc tế 2026',            desc: 'Đại diện HUTECH tại sân chơi quốc tế.' }
                 ]},
                 { name: 'Hoạt động CLB', photos: [
-                    { src: 'assets/images_Team_Building/Hinh_Team_BuilDing_1.jpg', title: 'Team Building 2025',  desc: 'Hoạt động ngoại khóa gắn kết các thành viên CLB.' },
-                    { src: 'assets/images_Thien_Nguyen/HD_Thien_Nguyen.jpg',       title: 'Hoạt Động Từ Thiện', desc: 'Chương trình thiện nguyện hỗ trợ cộng đồng.' }
+                    { src: 'assets/images_Team_Building/Hinh_Team_BuilDing_1.jpg', title: 'Team Building 2025',       desc: 'Hoạt động ngoại khóa gắn kết các thành viên CLB.' },
+                    { src: 'assets/images_Team_Building/Hinh_Team_BuilDing_2.jpg', title: 'Team Building — Trò chơi', desc: 'Các trò chơi tập thể vui nhộn.' },
+                    { src: 'assets/images_Thien_Nguyen/HD_Thien_Nguyen.JPG',      title: 'Hoạt Động Từ Thiện',      desc: 'Chương trình thiện nguyện hỗ trợ cộng đồng.' },
+                    { src: 'assets/images_Thien_Nguyen/HD_Thien_Nguyen2.JPG',      title: 'Từ thiện 2025',           desc: 'CLB đồng hành cùng cộng đồng.' }
                 ]}
             ];
 
             function gsResolveImg(url) {
                 if (!url) return '';
                 if (url.startsWith('http')) return url;
-                return GS_API.replace('/api','') + (url.startsWith('/') ? url : '/' + url);
+                // Nếu URL bắt đầu bằng /uploads → nối với backend URL
+                if (url.startsWith('/uploads')) {
+                    return GS_API.replace('/api','') + url;
+                }
+                // Nếu là relative path → giữ nguyên (ảnh tĩnh local)
+                return url;
             }
 
             function gsRenderGrid(photos) {
@@ -520,7 +531,8 @@
                 }
                 grid.innerHTML = gsLbPhotos.map(function(item, idx) {
                     return '<div class="gallery-item" onclick="gsLbOpen(' + idx + ')" style="min-height:200px;">' +
-                        '<img src="' + item.src + '" alt="' + (item.title||'') + '" class="gallery-real-img" loading="lazy" onerror="this.style.display=\'none\'">' +
+                        '<img src="' + item.src + '" alt="' + (item.title||'') + '" class="gallery-real-img" loading="lazy" ' +
+                        'onerror="this.style.display=\'none\';this.nextElementSibling.innerHTML=\'<div style=\\\'display:flex;align-items:center;justify-content:center;height:100%;background:#f0f2f5;color:#cbd5e0;font-size:2rem;\\\'><i class=\\\'fas fa-image\\\' title=\\\'Ảnh không tải được\\\'></i></div>\'">' +
                         '<div class="gallery-info"><h4>' + (item.title||'') + '</h4><p>' + (item.desc||'') + '</p></div>' +
                         '</div>';
                 }).join('');
@@ -569,8 +581,13 @@
             window.loadGallerySection = async function() {
                 try {
                     var res  = await fetch(GS_API + '/gallery/albums', { cache: 'default' });
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
                     var data = await res.json();
-                    if (!data.success || !data.data || !data.data.length) { gsFallback(); return; }
+
+                    if (!data.success || !data.data || !data.data.length) {
+                        console.info('[Gallery] API trả về rỗng — dùng ảnh tĩnh');
+                        gsFallback(); return;
+                    }
 
                     var albums = data.data.slice(0, 5);
                     var results = await Promise.all(albums.map(function(album) {
@@ -581,20 +598,31 @@
                                 return {
                                     id: album.id, name: album.name,
                                     photos: photos.map(function(p) {
-                                        return { src: gsResolveImg(p.image_url), title: p.caption || album.name, desc: album.description || album.name };
+                                        return {
+                                            src:   gsResolveImg(p.image_url),
+                                            title: p.caption || album.name,
+                                            desc:  album.description || album.name
+                                        };
                                     })
                                 };
                             })
-                            .catch(function() { return { id: album.id, name: album.name, photos: [] }; });
+                            .catch(function(e) {
+                                console.warn('[Gallery] Lỗi tải album ' + album.id + ':', e.message);
+                                return { id: album.id, name: album.name, photos: [] };
+                            });
                     }));
 
                     gsAlbums = results.filter(function(a) { return a.photos.length > 0; });
-                    if (!gsAlbums.length) { gsFallback(); return; }
+                    if (!gsAlbums.length) {
+                        console.info('[Gallery] Không có ảnh từ API — dùng ảnh tĩnh');
+                        gsFallback(); return;
+                    }
 
                     gsActive = -1;
                     gsRenderTabs();
                     gsRenderGrid(gsGetPhotos(-1));
                 } catch(e) {
+                    console.warn('[Gallery] Lỗi kết nối API (' + e.message + ') — dùng ảnh tĩnh');
                     gsFallback();
                 }
             };
@@ -640,10 +668,11 @@
             contactForm.addEventListener('submit', function(e) {
                 e.preventDefault();
                 const formData = {
-                    name:    document.getElementById('name').value,
-                    email:   document.getElementById('email').value,
-                    phone:   document.getElementById('phone').value,
-                    message: document.getElementById('message').value
+                    name:    document.getElementById('name').value.trim(),
+                    email:   document.getElementById('email').value.trim(),
+                    phone:   document.getElementById('phone').value.trim(),
+                    subject: (document.getElementById('subject') ? document.getElementById('subject').value : '') || 'Liên hệ từ website',
+                    message: document.getElementById('message').value.trim()
                 };
                 if (!formData.name || !formData.email || !formData.phone) {
                     showNotification('Vui lòng điền đầy đủ thông tin bắt buộc!', 'error'); return;
@@ -654,7 +683,15 @@
                 if (!/^[0-9]{10,11}$/.test(formData.phone.replace(/\D/g, ''))) {
                     showNotification('Số điện thoại không hợp lệ!', 'error'); return;
                 }
+
+                // Disable button khi đang gửi
+                var submitBtn = document.getElementById('contact-submit-btn');
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi...';
+                }
                 showNotification('Đang gửi...', 'info');
+
                 var contactApi = window.APP_CONFIG ? window.APP_CONFIG.API_BASE : 'http://localhost:3001/api';
                 fetch(contactApi + '/contact', {
                     method: 'POST',
@@ -664,14 +701,21 @@
                 .then(function(res) { return res.json(); })
                 .then(function(data) {
                     if (data.success) {
-                        showNotification('Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi trong thời gian sớm nhất.', 'success');
+                        showNotification('✅ Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi trong thời gian sớm nhất.', 'success');
                         contactForm.reset();
                     } else {
                         showNotification(data.message || 'Gửi thất bại, vui lòng thử lại.', 'error');
                     }
                 })
                 .catch(function() {
-                    showNotification('⚠️ Server chưa khởi động. Vui lòng chạy lệnh: cd backend && npm start', 'error');
+                    showNotification('⚠️ Không thể kết nối server. Vui lòng thử lại sau.', 'error');
+                })
+                .finally(function() {
+                    // Khôi phục button
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Gửi liên hệ';
+                    }
                 });
             });
         }

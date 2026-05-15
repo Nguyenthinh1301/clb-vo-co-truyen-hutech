@@ -37,10 +37,16 @@ class EmailService {
         }
 
         try {
+            const smtpHost = process.env.SMTP_HOST || 'smtp.gmail.com';
+            // Gmail: port 587 dùng STARTTLS (secure=false), port 465 dùng SSL (secure=true)
+            // Luôn dùng 587+STARTTLS để tránh lỗi SSL handshake
+            const smtpPort = 587;
+            const smtpSecure = false;
+
             this.transporter = nodemailer.createTransport({
-                host: process.env.SMTP_HOST || 'smtp.gmail.com',
-                port: parseInt(process.env.SMTP_PORT) || 465,
-                secure: true,
+                host: smtpHost,
+                port: smtpPort,
+                secure: smtpSecure,
                 auth: { user: smtpUser, pass: smtpPass },
                 tls: { rejectUnauthorized: false },
                 connectionTimeout: 10000,
@@ -49,7 +55,7 @@ class EmailService {
             });
             this.initialized = true;
             this.mode = 'smtp';
-            console.log('✅ Email service initialized (SMTP)');
+            console.log(`✅ Email service initialized (SMTP ${smtpHost}:${smtpPort})`);
         } catch (error) {
             console.error('❌ Email service initialization failed:', error.message);
         }
