@@ -19,12 +19,48 @@ $token = $login.data.token
 $headers = @{ Authorization = "Bearer $token"; "Content-Type" = "application/json" }
 Write-Host "   OK: role=$($login.data.user.role)" -ForegroundColor Green
 
+function Invoke-RestWithRetry {
+    param(
+        [Parameter(Mandatory=$true)][string]$Url,
+        [Parameter(Mandatory=$true)][string]$Method,
+        [Parameter(Mandatory=$false)][string]$Body,
+        [Parameter(Mandatory=$false)][hashtable]$Headers,
+        [int]$TimeoutSec = 20,
+        [int]$MaxAttempts = 5
+    )
+
+    for($attempt=1; $attempt -le $MaxAttempts; $attempt++){
+        try {
+            # Invoke-RestMethod uses -Uri (not -Url)
+            $params = @{ Uri = $Url; Method = $Method; TimeoutSec = $TimeoutSec }
+            if($Body -ne $null){ $params.Body = $Body }
+            if($Headers -ne $null){ $params.Headers = $Headers }
+            if($params.ContainsKey('Body')){ $params.ContentType = 'application/json' }
+            return Invoke-RestMethod @params
+
+        } catch {
+            $msg = $_.Exception.Message
+            if($msg -match '429'){
+        Write-Host "   Throttled (429). Retry attempt $attempt/$MaxAttempts..." -ForegroundColor Yellow
+                Start-Sleep -Seconds (15 * $attempt)
+                continue
+
+            }
+            throw
+        }
+    }
+
+    throw "Request failed after $MaxAttempts attempts: $Url"
+}
+
 # 3. Submit contact (như người dùng)
 Write-Host "3. Submitting contact message..."
 $contactBody = '{"name":"Nguyen Van Test","email":"aquin15121301@gmail.com","phone":"0901234567","subject":"Hoi ve lich tap CLB","message":"Cho toi hoi lich tap cua CLB Vo Co Truyen HUTECH nhu the nao? Cam on!"}'
-$contact = Invoke-RestMethod "https://clb-vo-co-truyen-hutech.onrender.com/api/contact" -Method POST -Body $contactBody -ContentType "application/json" -TimeoutSec 15
+$contact = Invoke-RestWithRetry -Url "https://clb-vo-co-truyen-hutech.onrender.com/api/contact" -Method POST -Body $contactBody -Headers @{ 'Content-Type' = 'application/json' } -TimeoutSec 20 -MaxAttempts 6
 $msgId = $contact.data.message_id
+if(-not $msgId){ throw "message_id is empty (contact create may have failed)." }
 Write-Host "   OK: message_id=$msgId" -ForegroundColor Green
+
 
 # 4. Admin xem tin nhắn
 Write-Host "4. Admin reading message..."
