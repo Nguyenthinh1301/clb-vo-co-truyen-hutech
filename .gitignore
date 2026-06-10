@@ -30,6 +30,7 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
+.history/
 
 # Build / Coverage
 dist/

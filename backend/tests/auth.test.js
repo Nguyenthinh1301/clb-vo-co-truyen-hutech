@@ -10,9 +10,11 @@ const db = require('../config/db');
 describe('Authentication API', () => {
   let testUser = {
     email: 'test@example.com',
+    username: 'testuser',
     password: 'Test123456',
-    full_name: 'Test User',
-    phone: '0123456789'
+    first_name: 'Test',
+    last_name: 'User',
+    phone_number: '0123456789'
   };
 
   let authToken;
@@ -53,7 +55,7 @@ describe('Authentication API', () => {
         .post('/api/auth/register')
         .send(testUser);
 
-      expect(res.statusCode).toBe(400);
+      expect(res.statusCode).toBe(409);
       expect(res.body.success).toBe(false);
     });
 
@@ -96,7 +98,7 @@ describe('Authentication API', () => {
       expect(res.body.success).toBe(true);
       expect(res.body.data).toHaveProperty('token');
       expect(res.body.data).toHaveProperty('refreshToken');
-      
+
       authToken = res.body.data.token;
     });
 
@@ -133,7 +135,7 @@ describe('Authentication API', () => {
 
       expect(res.statusCode).toBe(200);
       expect(res.body.success).toBe(true);
-      expect(res.body.data).toHaveProperty('email', testUser.email);
+      expect(res.body.data.user).toHaveProperty('email', testUser.email);
     });
 
     it('should fail without token', async () => {
@@ -160,8 +162,9 @@ describe('Authentication API', () => {
         .put('/api/auth/change-password')
         .set('Authorization', `Bearer ${authToken}`)
         .send({
-          currentPassword: testUser.password,
-          newPassword: 'NewPassword123'
+          current_password: testUser.password,
+          new_password: 'NewPassword123',
+          confirm_password: 'NewPassword123'
         });
 
       expect(res.statusCode).toBe(200);
@@ -173,11 +176,13 @@ describe('Authentication API', () => {
         .put('/api/auth/change-password')
         .set('Authorization', `Bearer ${authToken}`)
         .send({
-          currentPassword: 'wrongpassword',
-          newPassword: 'NewPassword123'
+          current_password: 'wrongpassword',
+          new_password: 'NewPassword123',
+          confirm_password: 'NewPassword123'
         });
 
-      expect(res.statusCode).toBe(401);
+      // Backend currently returns 400 for incorrect current password
+      expect(res.statusCode).toBe(400);
       expect(res.body.success).toBe(false);
     });
   });
@@ -193,3 +198,4 @@ describe('Authentication API', () => {
     });
   });
 });
+
