@@ -329,6 +329,63 @@ router.delete('/announcements/:id', adminOnly, async (req, res) => {
 });
 
 // ══════════════════════════════════════════════════════════════
+//  GALLERY (Thư viện ảnh) — Alias to /api/gallery
+// ══════════════════════════════════════════════════════════════
+
+// GET all albums (public)
+router.get('/gallery', async (req, res) => {
+    try {
+        const { status = 'active', all } = req.query;
+        const cacheKey = `cms:gallery:albums:${all||'0'}:${status}`;
+        const cached   = cacheService.get(cacheKey);
+        if (cached) return res.json(cached);
+
+        const where  = all === '1' ? '1=1' : "a.status = 'active'";
+        const albums = await db.find(
+            `SELECT a.*,
+             (SELECT COUNT(*) FROM gallery_photos p WHERE p.album_id = a.id) AS photo_count
+             FROM gallery_albums a
+             WHERE ${where}
+             ORDER BY a.sort_order ASC, a.created_at DESC`,
+            []
+        );
+
+        const result = { success: true, data: { albums, total: albums.length } };
+        cacheService.set(cacheKey, result, CACHE_TTL.events);
+        res.set('Cache-Control', 'public, max-age=30');
+        res.json(result);
+    } catch (e) {
+        res.status(500).json({ success: false, message: e.message });
+    }
+});
+
+// GET single album with photos (public)
+router.get('/gallery/:id', async (req, res) => {
+    try {
+        const numId = parseInt(req.params.id);
+        if (!numId || numId < 1) return res.status(400).json({ success: false, message: 'ID không hợp lệ' });
+
+        const cacheKey = `cms:gallery:album:${numId}`;
+        const cached   = cacheService.get(cacheKey);
+        if (cached) return res.json(cached);
+
+        const album = await db.findOne('SELECT * FROM gallery_albums WHERE id = ?', [numId]);
+        if (!album) return res.status(404).json({ success: false, message: 'Album không tồn tại' });
+
+        const photos = await db.find(
+            'SELECT * FROM gallery_photos WHERE album_id = ? ORDER BY sort_order ASC, created_at ASC',
+            [numId]
+        );
+
+        const result = { success: true, data: { album, photos } };
+        cacheService.set(cacheKey, result, CACHE_TTL.events);
+        res.json(result);
+    } catch (e) {
+        res.status(500).json({ success: false, message: e.message });
+    }
+});
+
+// ══════════════════════════════════════════════════════════════
 //  REVIEWS (Cảm nhận sinh viên)
 // ══════════════════════════════════════════════════════════════
 

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Backend Connection</title>
+    <script src="assets/js/config.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f7fa;
+        }
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h1 { color: #1a252f; margin-top: 0; }
+        h2 { color: #c41e3a; font-size: 1.3rem; margin-top: 0; }
+        .status { padding: 15px; border-radius: 8px; margin: 15px 0; font-weight: 500; }
+        .success { background: #d4edda; color: #155724; border-left: 4px solid #28a745; }
+        .error { background: #f8d7da; color: #721c24; border-left: 4px solid #dc3545; }
+        .info { background: #d1ecf1; color: #0c5460; border-left: 4px solid #17a2b8; }
+        .warning { background: #fff3cd; color: #856404; border-left: 4px solid #ffc107; }
+        button {
+            background: #c41e3a;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 5px;
+        }
+        button:hover { background: #a01628; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        pre {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            border: 1px solid #dee2e6;
+        }
+        code { color: #e83e8c; }
+        .config-info {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+        .test-item {
+            padding: 10px;
+            margin: 10px 0;
+            border-left: 3px solid #6c757d;
+            background: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🔧 Test Backend Connection</h1>
+        <p>Công cụ kiểm tra kết nối giữa Frontend và Backend</p>
+    </div>
+
+    <div class="card">
+        <h2>📋 Cấu hình hiện tại</h2>
+        <div class="config-info" id="config-info">
+            <p><strong>Loading...</strong></p>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>🧪 Các test tự động</h2>
+        <button onclick="runAllTests()">▶ Chạy tất cả tests</button>
+        <button onclick="clearResults()">🗑️ Xóa kết quả</button>
+        <div id="test-results"></div>
+    </div>
+
+    <div class="card">
+        <h2>🔐 Test Admin Login</h2>
+        <div style="margin: 20px 0;">
+            <label style="display: block; margin-bottom: 5px;">Email:</label>
+            <input type="email" id="login-email" value="admin@vocotruyenhutech.edu.vn" 
+                   style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 15px;">
+            
+            <label style="display: block; margin-bottom: 5px;">Password:</label>
+            <input type="password" id="login-password" value="Admin@123"
+                   style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 15px;">
+            
+            <button onclick="testLogin()">🔑 Test Login</button>
+        </div>
+        <div id="login-result"></div>
+    </div>
+
+    <script>
+        const API = window.APP_CONFIG?.API_BASE || 'http://localhost:3001/api';
+        const BACKEND_URL = window.APP_CONFIG?.BACKEND_URL || 'http://localhost:3001';
+
+        // Display config
+        document.getElementById('config-info').innerHTML = `
+            <p><strong>API Base URL:</strong> <code>${API}</code></p>
+            <p><strong>Backend URL:</strong> <code>${BACKEND_URL}</code></p>
+            <p><strong>Current Origin:</strong> <code>${window.location.origin}</code></p>
+            <p><strong>Hostname:</strong> <code>${window.location.hostname}</code></p>
+        `;
+
+        function showStatus(elementId, html, type) {
+            document.getElementById(elementId).innerHTML = `<div class="status ${type}">${html}</div>`;
+        }
+
+        function addTestResult(title, success, message, details = null) {
+            const result = document.getElementById('test-results');
+            const icon = success ? '✅' : '❌';
+            const type = success ? 'success' : 'error';
+            
+            let html = `
+                <div class="test-item">
+                    <strong>${icon} ${title}</strong><br>
+                    <div style="margin-top: 5px;">${message}</div>
+            `;
+            
+            if (details) {
+                html += `<pre style="margin-top: 10px; font-size: 0.85rem;">${JSON.stringify(details, null, 2)}</pre>`;
+            }
+            
+            html += '</div>';
+            result.innerHTML += html;
+        }
+
+        function clearResults() {
+            document.getElementById('test-results').innerHTML = '';
+            document.getElementById('login-result').innerHTML = '';
+        }
+
+        async function testHealthCheck() {
+            try {
+                const response = await fetch(`${BACKEND_URL}/health`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    addTestResult(
+                        'Health Check',
+                        true,
+                        `Server running (${data.environment})`,
+                        data
+                    );
+                    return true;
+                } else {
+                    addTestResult('Health Check', false, 'Server returned error', data);
+                    return false;
+                }
+            } catch (error) {
+                addTestResult('Health Check', false, `Connection failed: ${error.message}`);
+                return false;
+            }
+        }
+
+        async function testAuthEndpoint() {
+            try {
+                const response = await fetch(`${API}/auth/login`, {
+                    method: 'OPTIONS',
+                });
+                
+                if (response.ok || response.status === 204) {
+                    addTestResult(
+                        'Auth Endpoint (OPTIONS)',
+                        true,
+                        'CORS preflight passed',
+                        {
+                            status: response.status,
+                            headers: {
+                                'access-control-allow-origin': response.headers.get('access-control-allow-origin'),
+                                'access-control-allow-methods': response.headers.get('access-control-allow-methods')
+                            }
+                        }
+                    );
+                    return true;
+                } else {
+                    addTestResult('Auth Endpoint (OPTIONS)', false, `Status: ${response.status}`);
+                    return false;
+                }
+            } catch (error) {
+                addTestResult('Auth Endpoint (OPTIONS)', false, `Request failed: ${error.message}`);
+                return false;
+            }
+        }
+
+        async function testCORS() {
+            try {
+                const response = await fetch(`${API}/health`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const corsHeader = response.headers.get('access-control-allow-origin');
+                
+                if (corsHeader) {
+                    addTestResult(
+                        'CORS Headers',
+                        true,
+                        `Allowed origin: ${corsHeader}`,
+                        {
+                            'access-control-allow-origin': corsHeader,
+                            'origin': window.location.origin
+                        }
+                    );
+                    return true;
+                } else {
+                    addTestResult('CORS Headers', false, 'No CORS headers found');
+                    return false;
+                }
+            } catch (error) {
+                addTestResult('CORS Headers', false, `Check failed: ${error.message}`);
+                return false;
+            }
+        }
+
+        async function runAllTests() {
+            clearResults();
+            document.getElementById('test-results').innerHTML = '<div class="info">🔄 Running tests...</div>';
+            
+            await testHealthCheck();
+            await new Promise(r => setTimeout(r, 500));
+            
+            await testCORS();
+            await new Promise(r => setTimeout(r, 500));
+            
+            await testAuthEndpoint();
+            
+            document.getElementById('test-results').innerHTML = 
+                document.getElementById('test-results').innerHTML.replace('🔄 Running tests...', '');
+        }
+
+        async function testLogin() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const resultDiv = document.getElementById('login-result');
+            
+            if (!email || !password) {
+                showStatus('login-result', '⚠️ Vui lòng nhập email và password', 'warning');
+                return;
+            }
+            
+            resultDiv.innerHTML = '<div class="info">🔄 Đang đăng nhập...</div>';
+            
+            try {
+                const response = await fetch(`${API}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success && data.data?.token) {
+                    showStatus(
+                        'login-result',
+                        `✅ <strong>Đăng nhập thành công!</strong><br>
+                         User: ${data.data.user.first_name} ${data.data.user.last_name}<br>
+                         Role: ${data.data.user.role}<br>
+                         Token: ${data.data.token.substring(0, 20)}...
+                         <pre style="margin-top: 10px;">${JSON.stringify(data.data.user, null, 2)}</pre>`,
+                        'success'
+                    );
+                } else {
+                    showStatus(
+                        'login-result',
+                        `❌ <strong>Đăng nhập thất bại</strong><br>${data.message || 'Unknown error'}`,
+                        'error'
+                    );
+                }
+            } catch (error) {
+                showStatus(
+                        'login-result',
+                    `❌ <strong>Connection Error</strong><br>
+                     ${error.message}<br><br>
+                     <strong>Có thể do:</strong><br>
+                     • Backend chưa khởi động<br>
+                     • CORS configuration sai<br>
+                     • Network issue<br><br>
+                     <strong>Kiểm tra:</strong><br>
+                     1. Backend có chạy tại ${BACKEND_URL}?<br>
+                     2. Console (F12) có lỗi CORS?`,
+                    'error'
+                );
+            }
+        }
+
+        // Auto-run tests on page load
+        window.addEventListener('load', () => {
+            setTimeout(runAllTests, 500);
+        });
+    </script>
+</body>
+</html>
