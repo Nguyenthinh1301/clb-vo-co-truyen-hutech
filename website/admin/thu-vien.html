@@ -617,15 +617,39 @@ async function confirmDel() {
             closeDel();
             loadAlbums();
         } else {
+            // Photo deletion với better error handling
+            console.log('Deleting photo ID:', delTarget.id); // Debug log
             await API.gallery.deletePhoto(delTarget.id);
             toast('🗑️ Đã xóa ảnh');
             closeDel();
             // Xóa khỏi DOM ngay không cần reload
             var el = $('photo-' + delTarget.id);
-            if (el) el.remove();
+            if (el) {
+                el.remove();
+                // Check if no photos left
+                var grid = $('photo-grid');
+                if (grid && grid.children.length === 0) {
+                    // Reload album to show empty state
+                    openAlbum(currentAlbum.id);
+                }
+            }
         }
     } catch(e) {
-        toast('Lỗi xóa: ' + e.message, 'danger');
+        console.error('Delete error:', e); // Debug log
+        var msg = e.message || 'Không xác định';
+        
+        // Better error messages
+        if (msg.includes('không tồn tại')) {
+            toast('⚠️ ' + msg + '. Trang sẽ được làm mới.', 'warning');
+            // Reload to sync with actual data
+            setTimeout(function() {
+                if (currentAlbum) openAlbum(currentAlbum.id);
+                else loadAlbums();
+            }, 1500);
+        } else {
+            toast('❌ Lỗi xóa: ' + msg, 'danger');
+        }
+        closeDel();
     } finally {
         btn.disabled = false;
         btn.innerHTML = '<i class="fas fa-trash"></i> Xóa';
