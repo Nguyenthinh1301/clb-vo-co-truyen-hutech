@@ -79,7 +79,7 @@
         Chỉ tài khoản Admin mới có thể truy cập
     </div>
 
-    <form id="frm">
+    <form id="frm" autocomplete="off">
         <div class="form-group">
             <label class="form-label">
                 <i class="fas fa-envelope" style="color:#e74c3c;margin-right:6px;font-size:0.85rem;"></i>
@@ -87,7 +87,7 @@
             </label>
             <input class="form-control" type="email" id="email"
                 placeholder="Nhập email admin"
-                required autocomplete="username">
+                required autocomplete="off" value="">
         </div>
         <div class="form-group">
             <label class="form-label">
@@ -96,7 +96,7 @@
             </label>
             <input class="form-control" type="password" id="pw"
                 placeholder="Nhập mật khẩu"
-                required autocomplete="current-password">
+                required autocomplete="off" value="">
         </div>
 
         <button class="btn btn-primary" type="submit" id="btn"
@@ -126,6 +126,16 @@
 
     var msgEl = document.getElementById('msg');
     var btn   = document.getElementById('btn');
+    var emailInput = document.getElementById('email');
+    var pwInput = document.getElementById('pw');
+
+    // Clear all form data on page load (prevent browser cache)
+    window.addEventListener('load', function() {
+        emailInput.value = '';
+        pwInput.value = '';
+        // Also reset form to prevent browser restore
+        document.getElementById('frm').reset();
+    });
 
     function showMsg(html, type) {
         msgEl.innerHTML = '<div class="alert alert-' + type + '">' + html + '</div>';
@@ -134,8 +144,8 @@
     document.getElementById('frm').addEventListener('submit', function (e) {
         e.preventDefault();
 
-        var email = document.getElementById('email').value.trim();
-        var pw    = document.getElementById('pw').value;
+        var email = emailInput.value.trim();
+        var pw    = pwInput.value;
 
         if (!email || !pw) return;
 
@@ -173,6 +183,10 @@
 
             showMsg('<i class="fas fa-check-circle"></i> Đăng nhập thành công! Đang chuyển trang...', 'success');
             btn.disabled = true;
+
+            // Clear form trước khi redirect
+            emailInput.value = '';
+            pwInput.value = '';
 
             // Redirect ngay — không dùng setTimeout để tránh Live Server reload can thiệp
             window.location.replace('dashboard.html');
