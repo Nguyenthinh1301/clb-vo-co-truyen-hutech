@@ -24,13 +24,26 @@ app.use(helmet({
     crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
 
-// CORS configuration - Allow all origins in development
+// CORS configuration - Allow all origins in development, whitelist in production
 const corsOptions = {
     origin: function (origin, callback) {
-        // Always allow: no origin (file://, curl, mobile), or development mode
-        if (!origin || process.env.NODE_ENV === 'development') {
+        // Always allow: no origin (file://, curl, mobile apps)
+        if (!origin) {
             return callback(null, true);
         }
+        
+        // Development mode: allow all localhost/127.0.0.1 with any port
+        if (process.env.NODE_ENV === 'development') {
+            return callback(null, true);
+        }
+        
+        // Production: allow localhost/127.0.0.1 with any port (for local testing)
+        // Regex: http(s)://localhost:port or http(s)://127.0.0.1:port
+        const localhostRegex = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/;
+        if (localhostRegex.test(origin)) {
+            return callback(null, true);
+        }
+        
         // Production: check whitelist
         const allowed = (process.env.CORS_ORIGIN || '')
             .split(',').map(o => o.trim()).filter(Boolean);
