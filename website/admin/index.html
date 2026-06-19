@@ -79,6 +79,9 @@
         Chỉ tài khoản Admin mới có thể truy cập
     </div>
 
+    <!-- Backend Status Check -->
+    <div id="backendStatus" style="display:none; margin-bottom:15px;"></div>
+
     <form id="frm" autocomplete="off">
         <div class="form-group">
             <label class="form-label">
@@ -128,6 +131,7 @@
     var btn   = document.getElementById('btn');
     var emailInput = document.getElementById('email');
     var pwInput = document.getElementById('pw');
+    var backendStatusEl = document.getElementById('backendStatus');
 
     // Clear all form data on page load (prevent browser cache)
     window.addEventListener('load', function() {
@@ -135,10 +139,62 @@
         pwInput.value = '';
         // Also reset form to prevent browser restore
         document.getElementById('frm').reset();
+        
+        // Check backend status on page load
+        setTimeout(checkBackendStatus, 500);
     });
 
     function showMsg(html, type) {
         msgEl.innerHTML = '<div class="alert alert-' + type + '">' + html + '</div>';
+    }
+
+    function showBackendStatus(isOnline) {
+        if (!isOnline) {
+            backendStatusEl.style.display = 'block';
+            backendStatusEl.innerHTML = '<div class="alert alert-warning" style="margin:0;">' +
+                '<i class="fas fa-exclamation-triangle"></i> <strong>Backend chưa chạy!</strong><br>' +
+                '<small style="font-size:0.85rem;">Hướng dẫn start backend:</small><br>' +
+                '<small style="font-size:0.85rem;">1. Mở terminal trong VS Code (Ctrl+`)</small><br>' +
+                '<small style="font-size:0.85rem;">2. Chạy: <code style="background:#fff3cd;padding:2px 6px;border-radius:3px;">cd backend && npm run dev</code></small><br>' +
+                '<small style="font-size:0.85rem;">3. Chờ thấy "Server is running" ✅</small><br>' +
+                '<small style="font-size:0.85rem;">4. Reload lại trang này</small>' +
+                '</div>';
+        } else {
+            backendStatusEl.style.display = 'block';
+            backendStatusEl.innerHTML = '<div class="alert alert-success" style="margin:0;">' +
+                '<i class="fas fa-check-circle"></i> Backend đang online ✅' +
+                '</div>';
+            // Hide success message after 3 seconds
+            setTimeout(function() {
+                backendStatusEl.style.display = 'none';
+            }, 3000);
+        }
+    }
+
+    function checkBackendStatus() {
+        var healthUrl = API.replace('/api', '') + '/health';
+        
+        fetch(healthUrl, {
+            method: 'GET',
+            mode: 'cors',
+            cache: 'no-cache'
+        })
+        .then(function(res) {
+            if (res.ok) {
+                return res.json();
+            }
+            throw new Error('Backend unreachable');
+        })
+        .then(function(data) {
+            if (data.success) {
+                showBackendStatus(true);
+            } else {
+                showBackendStatus(false);
+            }
+        })
+        .catch(function() {
+            showBackendStatus(false);
+        });
     }
 
     document.getElementById('frm').addEventListener('submit', function (e) {
@@ -194,7 +250,10 @@
         .catch(function (err) {
             var msg = err.message || 'Lỗi không xác định';
             if (msg.indexOf('fetch') !== -1 || msg.indexOf('Failed') !== -1 || msg.indexOf('Network') !== -1) {
-                msg = 'Không kết nối được backend. Hãy chắc backend đang chạy.';
+                msg = '<strong>Không kết nối được backend.</strong><br>' +
+                      '<small>Backend có thể chưa chạy. Xem hướng dẫn bên trên ↑</small>';
+                // Show backend status again
+                showBackendStatus(false);
             }
             showMsg('<i class="fas fa-exclamation-circle"></i> ' + msg, 'danger');
             btn.disabled = false;
