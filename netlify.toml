@@ -1,7 +1,25 @@
 [build]
+  # Build command (empty for static site)
+  command = ""
+  
+  # Publish directory
   publish = "website"
+  
+  # Base directory (optional)
+  base = ""
 
+# Redirect rules
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+  force = false
+
+# Headers for security
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
