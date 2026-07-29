@@ -281,7 +281,7 @@ process.on('SIGINT', async () => {
     }
 });
 
-// Tự động tạo admin user nếu chưa có trong DB
+// Tự động tạo/kích hoạt admin user khi khởi động
 async function ensureAdminUser() {
     try {
         const { AuthUtils } = require('./middleware/auth');
@@ -289,17 +289,33 @@ async function ensureAdminUser() {
         const adminPassword = process.env.ADMIN_PASSWORD || 'Admin@HUTECH2026';
         const adminUsername = process.env.ADMIN_USERNAME || 'admin_hutech';
 
-        const existing = await db.findOne('SELECT id, email FROM users WHERE role = ? AND is_active = true', ['admin']);
+        // Tìm admin (kể cả inactive)
+        const existing = await db.findOne('SELECT id, email, is_active FROM users WHERE email = ?', [adminEmail]);
+
         if (existing) {
-            console.log('✅ Admin user exists:', existing.email);
+            // Đảm bảo admin đang active
+            if (!existing.is_active) {
+                await db.update('users', { is_active: true }, 'id = ?', [existing.id]);
+                console.log('✅ Admin re-activated:', adminEmail);
+            } else {
+                console.log('✅ Admin user OK:', adminEmail);
+            }
             return;
         }
 
+        // Tạo mới nếu chưa có
         const passwordHash = await AuthUtils.hashPassword(adminPassword);
+
+        // Kiểm tra DB dùng cột 'password' hay 'password_hash' (do migration 001 đổi tên)
+        const colCheck = await db.findOne(
+            "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'users' AND COLUMN_NAME = 'password_hash'"
+        );
+        const pwField = colCheck ? 'password_hash' : 'password';
+
         await db.insert('users', {
             email:             adminEmail,
             username:          adminUsername,
-            password:          passwordHash,
+            [pwField]:         passwordHash,
             first_name:        'Admin',
             last_name:         'CLB',
             full_name:         'Administrator',
