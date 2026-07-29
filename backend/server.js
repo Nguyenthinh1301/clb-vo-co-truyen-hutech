@@ -281,6 +281,39 @@ process.on('SIGINT', async () => {
     }
 });
 
+// Tự động tạo admin user nếu chưa có trong DB
+async function ensureAdminUser() {
+    try {
+        const { AuthUtils } = require('./middleware/auth');
+        const adminEmail    = process.env.ADMIN_EMAIL    || 'admin@vocotruyenhutech.edu.vn';
+        const adminPassword = process.env.ADMIN_PASSWORD || 'Admin@HUTECH2026';
+        const adminUsername = process.env.ADMIN_USERNAME || 'admin_hutech';
+
+        const existing = await db.findOne('SELECT id, email FROM users WHERE role = ? AND is_active = true', ['admin']);
+        if (existing) {
+            console.log('✅ Admin user exists:', existing.email);
+            return;
+        }
+
+        const passwordHash = await AuthUtils.hashPassword(adminPassword);
+        await db.insert('users', {
+            email:             adminEmail,
+            username:          adminUsername,
+            password:          passwordHash,
+            first_name:        'Admin',
+            last_name:         'CLB',
+            full_name:         'Administrator',
+            role:              'admin',
+            membership_status: 'active',
+            is_active:         true,
+            email_verified:    true
+        });
+        console.log('✅ Admin user created:', adminEmail, '/', adminPassword);
+    } catch (err) {
+        console.error('⚠️  ensureAdminUser failed:', err.message);
+    }
+}
+
 // Start server
 const PORT = process.env.PORT || 3001;
 // Production: listen 0.0.0.0 để nhận kết nối từ bên ngoài
@@ -300,10 +333,10 @@ const server = app.listen(PORT, HOST, () => {
     
     // Initialize WebSocket
     websocketService.initialize(server);
-    
+
     // Start scheduler service
     schedulerService.start();
-    
+
     // Log startup info
     logger.info('Server started successfully', {
         port: PORT,
@@ -311,6 +344,9 @@ const server = app.listen(PORT, HOST, () => {
         environment: process.env.NODE_ENV,
         websocket: 'enabled'
     });
+
+    // Đảm bảo admin user tồn tại trong DB
+    ensureAdminUser().catch(err => console.error('ensureAdminUser error:', err.message));
 });
 
 module.exports = app;
