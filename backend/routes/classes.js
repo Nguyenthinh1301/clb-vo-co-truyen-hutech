@@ -59,9 +59,9 @@ router.get('/', async (req, res) => {
 // Get my classes (for current user)
 router.get('/my-classes', authenticate, async (req, res) => {
     try {
-        const classes = await db.query(
-            `SELECT c.*, ce.enrollment_date, ce.status as enrollment_status, 
-             ce.payment_status, u.first_name as instructor_first_name, 
+        const classes = await db.find(
+            `SELECT c.*, ce.enrollment_date, ce.status as enrollment_status,
+             ce.payment_status, u.first_name as instructor_first_name,
              u.last_name as instructor_last_name,
              CONCAT(u.first_name, ' ', u.last_name) as instructor_name
              FROM class_enrollments ce
@@ -89,7 +89,7 @@ router.get('/my-classes', authenticate, async (req, res) => {
 // Get my schedule (all classes I'm enrolled in)
 router.get('/schedule/my-schedule', authenticate, async (req, res) => {
     try {
-        const schedule = await db.query(
+        const schedule = await db.find(
             `SELECT c.id, c.name, c.schedule, c.location, c.start_date, c.end_date,
              u.first_name as instructor_first_name, u.last_name as instructor_last_name
              FROM class_enrollments ce
@@ -425,8 +425,8 @@ router.get('/:id/students', authenticate, authorize('instructor', 'admin'), asyn
         }
 
         // Get students
-        const students = await db.query(
-            `SELECT u.id, u.username, u.first_name, u.last_name, u.email, 
+        const students = await db.find(
+            `SELECT u.id, u.username, u.first_name, u.last_name, u.email,
              u.phone_number, u.belt_level, u.profile_image,
              ce.enrollment_date, ce.status, ce.payment_status
              FROM class_enrollments ce

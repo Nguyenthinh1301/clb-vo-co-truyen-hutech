@@ -292,7 +292,7 @@ async function loadList() {
                 '<td style="color:#718096;font-size:0.82rem;">' + fmtDate(n.created_at) + '</td>' +
                 '<td>' +
                     '<div style="display:flex;gap:6px;">' +
-                        '<button class="btn btn-sm btn-outline" onclick="editItem(\'' + safeJson + '\')" title="Chỉnh sửa">' +
+                        '<button class="btn btn-sm btn-outline" onclick="editItem(' + n.id + ')" title="Chỉnh sửa">' +
                             '<i class="fas fa-edit"></i> Sửa' +
                         '</button>' +
                         '<button class="btn btn-sm btn-danger" data-del-id="' + n.id + '" data-del-name="' + n.title.replace(/"/g, '&quot;') + '" onclick="openDel(this.dataset.delId, this.dataset.delName)" title="Xóa">' +
@@ -366,26 +366,42 @@ function closeModal() {
     cleanupUpload('f-img');
 }
 
-function editItem(encodedJson) {
-    var n;
-    try { n = JSON.parse(decodeURIComponent(encodedJson)); }
-    catch (e) { toast('Lỗi đọc dữ liệu bài viết', 'danger'); return; }
-
-    $('f-id').value      = n.id;
-    $('f-title').value   = n.title    || '';
-    $('f-cat').value     = n.category || 'general';
-    $('f-status').value  = n.status   || 'published';
-    $('f-excerpt').value = n.excerpt  || '';
-    $('f-content').value = n.content  || '';
-    $('f-tags').value    = n.tags     || '';
-    renderTagsPreview(n.tags || '');
-
+async function editItem(id) {
+    // Hiển thị modal loading trước khi fetch
+    $('f-id').value      = '';
+    $('f-title').value   = '';
+    $('f-cat').value     = 'general';
+    $('f-status').value  = 'published';
+    $('f-excerpt').value = '';
+    $('f-content').value = '';
+    $('f-tags').value    = '';
+    setHTML('tags-preview', '');
     initUpload('img-upload-container', 'f-img', 'ảnh đại diện');
-    if (n.featured_image) setUploadImage('f-img', n.featured_image);
-
-    setHTML('modal-title', '<i class="fas fa-edit" style="color:#e74c3c;margin-right:8px;"></i>Chỉnh sửa tin tức');
+    setHTML('modal-title', '<i class="fas fa-spinner fa-spin" style="margin-right:8px;"></i>Đang tải...');
     $('modal').classList.add('open');
-    setTimeout(function () { $('f-title').focus(); }, 100);
+
+    try {
+        var res = await API.news.get(id);
+        var n   = res.data;
+        if (!n) throw new Error('Không tìm thấy bài viết');
+
+        $('f-id').value      = n.id;
+        $('f-title').value   = n.title    || '';
+        $('f-cat').value     = n.category || 'general';
+        $('f-status').value  = n.status   || 'published';
+        $('f-excerpt').value = n.excerpt  || '';
+        $('f-content').value = n.content  || '';
+        $('f-tags').value    = n.tags     || '';
+        renderTagsPreview(n.tags || '');
+
+        if (n.featured_image) setUploadImage('f-img', n.featured_image);
+
+        setHTML('modal-title', '<i class="fas fa-edit" style="color:#e74c3c;margin-right:8px;"></i>Chỉnh sửa tin tức');
+        setTimeout(function () { $('f-title').focus(); }, 100);
+    } catch (e) {
+        $('modal').classList.remove('open');
+        toast('Lỗi tải bài viết: ' + e.message, 'danger');
+    }
 }
 
 // ════════════════════════════════════════

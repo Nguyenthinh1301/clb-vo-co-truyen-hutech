@@ -155,6 +155,10 @@ router.get('/class/:classId', authenticate, authorize('instructor', 'admin'), as
             params.push(date);
         }
 
+        const pageNum = parseInt(page);
+        const limitNum = parseInt(limit);
+        const offsetNum = (pageNum - 1) * limitNum;
+
         const sql = `
             SELECT a.*, u.first_name, u.last_name, u.username, u.profile_image,
              rb.first_name as recorded_by_first_name, rb.last_name as recorded_by_last_name
@@ -163,9 +167,10 @@ router.get('/class/:classId', authenticate, authorize('instructor', 'admin'), as
              JOIN users rb ON a.recorded_by = rb.id
              WHERE ${whereClause}
              ORDER BY a.date DESC, u.last_name ASC, u.first_name ASC
+             LIMIT ? OFFSET ?
         `;
 
-        const result = await db.findMany(sql, params, parseInt(page), parseInt(limit));
+        const result = await db.find(sql, [...params, limitNum, offsetNum]);
 
         res.json({
             success: true,
@@ -220,8 +225,8 @@ router.get('/class/:classId/stats', authenticate, authorize('instructor', 'admin
         }
 
         // Get overall statistics
-        const overallStats = await db.query(
-            `SELECT 
+        const [overallRows] = await db.query(
+            `SELECT
              COUNT(*) as total_records,
              SUM(CASE WHEN status = 'present' THEN 1 ELSE 0 END) as present_count,
              SUM(CASE WHEN status = 'absent' THEN 1 ELSE 0 END) as absent_count,
@@ -234,7 +239,7 @@ router.get('/class/:classId/stats', authenticate, authorize('instructor', 'admin
         );
 
         // Get student-wise statistics
-        const studentStats = await db.query(
+        const [studentStats] = await db.query(
             `SELECT u.id, u.first_name, u.last_name, u.username,
              COUNT(*) as total_sessions,
              SUM(CASE WHEN a.status = 'present' THEN 1 ELSE 0 END) as present_sessions,
@@ -251,7 +256,7 @@ router.get('/class/:classId/stats', authenticate, authorize('instructor', 'admin
         );
 
         // Get date-wise statistics
-        const dateStats = await db.query(
+        const [dateStats] = await db.query(
             `SELECT date,
              COUNT(*) as total_students,
              SUM(CASE WHEN status = 'present' THEN 1 ELSE 0 END) as present_count,
@@ -268,7 +273,7 @@ router.get('/class/:classId/stats', authenticate, authorize('instructor', 'admin
         res.json({
             success: true,
             data: {
-                overall: overallStats[0] || {},
+                overall: overallRows[0] || {},
                 by_student: studentStats,
                 by_date: dateStats
             }
@@ -422,8 +427,8 @@ router.get('/summary', authenticate, authorize('instructor', 'admin'), async (re
             params.push(end_date);
         }
 
-        const summary = await db.query(
-            `SELECT 
+        const [summary] = await db.query(
+            `SELECT
              c.id as class_id, c.name as class_name,
              COUNT(*) as total_records,
              SUM(CASE WHEN a.status = 'present' THEN 1 ELSE 0 END) as present_count,

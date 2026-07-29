@@ -16,8 +16,8 @@ router.get('/profile', authenticateToken, async (req, res) => {
     try {
         const userId = req.user.id;
         
-        const users = await db.query(`
-            SELECT 
+        const user = await db.findOne(`
+            SELECT
                 id,
                 email,
                 username,
@@ -28,7 +28,7 @@ router.get('/profile', authenticateToken, async (req, res) => {
                 date_of_birth,
                 gender,
                 address,
-                avatar,
+                profile_image,
                 role,
                 membership_status,
                 belt_level,
@@ -36,17 +36,17 @@ router.get('/profile', authenticateToken, async (req, res) => {
             FROM users
             WHERE id = ? AND is_active = true
         `, [userId]);
-        
-        if (users.length === 0) {
+
+        if (!user) {
             return res.status(404).json({
                 success: false,
                 message: 'Không tìm thấy thông tin người dùng'
             });
         }
-        
+
         res.json({
             success: true,
-            data: users[0]
+            data: user
         });
     } catch (error) {
         console.error('Error fetching user profile:', error);
@@ -66,8 +66,8 @@ router.get('/classes', authenticateToken, async (req, res) => {
     try {
         const userId = req.user.id;
         
-        const classes = await db.query(`
-            SELECT 
+        const classes = await db.find(`
+            SELECT
                 c.id,
                 c.name,
                 c.description,
@@ -85,7 +85,7 @@ router.get('/classes', authenticateToken, async (req, res) => {
             WHERE ce.user_id = ? AND ce.status = 'active'
             ORDER BY ce.enrolled_at DESC
         `, [userId]);
-        
+
         res.json({
             success: true,
             data: classes
@@ -111,8 +111,8 @@ router.get('/events', authenticateToken, async (req, res) => {
         // Get upcoming events - use current date as parameter to avoid SQL parsing issues
         const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
         
-        const events = await db.query(`
-            SELECT 
+        const events = await db.find(`
+            SELECT
                 e.id,
                 e.name,
                 e.description,
@@ -125,7 +125,7 @@ router.get('/events', authenticateToken, async (req, res) => {
                 e.current_participants,
                 e.status,
                 e.image,
-                CASE 
+                CASE
                     WHEN er.id IS NOT NULL THEN 1
                     ELSE 0
                 END as is_registered,
@@ -135,7 +135,7 @@ router.get('/events', authenticateToken, async (req, res) => {
             WHERE e.date >= ? AND e.status IN ('upcoming', 'ongoing')
             ORDER BY e.date ASC, e.start_time ASC
         `, [userId, today]);
-        
+
         res.json({
             success: true,
             data: events
@@ -173,8 +173,8 @@ router.get('/schedule', authenticateToken, async (req, res) => {
             params.push(parseInt(month), parseInt(year));
         }
         
-        const schedule = await db.query(`
-            SELECT 
+        const [schedule] = await db.query(`
+            SELECT
                 a.id,
                 a.date,
                 a.status,
@@ -187,7 +187,7 @@ router.get('/schedule', authenticateToken, async (req, res) => {
             WHERE a.user_id = ? ${dateFilter}
             ORDER BY a.date DESC
         `, params);
-        
+
         res.json({
             success: true,
             data: schedule
@@ -211,8 +211,8 @@ router.get('/notifications', authenticateToken, async (req, res) => {
         const userId = req.user.id;
         const { limit = 20, offset = 0 } = req.query;
         
-        const notifications = await db.query(`
-            SELECT 
+        const [notifications] = await db.query(`
+            SELECT
                 id,
                 title,
                 message,

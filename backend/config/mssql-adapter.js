@@ -266,6 +266,8 @@ const adapter = {
       if (typeof conditionsOrWhere === 'string') {
         // SQL WHERE clause: delete('table', 'id = ?', [1])
         let whereClause = conditionsOrWhere;
+        // Convert MySQL syntax (NOW(), true/false) trước khi thay ? placeholders
+        whereClause = this.convertMySQLToMSSQL(whereClause);
         let paramIndex = 0;
         whereClause = whereClause.replace(/\?/g, () => `@param${paramIndex++}`);
         sql = `DELETE FROM ${table} WHERE ${whereClause}`;

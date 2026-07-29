@@ -24,13 +24,9 @@ router.get('/my-notifications', authenticate, async (req, res) => {
         const total = totalResult?.total || 0;
 
         // Get notifications with pagination
-        const notifications = await db.query(
-            `SELECT 
-                n.*,
-                u.first_name as sender_first_name,
-                u.last_name as sender_last_name
+        const [notifications] = await db.query(
+            `SELECT n.*
              FROM notifications n
-             LEFT JOIN users u ON n.created_by = u.id
              ${whereClause}
              ORDER BY n.created_at DESC
              LIMIT ? OFFSET ?`,

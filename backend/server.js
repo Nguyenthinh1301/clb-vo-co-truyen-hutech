@@ -76,9 +76,6 @@ const generalLimiter = rateLimit({
             const ip = req.ip || req.connection.remoteAddress;
             return ip === '127.0.0.1' || ip === '::1' || ip === 'localhost' || ip.includes('127.0.0.1');
         }
-        // Bỏ qua rate limit cho admin đã xác thực
-        const auth = req.headers.authorization;
-        if (auth && auth.startsWith('Bearer ')) return true;
         return false;
     }
 });

@@ -43,7 +43,7 @@ router.get('/', authenticate, authorize('admin'), async (req, res) => {
         const users = await db.find(
             `SELECT id, email, username, first_name, last_name, full_name,
              phone_number, role, membership_status, is_active, belt_level,
-             created_at, last_login_at
+             notes, created_at, last_login_at
              FROM users ${where}
              ORDER BY created_at DESC
              LIMIT ${limit} OFFSET ${offset}`,

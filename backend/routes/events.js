@@ -109,7 +109,7 @@ router.post('/:id/register', authenticate, async (req, res) => {
 
         // Check if event exists and is open for registration
         const event = await db.findOne(
-            'SELECT * FROM events WHERE id = ? AND status = "scheduled" AND is_public = 1',
+            "SELECT * FROM events WHERE id = ? AND status = 'scheduled' AND is_public = 1",
             [numId]
         );
 
@@ -157,11 +157,9 @@ router.post('/:id/register', authenticate, async (req, res) => {
             payment_status: event.registration_fee > 0 ? 'pending' : 'paid'
         });
 
-        // Update event current participants count
-        await db.update(
-            'events',
-            { current_participants: event.current_participants + 1 },
-            'id = ?',
+        // Update event current participants count (atomic to prevent race condition)
+        await db.query(
+            'UPDATE events SET current_participants = current_participants + 1 WHERE id = ?',
             [numId]
         );
 

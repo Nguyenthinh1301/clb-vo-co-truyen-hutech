@@ -404,16 +404,16 @@ const customValidations = {
     // Check if user is at least 16 years old
     isMinimumAge: (dateOfBirth) => {
         if (!dateOfBirth) return true;
-        
+
         const birth = new Date(dateOfBirth);
         const now = new Date();
-        const age = now.getFullYear() - birth.getFullYear();
+        let age = now.getFullYear() - birth.getFullYear();
         const monthDiff = now.getMonth() - birth.getMonth();
-        
+
         if (monthDiff < 0 || (monthDiff === 0 && now.getDate() < birth.getDate())) {
             age--;
         }
-        
+
         return age >= 16;
     }
 };

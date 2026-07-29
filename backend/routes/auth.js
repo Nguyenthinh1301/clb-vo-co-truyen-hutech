@@ -133,21 +133,19 @@ router.post('/login', ValidationRules.userLogin, handleValidationErrors, async (
             [email, email] // Using email for both email and username search
         );
 
-        // Log login attempt (non-blocking, don't fail if logging fails)
-        try {
-            await db.insert('login_attempts', {
-                email,
-                ip_address: clientIP,
-                user_agent: userAgent,
-                success: false,
-                failure_reason: user ? 'invalid_password' : 'user_not_found'
-            });
-        } catch (logError) {
-            console.error('Failed to log login attempt:', logError);
-            // Continue with login process even if logging fails
-        }
-
         if (!user) {
+            // Log failed attempt: user not found
+            try {
+                await db.insert('login_attempts', {
+                    email,
+                    ip_address: clientIP,
+                    user_agent: userAgent,
+                    success: false,
+                    failure_reason: 'user_not_found'
+                });
+            } catch (logError) {
+                console.error('Failed to log login attempt:', logError);
+            }
             return res.status(401).json({
                 success: false,
                 message: 'Email hoặc mật khẩu không chính xác'
@@ -158,38 +156,35 @@ router.post('/login', ValidationRules.userLogin, handleValidationErrors, async (
         const passwordField = user.password_hash || user.password;
         const isValidPassword = await AuthUtils.comparePassword(password, passwordField);
         if (!isValidPassword) {
+            // Log failed attempt: wrong password
+            try {
+                await db.insert('login_attempts', {
+                    email,
+                    ip_address: clientIP,
+                    user_agent: userAgent,
+                    success: false,
+                    failure_reason: 'invalid_password'
+                });
+            } catch (logError) {
+                console.error('Failed to log login attempt:', logError);
+            }
             return res.status(401).json({
                 success: false,
                 message: 'Email hoặc mật khẩu không chính xác'
             });
         }
 
-        // Update successful login attempt (get the most recent one)
-        // Use database-agnostic query (non-blocking, don't fail if update fails)
+        // Log successful login attempt (non-blocking)
         try {
-            const dbType = process.env.DB_TYPE || 'mysql';
-            let recentAttemptsQuery;
-            
-            if (dbType === 'mssql') {
-                recentAttemptsQuery = 'SELECT TOP 1 id FROM login_attempts WHERE email = ? AND ip_address = ? ORDER BY attempted_at DESC';
-            } else {
-                recentAttemptsQuery = 'SELECT id FROM login_attempts WHERE email = ? AND ip_address = ? ORDER BY attempted_at DESC LIMIT 1';
-            }
-            
-            const recentAttempts = await db.query(recentAttemptsQuery, [email, clientIP]);
-            // db.query trả về [rows, null] — lấy rows[0]
-            const attemptsRows = Array.isArray(recentAttempts[0]) ? recentAttempts[0] : recentAttempts;
-            
-            if (attemptsRows && attemptsRows.length > 0) {
-                await db.update('login_attempts', 
-                    { success: true, failure_reason: null }, 
-                    'id = ?', 
-                    [attemptsRows[0].id]
-                );
-            }
-        } catch (updateError) {
-            console.error('Failed to update login attempt:', updateError);
-            // Continue with login process even if update fails
+            await db.insert('login_attempts', {
+                email,
+                ip_address: clientIP,
+                user_agent: userAgent,
+                success: true,
+                failure_reason: null
+            });
+        } catch (logError) {
+            console.error('Failed to log login attempt:', logError);
         }
 
         // Update last login
@@ -383,7 +378,7 @@ router.put('/change-password', authenticate, ValidationRules.changePassword, han
 
         // Revoke all sessions except current
         await db.query(
-            'UPDATE user_sessions SET is_active = false WHERE user_id = $1 AND id != $2',
+            'UPDATE user_sessions SET is_active = false WHERE user_id = ? AND id != ?',
             [req.user.id, req.session.id]
         );
 

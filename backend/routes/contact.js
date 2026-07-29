@@ -73,7 +73,7 @@ router.post('/', contactLimiter, ValidationRules.contactMessage, handleValidatio
                                     <p style="margin:0;color:#444;line-height:1.7;">${message}</p>
                                 </div>
                                 <div style="margin-top:20px;text-align:center;">
-                                    <a href="https://vocotruyenhutech.netlify.app/admin/lien-he.html"
+                                    <a href="${process.env.ADMIN_URL || 'https://vocotruyenhutech.netlify.app'}/admin/lien-he.html"
                                        style="display:inline-block;padding:12px 28px;background:#c41e3a;color:#fff;text-decoration:none;border-radius:8px;font-weight:700;">
                                         Xem & Trả lời trong Admin
                                     </a>
@@ -309,6 +309,58 @@ router.post('/:id/reply', authenticate, authorize('admin'), async (req, res) => 
     }
 });
 
+// Bulk update contact messages (admin only) — phải khai báo TRƯỚC /:id/status
+router.put('/bulk/status', authenticate, authorize('admin'), async (req, res) => {
+    try {
+        const { message_ids, status } = req.body;
+
+        if (!Array.isArray(message_ids) || message_ids.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'Danh sách ID tin nhắn không hợp lệ'
+            });
+        }
+
+        if (!['new', 'read', 'replied', 'archived'].includes(status)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Trạng thái không hợp lệ'
+            });
+        }
+
+        // Update messages
+        const placeholders = message_ids.map(() => '?').join(',');
+        await db.query(
+            `UPDATE contact_messages SET status = ? WHERE id IN (${placeholders})`,
+            [status, ...message_ids]
+        );
+        const updatedCount = message_ids.length;
+
+        // Log bulk update
+        await auditLog({
+            user_id: req.user.id,
+            action: 'contact_messages_bulk_update',
+            table_name: 'contact_messages',
+            new_values: JSON.stringify({ message_ids, status, updated_count: updatedCount }),
+            ip_address: req.ip,
+            user_agent: req.get('User-Agent')
+        });
+
+        res.json({
+            success: true,
+            message: `Đã cập nhật ${updatedCount} tin nhắn`,
+            data: { updated_count: updatedCount }
+        });
+
+    } catch (error) {
+        logger.error('Bulk update contact messages error:', { error: error.message });
+        res.status(500).json({
+            success: false,
+            message: 'Lỗi server khi cập nhật hàng loạt'
+        });
+    }
+});
+
 // Update contact message status (admin only)
 router.put('/:id/status', authenticate, authorize('admin'), async (req, res) => {
     try {
@@ -444,20 +496,20 @@ router.get('/stats/overview', authenticate, authorize('admin'), async (req, res)
         }
 
         const [
-            overallStats,
-            statusStats,
-            dailyStats
+            [overallRows],
+            [statusRows],
+            [dailyRows]
         ] = await Promise.all([
             // Overall statistics
             db.query(
-                `SELECT 
+                `SELECT
                  COUNT(*) as total_messages,
                  SUM(CASE WHEN status = 'new' THEN 1 ELSE 0 END) as new_messages,
                  SUM(CASE WHEN status = 'read' THEN 1 ELSE 0 END) as read_messages,
                  SUM(CASE WHEN status = 'replied' THEN 1 ELSE 0 END) as replied_messages,
                  SUM(CASE WHEN status = 'archived' THEN 1 ELSE 0 END) as archived_messages,
-                 AVG(CASE WHEN replied_at IS NOT NULL 
-                     THEN TIMESTAMPDIFF(HOUR, created_at, replied_at) 
+                 AVG(CASE WHEN replied_at IS NOT NULL
+                     THEN DATEDIFF(HOUR, created_at, replied_at)
                      ELSE NULL END) as avg_response_time_hours
                  FROM contact_messages WHERE ${whereClause}`,
                 params
@@ -465,7 +517,7 @@ router.get('/stats/overview', authenticate, authorize('admin'), async (req, res)
 
             // By status
             db.query(
-                `SELECT status, COUNT(*) as count 
+                `SELECT status, COUNT(*) as count
                  FROM contact_messages WHERE ${whereClause}
                  GROUP BY status`,
                 params
@@ -473,7 +525,7 @@ router.get('/stats/overview', authenticate, authorize('admin'), async (req, res)
 
             // Daily statistics
             db.query(
-                `SELECT 
+                `SELECT
                  CAST(created_at AS DATE) as date,
                  COUNT(*) as total_messages,
                  SUM(CASE WHEN status = 'replied' THEN 1 ELSE 0 END) as replied_messages
@@ -488,9 +540,9 @@ router.get('/stats/overview', authenticate, authorize('admin'), async (req, res)
         res.json({
             success: true,
             data: {
-                overall: overallStats[0] || {},
-                by_status: statusStats,
-                daily_stats: dailyStats
+                overall: (overallRows && overallRows[0]) || {},
+                by_status: statusRows || [],
+                daily_stats: dailyRows || []
             }
         });
 
@@ -499,57 +551,6 @@ router.get('/stats/overview', authenticate, authorize('admin'), async (req, res)
         res.status(500).json({
             success: false,
             message: 'Lỗi server khi lấy thống kê tin nhắn'
-        });
-    }
-});
-
-// Bulk update contact messages (admin only)
-router.put('/bulk/status', authenticate, authorize('admin'), async (req, res) => {
-    try {
-        const { message_ids, status } = req.body;
-
-        if (!Array.isArray(message_ids) || message_ids.length === 0) {
-            return res.status(400).json({
-                success: false,
-                message: 'Danh sách ID tin nhắn không hợp lệ'
-            });
-        }
-
-        if (!['new', 'read', 'replied', 'archived'].includes(status)) {
-            return res.status(400).json({
-                success: false,
-                message: 'Trạng thái không hợp lệ'
-            });
-        }
-
-        // Update messages
-        const placeholders = message_ids.map(() => '?').join(',');
-        const updatedCount = await db.query(
-            `UPDATE contact_messages SET status = ? WHERE id IN (${placeholders})`,
-            [status, ...message_ids]
-        );
-
-        // Log bulk update
-        await auditLog({
-            user_id: req.user.id,
-            action: 'contact_messages_bulk_update',
-            table_name: 'contact_messages',
-            new_values: JSON.stringify({ message_ids, status, updated_count: updatedCount.affectedRows }),
-            ip_address: req.ip,
-            user_agent: req.get('User-Agent')
-        });
-
-        res.json({
-            success: true,
-            message: `Đã cập nhật ${updatedCount.affectedRows} tin nhắn`,
-            data: { updated_count: updatedCount.affectedRows }
-        });
-
-    } catch (error) {
-        logger.error('Bulk update contact messages error:', { error: error.message });
-        res.status(500).json({
-            success: false,
-            message: 'Lỗi server khi cập nhật hàng loạt'
         });
     }
 });

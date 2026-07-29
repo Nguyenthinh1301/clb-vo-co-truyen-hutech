@@ -26,29 +26,18 @@ router.get('/news', async (req, res) => {
         const dbType = process.env.DB_TYPE || 'mysql';
         let query;
 
-        if (dbType === 'mssql') {
-            query = `SELECT TOP ${parseInt(limit)} 
-                        n.id, n.title, n.slug, n.excerpt, n.category,
-                        n.featured_image, n.view_count, n.published_at,
-                        n.tags, u.first_name, u.last_name
-                     FROM news n
-                     LEFT JOIN users u ON n.author_id = u.id
-                     WHERE ${whereClause}
-                     ORDER BY n.published_at DESC
-                     OFFSET ${offset} ROWS`;
-        } else {
-            query = `SELECT n.id, n.title, n.slug, n.excerpt, n.category,
-                        n.featured_image, n.view_count, n.published_at,
-                        n.tags, u.first_name, u.last_name
-                     FROM news n
-                     LEFT JOIN users u ON n.author_id = u.id
-                     WHERE ${whereClause}
-                     ORDER BY n.published_at DESC
-                     LIMIT ? OFFSET ?`;
-            params.push(parseInt(limit), offset);
-        }
+        // Dùng LIMIT/OFFSET — adapter tự convert sang MSSQL OFFSET/FETCH NEXT
+        query = `SELECT n.id, n.title, n.slug, n.excerpt, n.category,
+                    n.featured_image, n.view_count, n.published_at,
+                    n.tags, u.first_name, u.last_name
+                 FROM news n
+                 LEFT JOIN users u ON n.author_id = u.id
+                 WHERE ${whereClause}
+                 ORDER BY n.published_at DESC
+                 LIMIT ? OFFSET ?`;
+        params.push(parseInt(limit), offset);
 
-        const news = await db.query(query, params);
+        const [news] = await db.query(query, params);
 
         const countResult = await db.findOne(
             `SELECT COUNT(*) as count FROM news WHERE ${whereClause}`,
@@ -109,7 +98,7 @@ router.get('/news/:id', async (req, res) => {
  */
 router.get('/announcements', async (req, res) => {
     try {
-        const announcements = await db.query(
+        const [announcements] = await db.query(
             `SELECT id, title, content, type, priority, target_audience, created_at
              FROM announcements
              WHERE status = 'active'

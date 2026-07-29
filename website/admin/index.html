@@ -63,11 +63,11 @@
 
 <div class="login-box">
     <div class="login-logo">
-        <!-- Logo HUTECH từ CDN chính thức, fallback về logo local -->
-        <img src="https://www.hutech.edu.vn/images/logo-hutech.png"
+        <!-- Logo HUTECH: thử CDN chính thức trước, fallback về logo local -->
+        <img src="../assets/images_Logo/Logo.jpg"
              alt="Logo HUTECH"
              style="width:90px;height:90px;border-radius:12px;object-fit:contain;border:none;box-shadow:none;background:transparent;"
-             onerror="this.onerror=null;this.src='https://upload.wikimedia.org/wikipedia/vi/thumb/8/8e/Logo_HUTECH.png/200px-Logo_HUTECH.png';this.onerror=function(){this.src='../assets/images_Logo/Logo.jpg';this.style.borderRadius='50%';this.style.objectFit='cover';}">
+             onerror="this.onerror=null;this.src='../assets/images_Logo/Logo2.jpg';this.onerror=function(){this.style.display='none';}">
         <h2>Admin HUTECH</h2>
         <p>CLB Võ Cổ Truyền HUTECH</p>
     </div>
@@ -145,26 +145,33 @@
     });
 
     function showMsg(html, type) {
-        msgEl.innerHTML = '<div class="alert alert-' + type + '">' + html + '</div>';
+        // Bọc nội dung vào div để tránh flex-item issue của .alert
+        msgEl.innerHTML = '<div class="alert alert-' + type + '"><i></i><div>' + html + '</div></div>';
     }
 
     function showBackendStatus(isOnline) {
         if (!isOnline) {
             backendStatusEl.style.display = 'block';
-            backendStatusEl.innerHTML = '<div class="alert alert-warning" style="margin:0;">' +
-                '<i class="fas fa-exclamation-triangle"></i> <strong>Backend chưa chạy!</strong><br>' +
-                '<small style="font-size:0.85rem;">Hướng dẫn start backend:</small><br>' +
-                '<small style="font-size:0.85rem;">1. Mở terminal trong VS Code (Ctrl+`)</small><br>' +
-                '<small style="font-size:0.85rem;">2. Chạy: <code style="background:#fff3cd;padding:2px 6px;border-radius:3px;">cd backend && npm run dev</code></small><br>' +
-                '<small style="font-size:0.85rem;">3. Chờ thấy "Server is running" ✅</small><br>' +
-                '<small style="font-size:0.85rem;">4. Reload lại trang này</small>' +
+            // Bọc text vào <div> để flex chỉ có 2 child: icon + text block
+            backendStatusEl.innerHTML =
+                '<div class="alert alert-warning" style="margin:0;">' +
+                    '<i class="fas fa-exclamation-triangle" style="margin-top:2px;"></i>' +
+                    '<div style="font-size:0.85rem;line-height:1.6;">' +
+                        '<strong>Backend chưa chạy!</strong><br>' +
+                        'Hướng dẫn start backend:<br>' +
+                        '1. Mở terminal trong VS Code (Ctrl+`)<br>' +
+                        '2. Chạy: <code style="background:#fff3cd;padding:2px 6px;border-radius:3px;">cd backend &amp;&amp; npm run dev</code><br>' +
+                        '3. Chờ thấy "Server is running" ✅<br>' +
+                        '4. Reload lại trang này' +
+                    '</div>' +
                 '</div>';
         } else {
             backendStatusEl.style.display = 'block';
-            backendStatusEl.innerHTML = '<div class="alert alert-success" style="margin:0;">' +
-                '<i class="fas fa-check-circle"></i> Backend đang online ✅' +
+            backendStatusEl.innerHTML =
+                '<div class="alert alert-success" style="margin:0;">' +
+                    '<i class="fas fa-check-circle"></i>' +
+                    '<div>Backend đang online ✅</div>' +
                 '</div>';
-            // Hide success message after 3 seconds
             setTimeout(function() {
                 backendStatusEl.style.display = 'none';
             }, 3000);

@@ -30,16 +30,16 @@ router.get('/announcements', async (req, res) => {
                      LIMIT ? OFFSET ?`;
         params.push(parseInt(limit), offset);
         
-        const announcements = await db.query(query, params);
-        
+        const [announcements] = await db.query(query, params);
+
         const total = await db.findOne(
-            `SELECT COUNT(*) as count FROM announcements 
-             WHERE status = 'active' 
+            `SELECT COUNT(*) as count FROM announcements
+             WHERE status = 'active'
              AND ${dateCheck}
              AND (target_audience = 'all' OR target_audience = ?)`,
             [req.user.role]
         );
-        
+
         res.json({
             success: true,
             data: {
@@ -115,23 +115,23 @@ router.get('/news', async (req, res) => {
             params.push(category);
         }
         
-        // Use PostgreSQL-compatible query
-        const query = `SELECT n.id, n.title, n.excerpt, n.category, n.tags, n.featured_image, 
+        const countParams = [...params];
+        const query = `SELECT n.id, n.title, n.excerpt, n.category, n.tags, n.featured_image,
                             n.published_at, n.views, u.first_name, u.last_name
                      FROM news n
                      LEFT JOIN users u ON n.author_id = u.id
                      WHERE ${whereClause}
-                     ORDER BY n.published_at DESC 
+                     ORDER BY n.published_at DESC
                      LIMIT ? OFFSET ?`;
         params.push(parseInt(limit), offset);
-        
-        const news = await db.query(query, params);
-        
+
+        const [news] = await db.query(query, params);
+
         const total = await db.findOne(
             `SELECT COUNT(*) as count FROM news WHERE ${whereClause}`,
-            params
+            countParams
         );
-        
+
         res.json({
             success: true,
             data: {
@@ -296,8 +296,8 @@ router.get('/recent-activities', async (req, res) => {
         
         const params = [userId, userId, parseInt(limit)];
         
-        const activities = await db.query(query, params);
-        
+        const [activities] = await db.query(query, params);
+
         res.json({
             success: true,
             data: { activities }
