@@ -49,15 +49,16 @@ Website chính thức và hệ thống quản lý nội dung cho Câu Lạc Bộ
 
 ## 📚 TÀI LIỆU HƯỚNG DẪN
 
-### Bắt Đầu Nhanh
-👉 **[README-DEPLOYMENT.md](README-DEPLOYMENT.md)** - Hướng dẫn đầy đủ nhất
+### 📖 Documentation
+Tất cả tài liệu đã được tổ chức trong thư mục **[`docs/`](docs/)**:
 
-### Tài Liệu Chi Tiết
-- **[PRODUCTION-STATUS.md](PRODUCTION-STATUS.md)** - Trạng thái hệ thống hiện tại
-- **[FINAL-SUMMARY.md](FINAL-SUMMARY.md)** - Tổng hợp toàn bộ dự án
-- **[DEPLOYMENT-COMPLETE.md](DEPLOYMENT-COMPLETE.md)** - Báo cáo triển khai
-- **[ADMIN-LOGIN-GUIDE.md](ADMIN-LOGIN-GUIDE.md)** - Hướng dẫn admin
-- **[docs/PRODUCTION-KEEP-ALIVE-GUIDE.md](docs/PRODUCTION-KEEP-ALIVE-GUIDE.md)** - Giải pháp cold start
+- **[📖 Documentation Index](docs/README.md)** - Danh mục tài liệu đầy đủ
+- **[⚡ Quick Start](QUICK_START.md)** - Bắt đầu nhanh trong 5 phút
+- **[🚀 Deployment Guide](docs/deployment/README.md)** - Hướng dẫn deploy production
+- **[💻 Development Guide](docs/development/local-setup.md)** - Setup môi trường dev
+- **[👨‍💼 Admin Guide](docs/admin/login-guide.md)** - Hướng dẫn quản trị
+- **[🔧 Fixes & Troubleshooting](docs/fixes/)** - Khắc phục sự cố
+- **[📊 Reports & QA](docs/reports/)** - Báo cáo và test results
 
 ---
 
