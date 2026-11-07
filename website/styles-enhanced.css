@@ -893,16 +893,30 @@ footer a:hover {
         min-height: 90vh;
     }
     
+    /* 3 ô số liệu xếp ngang 1 hàng (trước đây xếp dọc → hero dài hơn màn hình,
+       mũi tên cuộn xuống đè lên khối số liệu) */
     .hero-stats {
-        flex-direction: column;
-        gap: 20px;
-        padding: 20px 25px;
+        flex-direction: row;
+        justify-content: space-around;
+        gap: 8px;
+        width: 100%;
+        max-width: 420px;
+        margin-top: 32px;
+        padding: 16px 10px;
     }
-    
+
+    .hero-stat-item   { padding: 6px 4px !important; min-width: 0 !important; }
+    .hero-stat-number { font-size: 1.75rem; margin-bottom: 6px; }
+    .hero-stat-label  { font-size: 0.75rem; white-space: nowrap; } /* "Năm hoạt động" không xuống dòng → 3 số thẳng hàng */
+
     .hero-stat-divider {
-        width: 60px;
-        height: 1px;
+        width: 1px;
+        height: 32px;
     }
+
+    /* Chừa chỗ cho mũi tên cuộn xuống bên dưới khối số liệu */
+    .hero-section { padding-bottom: 80px; }
+    .scroll-indicator { bottom: 18px; }
     
     .hero-buttons {
         flex-direction: column;

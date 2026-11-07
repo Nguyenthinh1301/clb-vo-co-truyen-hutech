@@ -15,6 +15,7 @@ const schedulerService = require('./services/schedulerService');
 const { cacheService } = require('./services/cacheService');
 const { errorHandler, notFound } = require('./middleware/errorHandler');
 const websocketService = require('./services/websocketService');
+const { clientIp, isLocalRequest } = require('./utils/clientIp');
 
 // Create Express app
 const app = express();
@@ -74,14 +75,9 @@ const generalLimiter = rateLimit({
     },
     standardHeaders: true,
     legacyHeaders: false,
-    skip: (req) => {
-        // Bỏ qua rate limit cho localhost (development)
-        if (process.env.NODE_ENV === 'development') {
-            const ip = req.ip || req.connection.remoteAddress;
-            return ip === '127.0.0.1' || ip === '::1' || ip === 'localhost' || (ip || '').includes('127.0.0.1');
-        }
-        return false;
-    }
+    keyGenerator: clientIp,
+    // Bỏ qua rate limit cho localhost (development)
+    skip: (req) => process.env.NODE_ENV === 'development' && isLocalRequest(req)
 });
 
 // Strict rate limiting for login endpoint
@@ -96,20 +92,15 @@ const loginLimiter = rateLimit({
     },
     standardHeaders: true,
     legacyHeaders: false,
-    skip: (req) => {
-        if (process.env.NODE_ENV === 'development') {
-            const ip = req.ip || req.connection.remoteAddress;
-            return ip === '127.0.0.1' || ip === '::1' || ip === 'localhost' || ip.includes('127.0.0.1');
-        }
-        return false;
-    },
-    keyGenerator: (req) => req.ip
+    skip: (req) => process.env.NODE_ENV === 'development' && isLocalRequest(req),
+    keyGenerator: clientIp
 });
 
 // Password reset rate limiting
 const passwordResetLimiter = rateLimit({
     windowMs: 60 * 60 * 1000, // 1 hour
     max: 3, // limit each IP to 3 password reset attempts per hour
+    keyGenerator: clientIp,
     message: {
         success: false,
         message: 'Quá nhiều yêu cầu đặt lại mật khẩu. Vui lòng thử lại sau 1 giờ.'

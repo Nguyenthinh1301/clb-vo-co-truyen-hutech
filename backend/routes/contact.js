@@ -6,6 +6,7 @@ const { authenticate, authorize } = require('../middleware/auth');
 const { ValidationRules, handleValidationErrors, parsePagination } = require('../middleware/validation');
 const emailService = require('../services/emailService');
 const rateLimit = require('express-rate-limit');
+const { clientIp } = require('../utils/clientIp');
 const logger = require('../services/loggerService');
 
 // Rate limiter riêng cho form liên hệ public
@@ -19,7 +20,7 @@ const contactLimiter = rateLimit({
     },
     standardHeaders: true,
     legacyHeaders: false,
-    keyGenerator: (req) => req.ip // giới hạn theo IP
+    keyGenerator: clientIp // giới hạn theo IP thật của người gửi (qua Cloudflare)
 });
 
 // Submit contact message (public) — rate limited: 5 lần/15 phút/IP

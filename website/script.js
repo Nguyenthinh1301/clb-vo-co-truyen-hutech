@@ -100,7 +100,10 @@ document.addEventListener('DOMContentLoaded', function() {
     function createMobileMenu() {
         const nav = document.querySelector('nav');
         const navMenu = document.querySelector('.nav-menu');
-        
+        // Trang chủ nạp header bằng fetch sau DOMContentLoaded → lúc này chưa có <nav>.
+        // Header đã có nút menu riêng (dropdown.js), nên không có nav thì bỏ qua thay vì báo lỗi.
+        if (!nav || !navMenu) return;
+
         // Create hamburger button
         const hamburger = document.createElement('button');
         hamburger.classList.add('hamburger');
