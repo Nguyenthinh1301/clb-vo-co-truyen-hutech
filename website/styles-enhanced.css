@@ -471,22 +471,8 @@
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.gallery-item::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(43,125,224, 0.8), rgba(46, 204, 113, 0.8));
-    opacity: 0;
-    transition: opacity 0.4s ease;
-    z-index: 1;
-}
-
-.gallery-item:hover::before {
-    opacity: 1;
-}
+/* Đã bỏ lớp phủ gradient xanh (.gallery-item::before) hiện khi rê chuột / chạm vào ảnh:
+   nó che gần hết ảnh (đậm 80%). Giữ hiệu ứng phóng to nhẹ + chú thích trượt lên. */
 
 .gallery-item img {
     transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
