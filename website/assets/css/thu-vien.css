@@ -17,7 +17,7 @@ body,
 }
 
 .page-hero {
-    background: linear-gradient(135deg, #0d1117 0%, #1a1a2e 50%, #c41e3a 100%);
+    background: linear-gradient(135deg, #071d42 0%, #0d2f66 50%, #1450a3 100%);
     color: white;
     padding: 110px 20px 60px;
     text-align: center;
@@ -41,7 +41,7 @@ body,
 }
 
 .breadcrumb a {
-    color: #ffd700;
+    color: #ffd500;
     text-decoration: none;
 }
 
@@ -59,7 +59,7 @@ body,
 .gallery-cat-title {
     font-size: 20px;
     font-weight: 700;
-    color: #1a252f;
+    color: #0a2a5e;
     margin-bottom: 18px;
     display: flex;
     align-items: center;
@@ -67,7 +67,7 @@ body,
 }
 
 .gallery-cat-title i {
-    color: #c41e3a;
+    color: #1450a3;
 }
 
 /* --- Photo grid --- */
@@ -158,7 +158,7 @@ body,
 }
 
 .lb-close:hover {
-    color: #c41e3a;
+    color: #1450a3;
 }
 
 /* --- Responsive --- */

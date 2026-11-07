@@ -64,7 +64,9 @@
 
     // ===== ANIMATED COUNTER FOR STATS =====
     function initCounters() {
-        const counters = document.querySelectorAll('.stat-number, .hero-stat-number');
+        // Chỉ số liệu phần Giới thiệu — số ở hero (.hero-stat-number) đã được script.js đếm,
+        // đếm thêm ở đây sẽ làm 2 animation giành nhau
+        const counters = document.querySelectorAll('.stat-number');
         const speed = 2000; // Animation duration in ms
 
         const animateCounter = (counter) => {
@@ -351,7 +353,7 @@
             }
 
             draw() {
-                ctx.fillStyle = `rgba(52, 152, 219, ${this.life / 30})`;
+                ctx.fillStyle = `rgba(43,125,224, ${this.life / 30})`;
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
                 ctx.fill();

@@ -28,7 +28,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Enhanced Header styles */
 .main-header {
-    background: linear-gradient(135deg, #1a252f 0%, #2c3e50 100%);
+    background: linear-gradient(135deg, #0a2a5e 0%, #0f3570 100%);
     color: white;
     padding: 0;
     position: fixed;
@@ -40,7 +40,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .main-header.scrolled {
-    background: rgba(26, 37, 47, 0.98);
+    background: rgba(10,42,94, 0.98);
     backdrop-filter: blur(10px);
     box-shadow: 0 2px 30px rgba(0,0,0,0.2);
 }
@@ -98,8 +98,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .header-logo-img:hover {
-    border-color: #ffd700;
-    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+    border-color: #ffd500;
+    box-shadow: 0 4px 12px rgba(255,213,0, 0.3);
     transform: scale(1.05);
 }
 
@@ -119,7 +119,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .subtitle {
     font-size: 13px;
-    color: #ffd700;
+    color: #ffd500;
     font-weight: 600;
     display: block;
     line-height: 1;
@@ -145,7 +145,7 @@ h1, h2, h3, h4, h5, h6 {
 .nav-link:hover,
 .nav-link.active {
     background: rgba(255, 255, 255, 0.1);
-    color: #ffd700;
+    color: #ffd500;
 }
 
 /* Dropdown Giới thiệu */
@@ -171,7 +171,7 @@ h1, h2, h3, h4, h5, h6 {
     padding: 8px 0;
     z-index: 1000;
     list-style: none;
-    border-top: 3px solid #c41e3a;
+    border-top: 3px solid #1450a3;
 }
 
 .nav-has-dropdown.open .nav-dropdown-menu { display: block; }
@@ -192,15 +192,15 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .nav-dropdown-menu a i {
-    color: #c41e3a;
+    color: #1450a3;
     width: 16px;
     text-align: center;
     flex-shrink: 0;
 }
 
 .nav-dropdown-menu a:hover {
-    background: #fff0f2;
-    color: #c41e3a;
+    background: #eaf2fd;
+    color: #1450a3;
 }
 
 /* Mobile menu toggle */
@@ -245,7 +245,7 @@ h1, h2, h3, h4, h5, h6 {
     right: 0;
     width: 300px;
     height: 300px;
-    background: linear-gradient(135deg, rgba(52, 152, 219, 0.1), rgba(46, 204, 113, 0.1));
+    background: linear-gradient(135deg, rgba(43,125,224, 0.1), rgba(46, 204, 113, 0.1));
     border-radius: 50%;
     transform: translate(50%, -50%);
 }
@@ -257,21 +257,21 @@ h1, h2, h3, h4, h5, h6 {
 
 .section-badge {
     display: inline-block;
-    background: linear-gradient(135deg, #3498db, #2ecc71);
+    background: linear-gradient(135deg, #2b7de0, #2ecc71);
     color: white;
     padding: 8px 20px;
     border-radius: 20px;
     font-size: 0.9rem;
     font-weight: 600;
     margin-bottom: 15px;
-    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+    box-shadow: 0 4px 15px rgba(43,125,224, 0.3);
 }
 
 .section-header h2 {
     font-size: 2.5rem;
-    color: #2c3e50;
+    color: #0f3570;
     margin-bottom: 15px;
-    background: linear-gradient(135deg, #2c3e50, #3498db);
+    background: linear-gradient(135deg, #0f3570, #2b7de0);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -296,12 +296,12 @@ h1, h2, h3, h4, h5, h6 {
     padding: 30px;
     border-radius: 15px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    border-left: 5px solid #3498db;
+    border-left: 5px solid #2b7de0;
     margin-bottom: 30px;
 }
 
 .intro-box h3 {
-    color: #2c3e50;
+    color: #0f3570;
     margin-bottom: 15px;
     font-size: 1.4rem;
 }
@@ -330,7 +330,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .mission-box h4, .vision-box h4 {
-    color: #2c3e50;
+    color: #0f3570;
     margin-bottom: 15px;
     font-size: 1.3rem;
 }
@@ -375,7 +375,7 @@ h1, h2, h3, h4, h5, h6 {
 .stat-number {
     font-size: 2.5rem;
     font-weight: 700;
-    background: linear-gradient(135deg, #e74c3c, #f39c12);
+    background: linear-gradient(135deg, #1e63c4, #f39c12);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -432,7 +432,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .core-values h3 {
     text-align: center;
-    color: #2c3e50;
+    color: #0f3570;
     margin-bottom: 30px;
     font-size: 1.8rem;
 }
@@ -453,9 +453,9 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .value-item:hover {
-    border-color: #3498db;
+    border-color: #2b7de0;
     transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(52, 152, 219, 0.2);
+    box-shadow: 0 10px 25px rgba(43,125,224, 0.2);
 }
 
 .value-icon {
@@ -464,7 +464,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .value-item h4 {
-    color: #2c3e50;
+    color: #0f3570;
     margin-bottom: 10px;
     font-size: 1.2rem;
 }
@@ -482,7 +482,7 @@ main {
 
 /* Hero section */
 .hero {
-    background: linear-gradient(135deg, #3498db, #2c3e50);
+    background: linear-gradient(135deg, #2b7de0, #0f3570);
     color: white;
     padding: 100px 0;
     text-align: center;
@@ -499,7 +499,7 @@ main {
 }
 
 .cta-button {
-    background: #e74c3c;
+    background: #1e63c4;
     color: white;
     padding: 15px 30px;
     border: none;
@@ -510,7 +510,7 @@ main {
 }
 
 .cta-button:hover {
-    background: #c0392b;
+    background: #0d3b80;
 }
 
 /* Section styles */
@@ -528,7 +528,7 @@ section {
     text-align: center;
     margin-bottom: 2rem;
     font-size: 2.5rem;
-    color: #2c3e50;
+    color: #0f3570;
 }
 
 .about p {
@@ -561,7 +561,7 @@ section {
 
 .service-card h3 {
     margin-bottom: 1rem;
-    color: #2c3e50;
+    color: #0f3570;
 }
 
 /* Contact section - Basic styles for other contact sections */
@@ -603,7 +603,7 @@ section {
 .auth-form h2 {
     text-align: center;
     margin-bottom: 30px;
-    color: #2c3e50;
+    color: #0f3570;
 }
 
 .form-row {
@@ -638,7 +638,7 @@ section {
 .form-group select:focus,
 .form-group textarea:focus {
     outline: none;
-    border-color: #3498db;
+    border-color: #2b7de0;
 }
 
 .checkbox-group {
@@ -669,7 +669,7 @@ section {
 }
 
 .forgot-password {
-    color: #3498db;
+    color: #2b7de0;
     text-decoration: none;
     font-size: 14px;
 }
@@ -680,7 +680,7 @@ section {
 
 .auth-btn {
     width: 100%;
-    background: #3498db;
+    background: #2b7de0;
     color: white;
     padding: 12px;
     border: none;
@@ -691,7 +691,7 @@ section {
 }
 
 .auth-btn:hover {
-    background: #2980b9;
+    background: #1a5fb8;
 }
 
 .auth-footer {
@@ -700,7 +700,7 @@ section {
 }
 
 .auth-footer a {
-    color: #3498db;
+    color: #2b7de0;
     text-decoration: none;
 }
 
@@ -710,7 +710,7 @@ section {
 
 /* Page Header Styles */
 .page-header {
-    background: linear-gradient(135deg, #2c3e50, #3498db);
+    background: linear-gradient(135deg, #0f3570, #2b7de0);
     color: white;
     padding: 120px 0 60px;
     text-align: center;
@@ -745,7 +745,7 @@ section {
     top: 0;
     bottom: 0;
     width: 2px;
-    background: #3498db;
+    background: #2b7de0;
     transform: translateX(-50%);
 }
 
@@ -760,7 +760,7 @@ section {
 }
 
 .timeline-item .year {
-    background: #3498db;
+    background: #2b7de0;
     color: white;
     padding: 10px 20px;
     border-radius: 20px;
@@ -807,7 +807,7 @@ section {
 }
 
 .pricing-card.featured {
-    background: linear-gradient(135deg, #3498db, #2980b9);
+    background: linear-gradient(135deg, #2b7de0, #1a5fb8);
     color: white;
     transform: scale(1.05);
 }
@@ -821,7 +821,7 @@ section {
     font-size: 2rem;
     font-weight: bold;
     margin-bottom: 20px;
-    color: #3498db;
+    color: #2b7de0;
 }
 
 .pricing-card.featured .price {
@@ -852,7 +852,7 @@ section {
 }
 
 .pricing-btn {
-    background: #3498db;
+    background: #2b7de0;
     color: white;
     padding: 12px 30px;
     border: none;
@@ -863,11 +863,11 @@ section {
 
 .pricing-card.featured .pricing-btn {
     background: white;
-    color: #3498db;
+    color: #2b7de0;
 }
 
 .pricing-btn:hover {
-    background: #2980b9;
+    background: #1a5fb8;
 }
 
 .pricing-card.featured .pricing-btn:hover {
@@ -950,7 +950,7 @@ section {
     left: 0;
     width: 400px;
     height: 400px;
-    background: linear-gradient(135deg, rgba(44, 62, 80, 0.15), rgba(52, 152, 219, 0.1));
+    background: linear-gradient(135deg, rgba(15,53,112, 0.15), rgba(43,125,224, 0.1));
     border-radius: 50%;
     transform: translate(-50%, -50%);
     z-index: 1;
@@ -963,7 +963,7 @@ section {
     right: 0;
     width: 300px;
     height: 300px;
-    background: linear-gradient(135deg, rgba(44, 62, 80, 0.12), rgba(26, 37, 47, 0.1));
+    background: linear-gradient(135deg, rgba(15,53,112, 0.12), rgba(10,42,94, 0.1));
     border-radius: 50%;
     transform: translate(50%, 50%);
     z-index: 1;
@@ -981,9 +981,9 @@ section {
 
 .contact .section-header h2 {
     font-size: 2.5rem;
-    color: #2c3e50;
+    color: #0f3570;
     margin-bottom: 15px;
-    background: linear-gradient(135deg, #2c3e50, #3498db);
+    background: linear-gradient(135deg, #0f3570, #2b7de0);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -1014,7 +1014,7 @@ section {
     padding: 40px;
     border-radius: 20px;
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(52, 152, 219, 0.1);
+    border: 1px solid rgba(43,125,224, 0.1);
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
@@ -1027,16 +1027,16 @@ section {
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(135deg, #2c3e50, #1a252f);
+    background: linear-gradient(135deg, #0f3570, #0a2a5e);
 }
 
 .contact-info-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 20px 50px rgba(52, 152, 219, 0.15);
+    box-shadow: 0 20px 50px rgba(43,125,224, 0.15);
 }
 
 .contact-info-card h3 {
-    color: #2c3e50;
+    color: #0f3570;
     font-size: 1.5rem;
     margin-bottom: 30px;
     display: flex;
@@ -1046,7 +1046,7 @@ section {
 
 .contact-info-card h3 .icon {
     font-size: 1.8rem;
-    background: linear-gradient(135deg, #2c3e50, #34495e);
+    background: linear-gradient(135deg, #0f3570, #1b4a8f);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -1063,20 +1063,20 @@ section {
 }
 
 .contact-item:hover {
-    background: linear-gradient(135deg, rgba(44, 62, 80, 0.08), rgba(52, 73, 94, 0.05));
+    background: linear-gradient(135deg, rgba(15,53,112, 0.08), rgba(27,74,143, 0.05));
     transform: translateX(5px);
 }
 
 .contact-icon {
     width: 50px;
     height: 50px;
-    background: linear-gradient(135deg, #2c3e50, #34495e);
+    background: linear-gradient(135deg, #0f3570, #1b4a8f);
     border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    box-shadow: 0 8px 20px rgba(44, 62, 80, 0.4);
+    box-shadow: 0 8px 20px rgba(15,53,112, 0.4);
 }
 
 .contact-icon .icon {
@@ -1091,7 +1091,7 @@ section {
 
 .contact-details strong {
     display: block;
-    color: #2c3e50;
+    color: #0f3570;
     font-size: 1.1rem;
     margin-bottom: 5px;
     font-weight: 600;
@@ -1104,7 +1104,7 @@ section {
 }
 
 .contact-details .highlight {
-    color: #2c3e50;
+    color: #0f3570;
     font-weight: 600;
 }
 
@@ -1113,13 +1113,13 @@ section {
     border-radius: 20px;
     overflow: hidden;
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(52, 152, 219, 0.1);
+    border: 1px solid rgba(43,125,224, 0.1);
     transition: all 0.3s ease;
 }
 
 .map-container:hover {
     transform: translateY(-3px);
-    box-shadow: 0 20px 50px rgba(52, 152, 219, 0.15);
+    box-shadow: 0 20px 50px rgba(43,125,224, 0.15);
 }
 
 .map-placeholder {
@@ -1137,13 +1137,13 @@ section {
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(135deg, #2c3e50, #1a252f);
+    background: linear-gradient(135deg, #0f3570, #0a2a5e);
 }
 
 .map-icon {
     font-size: 3rem;
     margin-bottom: 15px;
-    background: linear-gradient(135deg, #2c3e50, #34495e);
+    background: linear-gradient(135deg, #0f3570, #1b4a8f);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -1153,7 +1153,7 @@ section {
     font-size: 1.2rem;
     font-weight: 600;
     margin-bottom: 8px;
-    color: #2c3e50;
+    color: #0f3570;
 }
 
 .map-placeholder small {
@@ -1171,7 +1171,7 @@ section {
     padding: 40px;
     border-radius: 20px;
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(52, 152, 219, 0.1);
+    border: 1px solid rgba(43,125,224, 0.1);
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
@@ -1185,16 +1185,16 @@ section {
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(135deg, #2c3e50, #1a252f);
+    background: linear-gradient(135deg, #0f3570, #0a2a5e);
 }
 
 .contact-form-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 20px 50px rgba(52, 152, 219, 0.15);
+    box-shadow: 0 20px 50px rgba(43,125,224, 0.15);
 }
 
 .contact-form-card h3 {
-    color: #2c3e50;
+    color: #0f3570;
     font-size: 1.5rem;
     margin-bottom: 15px;
     display: flex;
@@ -1204,7 +1204,7 @@ section {
 
 .contact-form-card h3 .icon {
     font-size: 1.8rem;
-    background: linear-gradient(135deg, #2c3e50, #34495e);
+    background: linear-gradient(135deg, #0f3570, #1b4a8f);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -1237,7 +1237,7 @@ section {
     display: flex;
     align-items: center;
     gap: 8px;
-    color: #2c3e50;
+    color: #0f3570;
     font-weight: 600;
     margin-bottom: 8px;
     font-size: 0.95rem;
@@ -1245,7 +1245,7 @@ section {
 
 .form-group label .icon {
     font-size: 1.1rem;
-    background: linear-gradient(135deg, #2c3e50, #34495e);
+    background: linear-gradient(135deg, #0f3570, #1b4a8f);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -1260,16 +1260,16 @@ section {
     font-size: 1rem;
     transition: all 0.3s ease;
     background: #f8f9fa;
-    color: #2c3e50;
+    color: #0f3570;
 }
 
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
     outline: none;
-    border-color: #2c3e50;
+    border-color: #0f3570;
     background: white;
-    box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.15);
+    box-shadow: 0 0 0 3px rgba(15,53,112, 0.15);
     transform: translateY(-2px);
 }
 
@@ -1285,7 +1285,7 @@ section {
 }
 
 .submit-btn {
-    background: linear-gradient(135deg, #2c3e50, #34495e);
+    background: linear-gradient(135deg, #0f3570, #1b4a8f);
     color: white;
     padding: 18px 40px;
     border: none;
@@ -1298,15 +1298,15 @@ section {
     align-items: center;
     justify-content: center;
     gap: 10px;
-    box-shadow: 0 8px 20px rgba(44, 62, 80, 0.4);
+    box-shadow: 0 8px 20px rgba(15,53,112, 0.4);
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .submit-btn:hover {
-    background: linear-gradient(135deg, #1a252f, #2c3e50);
+    background: linear-gradient(135deg, #0a2a5e, #0f3570);
     transform: translateY(-3px);
-    box-shadow: 0 12px 25px rgba(44, 62, 80, 0.5);
+    box-shadow: 0 12px 25px rgba(15,53,112, 0.5);
 }
 
 .submit-btn:active {
@@ -1401,7 +1401,7 @@ section {
     align-items: center;
     gap: 12px;
     padding: 12px 16px;
-    color: #2c3e50;
+    color: #0f3570;
     text-decoration: none;
     font-weight: 500;
     transition: all 0.3s ease;
@@ -1409,7 +1409,7 @@ section {
 
 .user-dropdown a:hover {
     background: #f8f9fa;
-    color: #3498db;
+    color: #2b7de0;
 }
 
 .user-dropdown a:last-child {
@@ -1460,7 +1460,7 @@ section {
     
     .user-dropdown a:hover {
         background: rgba(255, 255, 255, 0.1);
-        color: #3498db;
+        color: #2b7de0;
     }
     
     .user-dropdown a:last-child {
@@ -1570,7 +1570,7 @@ section {
 
 /* Footer */
 .main-footer {
-    background: #0d1117;
+    background: #071d42;
     color: white;
     padding: 60px 20px 0;
 }
@@ -1606,7 +1606,7 @@ section {
 
 .footer-brand .footer-logo span {
     font-size: 12px;
-    color: #ffd700;
+    color: #ffd500;
     font-weight: 600;
 }
 
@@ -1623,7 +1623,7 @@ section {
     color: white;
     margin-bottom: 18px;
     padding-bottom: 10px;
-    border-bottom: 2px solid #c41e3a;
+    border-bottom: 2px solid #1450a3;
     display: inline-block;
 }
 
@@ -1649,11 +1649,11 @@ section {
 
 .footer-section ul a i {
     font-size: 10px;
-    color: #c41e3a;
+    color: #1450a3;
 }
 
 .footer-section ul a:hover {
-    color: #ffd700;
+    color: #ffd500;
     gap: 10px;
 }
 
@@ -1677,7 +1677,7 @@ section {
 }
 
 .main-footer .social-links a:hover {
-    background: #c41e3a;
+    background: #1450a3;
     transform: translateY(-3px);
 }
 
@@ -1697,7 +1697,7 @@ section {
 }
 
 .footer-contact-item i {
-    color: #c41e3a;
+    color: #1450a3;
     width: 14px;
     flex-shrink: 0;
     margin-top: 2px;
@@ -1709,7 +1709,7 @@ section {
     transition: color 0.2s;
 }
 
-.footer-contact-item a:hover { color: #ffd700; }
+.footer-contact-item a:hover { color: #ffd500; }
 
 .footer-bottom {
     text-align: center;
@@ -1764,7 +1764,7 @@ section {
         left: -100%;
         top: 70px;
         flex-direction: column;
-        background: linear-gradient(135deg, #2c3e50, #34495e);
+        background: linear-gradient(135deg, #0f3570, #1b4a8f);
         width: 100%;
         text-align: center;
         transition: 0.3s;
@@ -1881,7 +1881,7 @@ section {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(26, 37, 47, 0.95);
+    background: rgba(10,42,94, 0.95);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -1900,7 +1900,7 @@ section {
     width: 50px;
     height: 50px;
     border: 4px solid rgba(255, 255, 255, 0.3);
-    border-top-color: #c41e3a;
+    border-top-color: #1450a3;
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
@@ -1917,7 +1917,7 @@ section {
 
 /* Enhanced Header Styles */
 .main-header.scrolled {
-    background: rgba(26, 37, 47, 0.98);
+    background: rgba(10,42,94, 0.98);
     backdrop-filter: blur(10px);
     box-shadow: 0 2px 30px rgba(0,0,0,0.2);
 }
@@ -1987,12 +1987,12 @@ section {
 
 .dropdown-menu a:hover {
     background: #f8f9fa;
-    color: #c41e3a;
+    color: #1450a3;
     padding-left: 25px;
 }
 
 .dropdown-menu a:hover i {
-    color: #c41e3a;
+    color: #1450a3;
 }
 
 .hero-section,
@@ -2007,7 +2007,7 @@ section {
 
 /* Enhanced Hero Section */
 .hero-section {
-    background: linear-gradient(135deg, #0d1117 0%, #1a1a2e 40%, #c41e3a 100%);
+    background: linear-gradient(135deg, #071d42 0%, #0d2f66 40%, #1450a3 100%);
     color: white;
     padding: 140px 20px 80px;
     text-align: center;
@@ -2031,7 +2031,7 @@ section {
 .hero-shape-1 {
     width: 500px;
     height: 500px;
-    background: #c41e3a;
+    background: #1450a3;
     top: -150px;
     right: -100px;
 }
@@ -2039,7 +2039,7 @@ section {
 .hero-shape-2 {
     width: 300px;
     height: 300px;
-    background: #ffd700;
+    background: #ffd500;
     bottom: -80px;
     left: -60px;
 }
@@ -2056,8 +2056,8 @@ section {
 /* Badge */
 .hero-badge {
     display: inline-block;
-    background: rgba(196, 30, 58, 0.25);
-    border: 1px solid rgba(196, 30, 58, 0.6);
+    background: rgba(20,80,163, 0.25);
+    border: 1px solid rgba(20,80,163, 0.6);
     color: #ff6b8a;
     padding: 6px 18px;
     border-radius: 20px;
@@ -2100,7 +2100,7 @@ section {
 .hero-stat-number {
     font-size: 36px;
     font-weight: 800;
-    color: #ffd700;
+    color: #ffd500;
     line-height: 1;
     margin-bottom: 6px;
 }
@@ -2178,14 +2178,14 @@ section {
 }
 
 .btn-primary {
-    background: #c41e3a;
+    background: #1450a3;
     color: white;
 }
 
 .btn-primary:hover {
-    background: #a01828;
+    background: #0d3b80;
     transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(196, 30, 58, 0.3);
+    box-shadow: 0 10px 25px rgba(20,80,163, 0.3);
 }
 
 .btn-secondary {
@@ -2196,7 +2196,7 @@ section {
 
 .btn-secondary:hover {
     background: white;
-    color: #c41e3a;
+    color: #1450a3;
 }
 
 .hero-stats {
@@ -2222,13 +2222,11 @@ section {
 .stat-number {
     font-size: 40px;
     font-weight: 700;
-    color: #ffd700;
+    color: #ffd500;
     margin-bottom: 5px;
 }
 
-.stat-number::after {
-    content: '+';
-}
+/* (Đã bỏ .stat-number::after { content:'+' } — HTML đã ghi sẵn "8+", thêm ở CSS thành "8++") */
 
 .stat-label {
     font-size: 14px;
@@ -2247,7 +2245,7 @@ section {
 
 .section-header h2 {
     font-size: 36px;
-    color: #2c3e50;
+    color: #0f3570;
     margin-bottom: 15px;
     position: relative;
     display: inline-block;
@@ -2261,7 +2259,7 @@ section {
     transform: translateX(-50%);
     width: 60px;
     height: 4px;
-    background: #c41e3a;
+    background: #1450a3;
     border-radius: 2px;
 }
 
@@ -2295,12 +2293,12 @@ section {
 
 .schedule-card:hover {
     transform: translateY(-10px);
-    border-color: #c41e3a;
+    border-color: #1450a3;
     box-shadow: 0 15px 40px rgba(0,0,0,0.15);
 }
 
 .schedule-card.featured {
-    background: linear-gradient(135deg, #c41e3a, #a01828);
+    background: linear-gradient(135deg, #1450a3, #0d3b80);
     color: white;
 }
 
@@ -2308,8 +2306,8 @@ section {
     position: absolute;
     top: -10px;
     right: 20px;
-    background: #ffd700;
-    color: #1a252f;
+    background: #ffd500;
+    color: #0a2a5e;
     padding: 5px 15px;
     border-radius: 20px;
     font-size: 12px;
@@ -2320,11 +2318,11 @@ section {
     font-size: 18px;
     font-weight: 700;
     margin-bottom: 15px;
-    color: #c41e3a;
+    color: #1450a3;
 }
 
 .schedule-card.featured .schedule-day {
-    color: #ffd700;
+    color: #ffd500;
 }
 
 .schedule-time {
@@ -2377,14 +2375,14 @@ section {
     background: white;
     padding: 20px;
     border-radius: 10px;
-    border-left: 4px solid #c41e3a;
+    border-left: 4px solid #1450a3;
     display: flex;
     align-items: center;
     gap: 15px;
 }
 
 .schedule-note i {
-    color: #c41e3a;
+    color: #1450a3;
     font-size: 24px;
 }
 
@@ -2430,7 +2428,7 @@ section {
 .coach-card-front {
     height: 100%;
     background: white;
-    border-top: 4px solid #c41e3a;
+    border-top: 4px solid #1450a3;
     box-shadow: 0 2px 12px rgba(0,0,0,0.07);
     border-radius: 16px;
     display: flex;
@@ -2454,7 +2452,7 @@ section {
     border-radius: 50%;
     overflow: hidden;
     border: 3px solid #f0f0f0;
-    background: linear-gradient(135deg, #1a252f, #c41e3a);
+    background: linear-gradient(135deg, #0a2a5e, #1450a3);
     margin-bottom: 16px;
     flex-shrink: 0;
 }
@@ -2477,20 +2475,20 @@ section {
 .coach-info h3 {
     font-size: 17px;
     font-weight: 700;
-    color: #1a252f;
+    color: #0a2a5e;
     margin: 0;
     text-align: center;
 }
 
 .coach-title {
     display: inline-block;
-    background: #fff0f2;
-    color: #c41e3a;
+    background: #eaf2fd;
+    color: #1450a3;
     font-size: 12px;
     font-weight: 600;
     padding: 4px 12px;
     border-radius: 20px;
-    border: 1px solid rgba(196,30,58,0.2);
+    border: 1px solid rgba(20,80,163,0.2);
     margin-bottom: 4px;
 }
 
@@ -2499,7 +2497,7 @@ section {
     font-size: 13px;
     font-weight: 600;
     color: white;
-    background: #c41e3a;
+    background: #1450a3;
     padding: 7px 20px;
     border-radius: 8px;
     display: inline-flex;
@@ -2519,7 +2517,7 @@ section {
 
 /* Back */
 .coach-card-back {
-    background: linear-gradient(145deg, #1a252f 0%, #2c3e50 100%);
+    background: linear-gradient(145deg, #0a2a5e 0%, #0f3570 100%);
     transform: rotateY(180deg);
     padding: 20px;
     display: flex;
@@ -2546,7 +2544,7 @@ section {
 }
 
 .coach-back-btn:hover {
-    background: rgba(196,30,58,0.6);
+    background: rgba(20,80,163,0.6);
 }
 
 .coach-back-name {
@@ -2558,7 +2556,7 @@ section {
 
 .coach-back-title {
     font-size: 12px;
-    color: #ffd700;
+    color: #ffd500;
     font-weight: 600;
     margin-bottom: 14px;
     padding-bottom: 12px;
@@ -2644,7 +2642,7 @@ section {
 .gallery-item .gallery-info h4 {
     font-size: 14px;
     font-weight: 700;
-    color: #1a252f;
+    color: #0a2a5e;
     margin-bottom: 6px;
 }
 
@@ -2656,7 +2654,7 @@ section {
 }
 
 .gallery-placeholder {
-    background: linear-gradient(160deg, #1a252f 0%, #2c3e50 60%, #c41e3a 100%);
+    background: linear-gradient(160deg, #0a2a5e 0%, #0f3570 60%, #1450a3 100%);
     padding: 28px 20px;
     text-align: center;
     color: white;
@@ -2677,11 +2675,11 @@ section {
     left: 0;
     right: 0;
     height: 3px;
-    background: #ffd700;
+    background: #ffd500;
 }
 
 .gallery-placeholder i {
-    color: #ffd700;
+    color: #ffd500;
     margin-bottom: 16px;
     flex-shrink: 0;
 }
@@ -2697,7 +2695,7 @@ section {
     font-size: 16px;
     margin-bottom: 10px;
     font-weight: 700;
-    color: #ffd700;
+    color: #ffd500;
 }
 
 .gallery-info p {
@@ -2713,7 +2711,7 @@ section {
     background: white;
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-    border-top: 4px solid #c41e3a;
+    border-top: 4px solid #1450a3;
 }
 
 .gallery-cta p {
@@ -2789,7 +2787,7 @@ section {
 /* Events Section */
 .events-section {
     padding: 80px 0;
-    background: #1a252f;
+    background: #0a2a5e;
 }
 
 .events-section .section-header h2 {
@@ -2827,7 +2825,7 @@ section {
     top: 0;
     bottom: 0;
     width: 4px;
-    background: #c41e3a;
+    background: #1450a3;
 }
 
 .event-card.past::before {
@@ -2868,7 +2866,7 @@ section {
 }
 
 .event-card.status-upcoming .event-badge-auto {
-    background: #c41e3a;
+    background: #1450a3;
 }
 
 .event-card.status-ongoing .event-badge-auto {
@@ -2911,7 +2909,7 @@ section {
 .countdown-num {
     font-size: 18px;
     font-weight: 800;
-    color: #ffd700;
+    color: #ffd500;
     line-height: 1;
 }
 
@@ -2940,8 +2938,8 @@ section {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: rgba(196, 30, 58, 0.15);
-    border: 1px solid rgba(196, 30, 58, 0.3);
+    background: rgba(20,80,163, 0.15);
+    border: 1px solid rgba(20,80,163, 0.3);
     border-radius: 10px;
     padding: 14px 18px;
     min-width: 72px;
@@ -2957,7 +2955,7 @@ section {
 .event-day {
     font-size: 2rem;
     font-weight: 800;
-    color: #ffd700;
+    color: #ffd500;
     line-height: 1;
 }
 
@@ -3013,7 +3011,7 @@ section {
 }
 
 .event-meta span i {
-    color: #c41e3a;
+    color: #1450a3;
     width: 14px;
     flex-shrink: 0;
 }
@@ -3066,7 +3064,7 @@ section {
     display: block;
     margin-bottom: 8px;
     font-weight: 600;
-    color: #1a252f;
+    color: #0a2a5e;
 }
 
 .form-group input,
@@ -3083,7 +3081,7 @@ section {
 .form-group input:focus,
 .form-group textarea:focus {
     outline: none;
-    border-color: #c41e3a;
+    border-color: #1450a3;
 }
 
 .contact-info {
@@ -3106,7 +3104,7 @@ section {
 
 .info-item i {
     font-size: 24px;
-    color: #c41e3a;
+    color: #1450a3;
     width: 40px;
     height: 40px;
     background: white;
@@ -3118,7 +3116,7 @@ section {
 }
 
 .info-item h4 {
-    color: #2c3e50;
+    color: #0f3570;
     margin-bottom: 5px;
     text-align: left;
 }
@@ -3262,7 +3260,7 @@ section {
 
 .about-text h3 {
     font-size: 28px;
-    color: #2c3e50;
+    color: #0f3570;
     margin-bottom: 20px;
 }
 
@@ -3286,7 +3284,7 @@ section {
 }
 
 .about-features i {
-    color: #c41e3a;
+    color: #1450a3;
     font-size: 20px;
 }
 
@@ -3313,7 +3311,7 @@ section {
 .stat-box .stat-number {
     font-size: 32px;
     font-weight: 700;
-    color: #c41e3a;
+    color: #1450a3;
     margin-bottom: 5px;
 }
 
@@ -3355,7 +3353,7 @@ section {
     opacity: 0;
     transform: translateX(100%);
     transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-    background: linear-gradient(135deg, #1a252f 0%, #c41e3a 100%);
+    background: linear-gradient(135deg, #0a2a5e 0%, #1450a3 100%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -3449,7 +3447,7 @@ section {
     font-size: 24px;
     font-weight: 700;
     margin-bottom: 15px;
-    color: #ffd700;
+    color: #ffd500;
 }
 
 .image-item p {
@@ -3487,22 +3485,22 @@ section {
 }
 
 .indicator.active {
-    background: #ffd700;
+    background: #ffd500;
     border-color: white;
     transform: scale(1.3);
 }
 
 /* Gradient Variations for Different Slides */
 .carousel-slide:nth-child(1) {
-    background: linear-gradient(135deg, #1a252f 0%, #c41e3a 100%);
+    background: linear-gradient(135deg, #0a2a5e 0%, #1450a3 100%);
 }
 
 .carousel-slide:nth-child(2) {
-    background: linear-gradient(135deg, #2c3e50 0%, #e74c3c 100%);
+    background: linear-gradient(135deg, #0f3570 0%, #1e63c4 100%);
 }
 
 .carousel-slide:nth-child(3) {
-    background: linear-gradient(135deg, #8e44ad 0%, #3498db 100%);
+    background: linear-gradient(135deg, #8e44ad 0%, #2b7de0 100%);
 }
 
 .carousel-slide:nth-child(4) {
@@ -3602,7 +3600,7 @@ section {
     transform: translateX(-50%);
     width: 0;
     height: 2px;
-    background: #ffd700;
+    background: #ffd500;
     transition: width 0.3s ease;
 }
 
@@ -3612,7 +3610,7 @@ section {
 
 /* Smooth transition for active state */
 .nav-link.active {
-    color: #ffd700;
+    color: #ffd500;
 }
 
 /* ========================================
@@ -3622,7 +3620,7 @@ section {
 
 /* Auth page layout */
 .auth-page {
-    background: linear-gradient(135deg, #1a252f 0%, #2c3e50 50%, #34495e 100%);
+    background: linear-gradient(135deg, #0a2a5e 0%, #0f3570 50%, #1b4a8f 100%);
     min-height: 100vh;
     display: flex;
     align-items: center;
@@ -3723,7 +3721,7 @@ section {
 }
 
 .auth-header {
-    background: linear-gradient(135deg, #2c3e50, #34495e);
+    background: linear-gradient(135deg, #0f3570, #1b4a8f);
     color: white;
     padding: 30px 30px 25px;
     text-align: center;
@@ -3757,7 +3755,7 @@ section {
     display: block;
     margin-bottom: 8px;
     font-weight: 600;
-    color: #2c3e50;
+    color: #0f3570;
     font-size: 14px;
 }
 
@@ -3774,9 +3772,9 @@ section {
 
 .auth-page .form-control:focus {
     outline: none;
-    border-color: #3498db;
+    border-color: #2b7de0;
     background: white;
-    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+    box-shadow: 0 0 0 3px rgba(43,125,224, 0.1);
 }
 
 .password-group {
@@ -3797,7 +3795,7 @@ section {
 }
 
 .password-toggle:hover {
-    color: #3498db;
+    color: #2b7de0;
 }
 
 .remember-forgot {
@@ -3817,11 +3815,11 @@ section {
 .remember-me input[type="checkbox"] {
     width: 16px;
     height: 16px;
-    accent-color: #3498db;
+    accent-color: #2b7de0;
 }
 
 .forgot-password {
-    color: #3498db;
+    color: #2b7de0;
     text-decoration: none;
     font-weight: 500;
 }
@@ -3833,7 +3831,7 @@ section {
 .btn-login {
     width: 100%;
     padding: 16px;
-    background: linear-gradient(135deg, #3498db, #2980b9);
+    background: linear-gradient(135deg, #2b7de0, #1a5fb8);
     color: white;
     border: none;
     border-radius: 10px;
@@ -3842,18 +3840,18 @@ section {
     cursor: pointer;
     transition: all 0.3s ease;
     margin-bottom: 20px;
-    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
+    box-shadow: 0 4px 15px rgba(43,125,224, 0.2);
 }
 
 .btn-login:hover {
-    background: linear-gradient(135deg, #2980b9, #1f4f7a);
+    background: linear-gradient(135deg, #1a5fb8, #1f4f7a);
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(52, 152, 219, 0.4);
+    box-shadow: 0 8px 25px rgba(43,125,224, 0.4);
 }
 
 .btn-login:active {
     transform: translateY(0);
-    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
+    box-shadow: 0 4px 15px rgba(43,125,224, 0.2);
 }
 
 .divider {
@@ -3897,7 +3895,7 @@ section {
 
 .register-link a,
 .login-link a {
-    color: #3498db;
+    color: #2b7de0;
     text-decoration: none;
     font-weight: 600;
 }
@@ -3991,7 +3989,7 @@ section {
     top: 20px;
     left: 20px;
     background: rgba(255, 255, 255, 0.9);
-    color: #2c3e50;
+    color: #0f3570;
     padding: 10px 15px;
     border-radius: 8px;
     text-decoration: none;
@@ -4134,7 +4132,7 @@ section {
     padding: 14px 25px;
     font-size: 15px;
     margin-top: 8px;
-    box-shadow: 0 6px 15px rgba(44, 62, 80, 0.3);
+    box-shadow: 0 6px 15px rgba(15,53,112, 0.3);
 }
 
 .auth-header::after {
@@ -4147,7 +4145,7 @@ section {
     height: 0;
     border-left: 15px solid transparent;
     border-right: 15px solid transparent;
-    border-top: 10px solid #34495e;
+    border-top: 10px solid #1b4a8f;
 }
 
 .auth-logo {
@@ -4210,15 +4208,15 @@ section {
     font-size: 14px;
     transition: all 0.3s ease;
     background: #f8f9fa;
-    color: #2c3e50;
+    color: #0f3570;
 }
 
 .auth-page .form-group input:focus,
 .auth-page .form-group select:focus {
     outline: none;
-    border-color: #2c3e50;
+    border-color: #0f3570;
     background: white;
-    box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.15);
+    box-shadow: 0 0 0 3px rgba(15,53,112, 0.15);
     transform: translateY(-2px);
 }
 
@@ -4237,7 +4235,7 @@ section {
     margin-top: 2px;
     width: auto;
     transform: scale(1.2);
-    accent-color: #2c3e50;
+    accent-color: #0f3570;
 }
 
 .checkbox-group label {
@@ -4249,7 +4247,7 @@ section {
 }
 
 .checkbox-group a {
-    color: #2c3e50;
+    color: #0f3570;
     text-decoration: none;
     font-weight: 600;
 }
@@ -4259,7 +4257,7 @@ section {
 }
 
 .submit-btn {
-    background: linear-gradient(135deg, #2c3e50, #34495e);
+    background: linear-gradient(135deg, #0f3570, #1b4a8f);
     color: white;
     padding: 18px 30px;
     border: none;
@@ -4268,16 +4266,16 @@ section {
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 8px 20px rgba(44, 62, 80, 0.4);
+    box-shadow: 0 8px 20px rgba(15,53,112, 0.4);
     text-transform: uppercase;
     letter-spacing: 0.5px;
     margin-top: 10px;
 }
 
 .submit-btn:hover {
-    background: linear-gradient(135deg, #1a252f, #2c3e50);
+    background: linear-gradient(135deg, #0a2a5e, #0f3570);
     transform: translateY(-3px);
-    box-shadow: 0 12px 25px rgba(44, 62, 80, 0.5);
+    box-shadow: 0 12px 25px rgba(15,53,112, 0.5);
 }
 
 .submit-btn:active {
@@ -4305,7 +4303,7 @@ section {
 }
 
 .auth-footer a {
-    color: #2c3e50;
+    color: #0f3570;
     text-decoration: none;
     font-weight: 600;
     margin-left: 5px;
@@ -4399,7 +4397,7 @@ section {
 .welcome-avatar {
     width: 80px;
     height: 80px;
-    background: linear-gradient(135deg, #3498db, #2ecc71);
+    background: linear-gradient(135deg, #2b7de0, #2ecc71);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -4410,7 +4408,7 @@ section {
 }
 
 .welcome-info h1 {
-    color: #2c3e50;
+    color: #0f3570;
     margin-bottom: 5px;
 }
 
@@ -4421,7 +4419,7 @@ section {
 
 .user-badge {
     display: inline-block;
-    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    background: linear-gradient(135deg, #1e63c4, #0d3b80);
     color: white;
     padding: 5px 15px;
     border-radius: 20px;
@@ -4468,7 +4466,7 @@ section {
 }
 
 .card-icon.blue {
-    background: linear-gradient(135deg, #3498db, #2980b9);
+    background: linear-gradient(135deg, #2b7de0, #1a5fb8);
 }
 
 .card-icon.green {
@@ -4484,7 +4482,7 @@ section {
 }
 
 .card-title {
-    color: #2c3e50;
+    color: #0f3570;
     font-size: 1.2rem;
     font-weight: 600;
     margin: 0;
@@ -4503,7 +4501,7 @@ section {
 }
 
 .quick-actions h3 {
-    color: #2c3e50;
+    color: #0f3570;
     margin-bottom: 20px;
     display: flex;
     align-items: center;
@@ -4522,7 +4520,7 @@ section {
     gap: 10px;
     padding: 15px 20px;
     background: linear-gradient(135deg, #ecf0f1, #bdc3c7);
-    color: #2c3e50;
+    color: #0f3570;
     text-decoration: none;
     border-radius: 10px;
     transition: all 0.3s ease;
@@ -4530,17 +4528,17 @@ section {
 }
 
 .action-btn:hover {
-    background: linear-gradient(135deg, #3498db, #2980b9);
+    background: linear-gradient(135deg, #2b7de0, #1a5fb8);
     color: white;
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+    box-shadow: 0 5px 15px rgba(43,125,224, 0.3);
 }
 
 .back-home-btn {
     position: fixed;
     bottom: 30px;
     right: 30px;
-    background: linear-gradient(135deg, #3498db, #2980b9);
+    background: linear-gradient(135deg, #2b7de0, #1a5fb8);
     color: white;
     padding: 15px 20px;
     border-radius: 50px;
@@ -4549,15 +4547,15 @@ section {
     align-items: center;
     gap: 10px;
     font-weight: 600;
-    box-shadow: 0 10px 30px rgba(52, 152, 219, 0.3);
+    box-shadow: 0 10px 30px rgba(43,125,224, 0.3);
     transition: all 0.3s ease;
     z-index: 100;
 }
 
 .back-home-btn:hover {
-    background: linear-gradient(135deg, #2980b9, #1f4e79);
+    background: linear-gradient(135deg, #1a5fb8, #1f4e79);
     transform: translateY(-3px);
-    box-shadow: 0 15px 40px rgba(52, 152, 219, 0.4);
+    box-shadow: 0 15px 40px rgba(43,125,224, 0.4);
 }
 
 /* Personal Info Section Styles */
@@ -4627,7 +4625,7 @@ section {
 
 .info-grid .info-item label {
     font-weight: 600;
-    color: #2c3e50;
+    color: #0f3570;
     font-size: 0.9rem;
 }
 
@@ -4651,7 +4649,7 @@ section {
 .info-grid .info-item input:focus,
 .info-grid .info-item select:focus {
     outline: none;
-    border-color: #3498db;
+    border-color: #2b7de0;
 }
 
 .edit-actions {
@@ -4775,7 +4773,7 @@ section {
 }
 
 .edit-header h1 {
-    color: #2c3e50;
+    color: #0f3570;
     margin-bottom: 10px;
 }
 
@@ -4798,7 +4796,7 @@ section {
 .edit-page .form-group label {
     display: block;
     margin-bottom: 8px;
-    color: #2c3e50;
+    color: #0f3570;
     font-weight: 600;
     font-size: 1rem;
 }
@@ -4819,8 +4817,8 @@ section {
 .edit-page .form-group select:focus,
 .edit-page .form-group textarea:focus {
     outline: none;
-    border-color: #3498db;
-    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+    border-color: #2b7de0;
+    box-shadow: 0 0 0 3px rgba(43,125,224, 0.1);
 }
 
 .edit-page .form-group textarea {
@@ -4838,7 +4836,7 @@ section {
     height: 120px;
     border-radius: 50%;
     margin: 0 auto 20px;
-    background: linear-gradient(135deg, #3498db, #2ecc71);
+    background: linear-gradient(135deg, #2b7de0, #2ecc71);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -4861,7 +4859,7 @@ section {
 }
 
 .avatar-upload-btn {
-    background: #3498db;
+    background: #2b7de0;
     color: white;
     padding: 10px 20px;
     border-radius: 25px;
@@ -4873,7 +4871,7 @@ section {
 }
 
 .avatar-upload-btn:hover {
-    background: #2980b9;
+    background: #1a5fb8;
     transform: translateY(-2px);
 }
 
@@ -4895,13 +4893,13 @@ section {
 }
 
 .edit-page .btn-primary {
-    background: linear-gradient(135deg, #3498db, #2ecc71);
+    background: linear-gradient(135deg, #2b7de0, #2ecc71);
     color: white;
 }
 
 .edit-page .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+    box-shadow: 0 5px 15px rgba(43,125,224, 0.4);
 }
 
 .edit-page .btn-secondary {
@@ -5109,7 +5107,7 @@ section {
 
     .nav-dropdown-menu a:hover {
         background: rgba(255,255,255,0.1) !important;
-        color: #ffd700 !important;
+        color: #ffd500 !important;
     }
 
     /* Hero */

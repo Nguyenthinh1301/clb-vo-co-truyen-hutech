@@ -74,7 +74,7 @@ body { font-family: "Open Sans", sans-serif; }
 }
 
 .profile-breadcrumb a {
-    color: #ffd700;
+    color: #ffd500;
     text-decoration: none;
 }
 
@@ -93,7 +93,7 @@ body { font-family: "Open Sans", sans-serif; }
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: #c41e3a;
+    background: #1450a3;
     color: white;
     font-size: 12px;
     font-weight: 700;
@@ -116,7 +116,7 @@ body { font-family: "Open Sans", sans-serif; }
     display: block;
     font-size: 22px;
     font-weight: 800;
-    color: #ffd700;
+    color: #ffd500;
     line-height: 1;
 }
 
@@ -144,7 +144,7 @@ body { font-family: "Open Sans", sans-serif; }
     align-items: center;
     gap: 8px;
     padding: 9px 20px;
-    background: #1a252f;
+    background: #0a2a5e;
     color: white;
     font-size: 13px;
     font-weight: 600;
@@ -156,7 +156,7 @@ body { font-family: "Open Sans", sans-serif; }
 }
 
 .profile-back-btn:hover {
-    background: #c41e3a;
+    background: #1450a3;
     transform: translateX(-3px);
 }
 
@@ -166,16 +166,16 @@ body { font-family: "Open Sans", sans-serif; }
 .profile-section-title {
     font-size: 18px;
     font-weight: 700;
-    color: #1a252f;
+    color: #0a2a5e;
     margin-bottom: 20px;
     padding-bottom: 10px;
-    border-bottom: 2px solid #c41e3a;
+    border-bottom: 2px solid #1450a3;
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
-.profile-section-title i { color: #c41e3a; }
+.profile-section-title i { color: #1450a3; }
 
 /* ── Bio ── */
 .profile-bio {
@@ -186,7 +186,7 @@ body { font-family: "Open Sans", sans-serif; }
     line-height: 1.85;
     color: #444;
     font-size: 15px;
-    border-left: 4px solid #c41e3a;
+    border-left: 4px solid #1450a3;
 }
 
 /* ── Timeline thành tích ── */
@@ -202,7 +202,7 @@ body { font-family: "Open Sans", sans-serif; }
     top: 0;
     bottom: 0;
     width: 2px;
-    background: linear-gradient(to bottom, #c41e3a, #1a252f);
+    background: linear-gradient(to bottom, #1450a3, #0a2a5e);
     border-radius: 2px;
 }
 
@@ -229,15 +229,15 @@ body { font-family: "Open Sans", sans-serif; }
     width: 12px;
     height: 12px;
     border-radius: 50%;
-    background: #c41e3a;
+    background: #1450a3;
     border: 2px solid white;
-    box-shadow: 0 0 0 2px #c41e3a;
+    box-shadow: 0 0 0 2px #1450a3;
 }
 
 .ach-year {
     font-size: 11px;
     font-weight: 700;
-    color: #c41e3a;
+    color: #1450a3;
     text-transform: uppercase;
     letter-spacing: 1px;
     margin-bottom: 4px;
@@ -246,7 +246,7 @@ body { font-family: "Open Sans", sans-serif; }
 .ach-title {
     font-size: 14px;
     font-weight: 700;
-    color: #1a252f;
+    color: #0a2a5e;
     margin-bottom: 4px;
 }
 
@@ -282,7 +282,7 @@ body { font-family: "Open Sans", sans-serif; }
 .sidebar-card-title {
     font-size: 14px;
     font-weight: 700;
-    color: #1a252f;
+    color: #0a2a5e;
     margin-bottom: 16px;
     display: flex;
     align-items: center;
@@ -291,7 +291,7 @@ body { font-family: "Open Sans", sans-serif; }
     border-bottom: 1px solid #f0f0f0;
 }
 
-.sidebar-card-title i { color: #c41e3a; }
+.sidebar-card-title i { color: #1450a3; }
 
 /* Info list */
 .sidebar-info-list { list-style: none; padding: 0; margin: 0; }
@@ -309,7 +309,7 @@ body { font-family: "Open Sans", sans-serif; }
 .sidebar-info-list li:last-child { border-bottom: none; }
 
 .sil-label { color: #999; flex-shrink: 0; }
-.sil-value { font-weight: 700; color: #1a252f; text-align: right; }
+.sil-value { font-weight: 700; color: #0a2a5e; text-align: right; }
 
 /* Gallery sidebar */
 .sidebar-gallery {
@@ -338,7 +338,7 @@ body { font-family: "Open Sans", sans-serif; }
 
 /* Avatar placeholder (khi không có ảnh) */
 .profile-avatar-placeholder {
-    background: linear-gradient(135deg, #1a252f, #c41e3a);
+    background: linear-gradient(135deg, #0a2a5e, #1450a3);
     display: flex;
     align-items: center;
     justify-content: center;

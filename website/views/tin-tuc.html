@@ -40,8 +40,8 @@
         }
         .tn-filter-btn:hover,
         .tn-filter-btn.active {
-            background: #c41e3a;
-            border-color: #c41e3a;
+            background: #1450a3;
+            border-color: #1450a3;
             color: #fff;
         }
         /* Skeleton loading */
@@ -72,7 +72,7 @@
         }
         /* Card clickable */
         .tn-card { cursor: pointer; text-decoration: none; color: inherit; }
-        .tn-card:hover h4 { color: #c41e3a; }
+        .tn-card:hover h4 { color: #1450a3; }
 
         /* ── Grid animation ── */
         #news-grid {
@@ -176,8 +176,8 @@
         }
         .tn-page-btn:hover,
         .tn-page-btn.active {
-            background: #c41e3a;
-            border-color: #c41e3a;
+            background: #1450a3;
+            border-color: #1450a3;
             color: #fff;
         }
         .tn-page-btn:disabled {
@@ -222,7 +222,7 @@
         }
         .tn-modal-body h2 {
             font-size: 22px; font-weight: 800;
-            color: #1a252f; margin-bottom: 16px; line-height: 1.4;
+            color: #0a2a5e; margin-bottom: 16px; line-height: 1.4;
         }
         .tn-modal-content {
             font-size: 15px; color: #444;
@@ -241,7 +241,7 @@
             margin: 16px 16px 0 0;
             transition: background 0.2s;
         }
-        .tn-modal-close:hover { background: #c41e3a; color: #fff; }
+        .tn-modal-close:hover { background: #1450a3; color: #fff; }
     </style>
 </head>
 <body>
@@ -420,7 +420,7 @@
                 tagsHtml = '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;">' +
                     tagList.map(function(t) {
                         return '<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:12px;background:#f0f4f8;color:#4a5568;font-size:11px;font-weight:600;">' +
-                            '<i class="fas fa-tag" style="color:#c41e3a;font-size:9px;"></i>' + t +
+                            '<i class="fas fa-tag" style="color:#1450a3;font-size:9px;"></i>' + t +
                             '</span>';
                     }).join('') +
                 '</div>';
@@ -602,7 +602,7 @@
                     (n.tags ? '<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px;">' +
                         n.tags.split(',').map(function(t) { return t.trim(); }).filter(Boolean).map(function(t) {
                             return '<span style="display:inline-flex;align-items:center;gap:3px;padding:3px 10px;border-radius:14px;background:#f0f4f8;color:#4a5568;font-size:12px;font-weight:600;">' +
-                                '<i class="fas fa-tag" style="color:#c41e3a;font-size:10px;"></i>' + t + '</span>';
+                                '<i class="fas fa-tag" style="color:#1450a3;font-size:10px;"></i>' + t + '</span>';
                         }).join('') + '</div>' : '') +
                     '<div class="tn-modal-content">' + (n.content || n.excerpt || '') + '</div>' +
                 '</div>';

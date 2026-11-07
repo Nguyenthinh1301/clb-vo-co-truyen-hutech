@@ -19,7 +19,7 @@ body,
 }
 
 .page-hero {
-    background: linear-gradient(135deg, #0d1117 0%, #1a1a2e 50%, #c41e3a 100%);
+    background: linear-gradient(135deg, #071d42 0%, #0d2f66 50%, #1450a3 100%);
     color: white;
     padding: 110px 20px 60px;
     text-align: center;
@@ -43,7 +43,7 @@ body,
 }
 
 .breadcrumb a {
-    color: #ffd700;
+    color: #ffd500;
     text-decoration: none;
 }
 
@@ -57,17 +57,17 @@ body,
 .section-title {
     font-size: 22px;
     font-weight: 700;
-    color: #1a252f;
+    color: #0a2a5e;
     margin-bottom: 28px;
     padding-bottom: 10px;
-    border-bottom: 2px solid #c41e3a;
+    border-bottom: 2px solid #1450a3;
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
 .section-title i {
-    color: #c41e3a;
+    color: #1450a3;
 }
 
 /* --- Member grid --- */
@@ -119,7 +119,7 @@ body,
 .member-photo-placeholder {
     width: 100%;
     aspect-ratio: 3 / 4;
-    background: linear-gradient(135deg, #1a252f, #c41e3a);
+    background: linear-gradient(135deg, #0a2a5e, #1450a3);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -134,19 +134,19 @@ body,
 .member-body h4 {
     font-size: 17px;
     font-weight: 700;
-    color: #1a252f;
+    color: #0a2a5e;
     margin-bottom: 6px;
 }
 
 .member-badge {
     display: inline-block;
-    background: #fff0f2;
-    color: #c41e3a;
+    background: #eaf2fd;
+    color: #1450a3;
     font-size: 12px;
     font-weight: 600;
     padding: 3px 12px;
     border-radius: 20px;
-    border: 1px solid rgba(196,30,58,0.2);
+    border: 1px solid rgba(20,80,163,0.2);
     margin-bottom: 12px;
 }
 
@@ -175,7 +175,7 @@ body,
 
 .member-details .dv {
     font-weight: 600;
-    color: #1a252f;
+    color: #0a2a5e;
     text-align: right;
 }
 
@@ -195,7 +195,7 @@ body,
     gap: 7px;
     margin-top: 14px;
     padding: 8px 18px;
-    background: #c41e3a;
+    background: #1450a3;
     color: white;
     font-size: 13px;
     font-weight: 600;

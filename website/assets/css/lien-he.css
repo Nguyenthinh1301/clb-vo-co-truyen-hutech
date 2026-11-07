@@ -6,13 +6,13 @@
 body { font-family: "Open Sans", sans-serif; }
 
 .page-hero {
-    background: linear-gradient(135deg, #0d1117 0%, #1a1a2e 50%, #c41e3a 100%);
+    background: linear-gradient(135deg, #071d42 0%, #0d2f66 50%, #1450a3 100%);
     color: white; padding: 110px 20px 60px; text-align: center;
 }
 .page-hero h1 { font-size: 38px; font-weight: 800; margin-bottom: 12px; font-family: "Open Sans", sans-serif; }
 .page-hero p { font-size: 16px; opacity: 0.8; }
 .breadcrumb { font-size: 13px; opacity: 0.6; margin-bottom: 16px; }
-.breadcrumb a { color: #ffd700; text-decoration: none; }
+.breadcrumb a { color: #ffd500; text-decoration: none; }
 
 .page-body {
     max-width: 1040px;
@@ -34,7 +34,7 @@ body { font-family: "Open Sans", sans-serif; }
     padding: 24px 18px;
     text-align: center;
     box-shadow: 0 2px 12px rgba(0,0,0,0.07);
-    border-top: 4px solid #c41e3a;
+    border-top: 4px solid #1450a3;
     transition: transform 0.2s;
 }
 
@@ -42,18 +42,18 @@ body { font-family: "Open Sans", sans-serif; }
 
 .lh-info-card .lh-icon {
     width: 48px; height: 48px;
-    background: #fff0f2;
+    background: #eaf2fd;
     border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
     margin: 0 auto 14px;
-    color: #c41e3a;
+    color: #1450a3;
     font-size: 20px;
 }
 
 .lh-info-card h4 {
     font-size: 14px;
     font-weight: 700;
-    color: #1a252f;
+    color: #0a2a5e;
     margin-bottom: 8px;
 }
 
@@ -65,7 +65,7 @@ body { font-family: "Open Sans", sans-serif; }
 }
 
 .lh-info-card a {
-    color: #c41e3a;
+    color: #1450a3;
     text-decoration: none;
     font-weight: 600;
 }
@@ -89,14 +89,14 @@ body { font-family: "Open Sans", sans-serif; }
 .lh-form-box h3 {
     font-size: 20px;
     font-weight: 700;
-    color: #1a252f;
+    color: #0a2a5e;
     margin-bottom: 24px;
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
-.lh-form-box h3 i { color: #c41e3a; }
+.lh-form-box h3 i { color: #1450a3; }
 
 .lh-form-group {
     margin-bottom: 18px;
@@ -126,7 +126,7 @@ body { font-family: "Open Sans", sans-serif; }
 .lh-form-group input:focus,
 .lh-form-group textarea:focus {
     outline: none;
-    border-color: #c41e3a;
+    border-color: #1450a3;
 }
 
 .lh-form-group textarea { resize: vertical; min-height: 120px; }
@@ -134,7 +134,7 @@ body { font-family: "Open Sans", sans-serif; }
 .lh-submit-btn {
     width: 100%;
     padding: 13px;
-    background: #c41e3a;
+    background: #1450a3;
     color: white;
     border: none;
     border-radius: 8px;
@@ -149,7 +149,7 @@ body { font-family: "Open Sans", sans-serif; }
     gap: 8px;
 }
 
-.lh-submit-btn:hover { background: #a01828; transform: translateY(-1px); }
+.lh-submit-btn:hover { background: #0d3b80; transform: translateY(-1px); }
 
 .lh-status-bar {
     padding: 10px 14px;
@@ -170,7 +170,7 @@ body { font-family: "Open Sans", sans-serif; }
 .lh-right { display: flex; flex-direction: column; gap: 24px; }
 
 .lh-social-box {
-    background: linear-gradient(135deg, #1a252f, #2c3e50);
+    background: linear-gradient(135deg, #0a2a5e, #0f3570);
     border-radius: 16px;
     padding: 28px;
     color: white;
@@ -234,7 +234,7 @@ body { font-family: "Open Sans", sans-serif; }
 }
 
 .lh-map-label {
-    background: linear-gradient(135deg, #1a252f, #2c3e50);
+    background: linear-gradient(135deg, #0a2a5e, #0f3570);
     color: #fff;
     padding: 10px 16px;
     font-size: 13px;
@@ -244,7 +244,7 @@ body { font-family: "Open Sans", sans-serif; }
     gap: 8px;
 }
 
-.lh-map-label i { color: #c41e3a; }
+.lh-map-label i { color: #1450a3; }
 
 .lh-map-box iframe {
     width: 100%;

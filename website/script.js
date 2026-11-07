@@ -146,7 +146,7 @@ function showNotification(message, type = 'info') {
         top: 20px;
         right: 20px;
         padding: 15px 20px;
-        background: ${type === 'success' ? '#27ae60' : type === 'error' ? '#e74c3c' : '#3498db'};
+        background: ${type === 'success' ? '#27ae60' : type === 'error' ? '#e74c3c' : '#2b7de0'};
         color: white;
         border-radius: 5px;
         z-index: 10000;
@@ -458,7 +458,7 @@ setTimeout(() => {
 }, 1500);
 
 // Console welcome message
-console.log('%c🥋 CLB Võ Cổ Truyền HUTECH', 'color: #c41e3a; font-size: 20px; font-weight: bold;');
+console.log('%c🥋 CLB Võ Cổ Truyền HUTECH', 'color: #1450a3; font-size: 20px; font-weight: bold;');
 console.log('%cWebsite đã được nâng cấp với thiết kế mới!', 'color: #666; font-size: 14px;');
 
 
@@ -528,7 +528,7 @@ window.addEventListener('scroll', function() {
     }, 100);
 });
 
-console.log('%c✨ Smooth scroll với hiệu ứng đã được kích hoạt!', 'color: #ffd700; font-size: 14px; font-weight: bold;');
+console.log('%c✨ Smooth scroll với hiệu ứng đã được kích hoạt!', 'color: #ffd500; font-size: 14px; font-weight: bold;');
 
 // ========================================
 // IMAGE CAROUSEL FOR ABOUT SECTION
@@ -746,4 +746,4 @@ bounceStyle.textContent = `
 `;
 document.head.appendChild(bounceStyle);
 
-console.log('%c🎠 Image Carousel đã được kích hoạt cho phần About!', 'color: #c41e3a; font-size: 14px; font-weight: bold;');
+console.log('%c🎠 Image Carousel đã được kích hoạt cho phần About!', 'color: #1450a3; font-size: 14px; font-weight: bold;');

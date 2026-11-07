@@ -8,7 +8,7 @@ body {
 }
 
 .page-hero {
-    background: linear-gradient(135deg, #0d1117 0%, #1a1a2e 50%, #c41e3a 100%);
+    background: linear-gradient(135deg, #071d42 0%, #0d2f66 50%, #1450a3 100%);
     color: white;
     padding: 110px 20px 60px;
     text-align: center;
@@ -33,7 +33,7 @@ body {
 }
 
 .breadcrumb a {
-    color: #ffd700;
+    color: #ffd500;
     text-decoration: none;
 }
 
@@ -45,7 +45,7 @@ body {
 
 /* --- Intro note --- */
 .lt-intro {
-    background: linear-gradient(135deg, #1a252f, #2c3e50);
+    background: linear-gradient(135deg, #0a2a5e, #0f3570);
     color: white;
     border-radius: 14px;
     padding: 24px 28px;
@@ -59,7 +59,7 @@ body {
 
 .lt-intro i {
     font-size: 28px;
-    color: #ffd700;
+    color: #ffd500;
     flex-shrink: 0;
 }
 
@@ -86,22 +86,22 @@ body {
 }
 
 .lt-card-header {
-    background: #1a252f;
+    background: #0a2a5e;
     color: white;
     padding: 20px 22px 16px;
     position: relative;
 }
 
 .lt-card.featured .lt-card-header {
-    background: linear-gradient(135deg, #c41e3a, #8b0000);
+    background: linear-gradient(135deg, #1450a3, #8b0000);
 }
 
 .lt-badge {
     position: absolute;
     top: 12px;
     right: 12px;
-    background: #ffd700;
-    color: #1a252f;
+    background: #ffd500;
+    color: #0a2a5e;
     font-size: 11px;
     font-weight: 700;
     padding: 3px 10px;
@@ -117,7 +117,7 @@ body {
 .lt-time {
     font-size: 22px;
     font-weight: 800;
-    color: #ffd700;
+    color: #ffd500;
 }
 
 .lt-card-body {
@@ -127,7 +127,7 @@ body {
 .lt-location {
     font-size: 15px;
     font-weight: 700;
-    color: #1a252f;
+    color: #0a2a5e;
     margin-bottom: 8px;
 }
 
@@ -141,7 +141,7 @@ body {
 }
 
 .lt-detail i {
-    color: #c41e3a;
+    color: #1450a3;
     width: 14px;
     text-align: center;
     flex-shrink: 0;
@@ -164,14 +164,14 @@ body {
 .lt-map-section h2 {
     font-size: 22px;
     font-weight: 700;
-    color: #1a252f;
+    color: #0a2a5e;
     margin-bottom: 24px;
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
-.lt-map-section h2 i { color: #c41e3a; }
+.lt-map-section h2 i { color: #1450a3; }
 
 .lt-map-grid {
     display: grid;
@@ -184,13 +184,13 @@ body {
     border-radius: 14px;
     padding: 22px;
     box-shadow: 0 2px 12px rgba(0,0,0,0.07);
-    border-left: 4px solid #c41e3a;
+    border-left: 4px solid #1450a3;
 }
 
 .lt-map-card h4 {
     font-size: 16px;
     font-weight: 700;
-    color: #1a252f;
+    color: #0a2a5e;
     margin-bottom: 8px;
 }
 
@@ -203,8 +203,8 @@ body {
 
 .lt-map-card .lt-map-tag {
     display: inline-block;
-    background: #fff0f2;
-    color: #c41e3a;
+    background: #eaf2fd;
+    color: #1450a3;
     font-size: 12px;
     font-weight: 600;
     padding: 3px 12px;

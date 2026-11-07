@@ -57,10 +57,10 @@
 .ann-strip-icon {
     width: 48px; height: 48px;
     border-radius: 14px;
-    background: linear-gradient(135deg, #c41e3a, #e74c3c);
+    background: linear-gradient(135deg, #1450a3, #1e63c4);
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
-    box-shadow: 0 4px 14px rgba(196,30,58,0.25);
+    box-shadow: 0 4px 14px rgba(20,80,163,0.25);
 }
 .ann-strip-icon i {
     color: #fff;
@@ -77,7 +77,7 @@
 .ann-strip-title h2 {
     font-size: 1.6rem;
     font-weight: 800;
-    color: #2c3e50;
+    color: #0f3570;
     margin: 0 0 4px;
     line-height: 1.2;
     font-family: 'Open Sans', sans-serif;
@@ -96,20 +96,20 @@
     gap: 7px;
     font-size: 13px;
     font-weight: 700;
-    color: #c41e3a;
+    color: #1450a3;
     text-decoration: none;
     padding: 9px 20px;
-    border: 2px solid #c41e3a;
+    border: 2px solid #1450a3;
     border-radius: 24px;
     transition: all 0.22s ease;
     white-space: nowrap;
     align-self: center;
 }
 .ann-strip-viewall:hover {
-    background: #c41e3a;
+    background: #1450a3;
     color: #fff;
     transform: translateX(3px);
-    box-shadow: 0 4px 14px rgba(196,30,58,0.25);
+    box-shadow: 0 4px 14px rgba(20,80,163,0.25);
 }
 .ann-strip-viewall i {
     transition: transform 0.22s ease;
@@ -141,10 +141,10 @@
     display: block;
 }
 .ann-strip-card:hover {
-    border-color: #c41e3a;
+    border-color: #1450a3;
     background: #fff;
     transform: translateY(-4px);
-    box-shadow: 0 12px 32px rgba(196,30,58,0.10);
+    box-shadow: 0 12px 32px rgba(20,80,163,0.10);
 }
 
 /* Accent line trên cùng theo priority */
@@ -157,9 +157,9 @@
     background: #e2e8f0;
     transition: background 0.25s;
 }
-.ann-strip-card.pri-high::before   { background: linear-gradient(90deg, #c41e3a, #e74c3c); }
+.ann-strip-card.pri-high::before   { background: linear-gradient(90deg, #dc2626, #ef4444); }
 .ann-strip-card.pri-urgent::before { background: linear-gradient(90deg, #f39c12, #e67e22); }
-.ann-strip-card.pri-normal::before { background: linear-gradient(90deg, #3498db, #2980b9); }
+.ann-strip-card.pri-normal::before { background: linear-gradient(90deg, #2b7de0, #1a5fb8); }
 .ann-strip-card.pri-low::before    { background: #cbd5e0; }
 
 /* ── Card top: type + date ── */
@@ -182,7 +182,7 @@
     background: #f0f4f8;
     color: #4a5568;
 }
-.ann-type-chip i { color: #c41e3a; font-size: 10px; }
+.ann-type-chip i { color: #1450a3; font-size: 10px; }
 .ann-type-chip.urgent { background: #fff8e1; color: #856404; }
 .ann-type-chip.urgent i { color: #f39c12; }
 
@@ -204,7 +204,7 @@
     margin-bottom: 10px;
     letter-spacing: 0.3px;
 }
-.ann-pri-pill.high   { background: #fef2f2; color: #c41e3a; }
+.ann-pri-pill.high   { background: #fef2f2; color: #b91c1c; } /* mức Cao giữ đỏ để phân biệt */
 .ann-pri-pill.urgent { background: #fffbeb; color: #92400e; }
 .ann-pri-pill.normal { background: #eff6ff; color: #1d4ed8; }
 .ann-pri-pill.low    { background: #f8fafc; color: #94a3b8; }
@@ -213,12 +213,12 @@
 .ann-strip-card h4 {
     font-size: 15px;
     font-weight: 700;
-    color: #1a252f;
+    color: #0a2a5e;
     margin: 0 0 8px;
     line-height: 1.45;
     transition: color 0.2s;
 }
-.ann-strip-card:hover h4 { color: #c41e3a; }
+.ann-strip-card:hover h4 { color: #1450a3; }
 
 .ann-strip-card p {
     font-size: 13px;
@@ -238,7 +238,7 @@
     padding-top: 12px;
     border-top: 1px solid #f0f0f0;
 }
-.ann-card-expiry i { color: #c41e3a; }
+.ann-card-expiry i { color: #1450a3; }
 
 /* ── Read more arrow ── */
 .ann-card-arrow {
@@ -249,13 +249,13 @@
     background: #f0f4f8;
     display: flex; align-items: center; justify-content: center;
     font-size: 11px;
-    color: #c41e3a;
+    color: #1450a3;
     transition: all 0.22s ease;
     opacity: 0;
 }
 .ann-strip-card:hover .ann-card-arrow {
     opacity: 1;
-    background: #c41e3a;
+    background: #1450a3;
     color: #fff;
     transform: translateX(2px);
 }

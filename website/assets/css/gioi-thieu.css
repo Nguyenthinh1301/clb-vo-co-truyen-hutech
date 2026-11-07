@@ -22,7 +22,7 @@ body,
 }
 
 .page-hero {
-    background: linear-gradient(135deg, #0d1117 0%, #1a1a2e 50%, #c41e3a 100%);
+    background: linear-gradient(135deg, #071d42 0%, #0d2f66 50%, #1450a3 100%);
     color: white;
     padding: 110px 20px 60px;
     text-align: center;
@@ -46,7 +46,7 @@ body,
 }
 
 .breadcrumb a {
-    color: #ffd700;
+    color: #ffd500;
     text-decoration: none;
 }
 
@@ -77,7 +77,7 @@ body,
 
 .intro-grid h2 {
     font-size: 28px;
-    color: #1a252f;
+    color: #0a2a5e;
     margin-bottom: 16px;
     font-weight: 800;
 }
@@ -102,20 +102,20 @@ body,
     border-radius: 14px;
     padding: 30px 22px;
     text-align: center;
-    border-top: 4px solid #c41e3a;
+    border-top: 4px solid #1450a3;
     box-shadow: 0 2px 12px rgba(0,0,0,0.06);
 }
 
 .value-card i {
     font-size: 34px;
-    color: #c41e3a;
+    color: #1450a3;
     margin-bottom: 14px;
     display: block;
 }
 
 .value-card h4 {
     font-size: 16px;
-    color: #1a252f;
+    color: #0a2a5e;
     margin-bottom: 10px;
     font-weight: 700;
 }
@@ -129,7 +129,7 @@ body,
 /* --- Timeline --- */
 .timeline-section h2 {
     font-size: 26px;
-    color: #1a252f;
+    color: #0a2a5e;
     font-weight: 800;
     margin-bottom: 32px;
     text-align: center;
@@ -153,22 +153,22 @@ body,
     width: 18px;
     height: 18px;
     border-radius: 50%;
-    background: #c41e3a;
+    background: #1450a3;
     border: 3px solid white;
-    box-shadow: 0 0 0 2px #c41e3a;
+    box-shadow: 0 0 0 2px #1450a3;
 }
 
 .tl-year {
     font-size: 13px;
     font-weight: 700;
-    color: #c41e3a;
+    color: #1450a3;
     margin-bottom: 4px;
 }
 
 .tl-item h4 {
     font-size: 16px;
     font-weight: 700;
-    color: #1a252f;
+    color: #0a2a5e;
     margin-bottom: 6px;
 }
 
@@ -188,10 +188,10 @@ body,
 
 /* --- Quote --- */
 .gt-quote {
-    border-left: 4px solid #c41e3a;
+    border-left: 4px solid #1450a3;
     margin: 0 0 20px;
     padding: 14px 20px;
-    background: #fff8f8;
+    background: #f4f8fe;
     border-radius: 0 10px 10px 0;
     font-size: 14px;
     color: #444;
@@ -204,7 +204,7 @@ body,
     margin-top: 10px;
     font-size: 13px;
     font-weight: 700;
-    color: #c41e3a;
+    color: #1450a3;
     font-style: normal;
 }
 
@@ -213,7 +213,7 @@ body,
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: #c41e3a;
+    background: #1450a3;
     color: white;
     padding: 12px 28px;
     border-radius: 50px;
@@ -225,7 +225,7 @@ body,
 }
 
 .gt-cta-btn:hover {
-    background: #a01828;
+    background: #0d3b80;
     transform: translateY(-2px);
 }
 
@@ -237,14 +237,14 @@ body,
 .gt-schedule-section h2 {
     font-size: 22px;
     font-weight: 700;
-    color: #1a252f;
+    color: #0a2a5e;
     margin-bottom: 24px;
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
-.gt-schedule-section h2 i { color: #c41e3a; }
+.gt-schedule-section h2 i { color: #1450a3; }
 
 .gt-schedule-grid {
     display: grid;
@@ -260,26 +260,26 @@ body,
     align-items: flex-start;
     gap: 18px;
     box-shadow: 0 2px 12px rgba(0,0,0,0.07);
-    border-left: 4px solid #c41e3a;
+    border-left: 4px solid #1450a3;
 }
 
 .gt-schedule-icon {
     width: 44px;
     height: 44px;
-    background: #fff0f2;
+    background: #eaf2fd;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    color: #c41e3a;
+    color: #1450a3;
     font-size: 18px;
 }
 
 .gt-schedule-days {
     font-size: 16px;
     font-weight: 700;
-    color: #1a252f;
+    color: #0a2a5e;
     margin-bottom: 6px;
 }
 
@@ -295,7 +295,7 @@ body,
 .gt-schedule-place {
     font-size: 14px;
     font-weight: 600;
-    color: #c41e3a;
+    color: #1450a3;
 }
 
 .gt-schedule-campus {
@@ -306,7 +306,7 @@ body,
 
 /* --- Contact note --- */
 .gt-contact-note {
-    background: linear-gradient(135deg, #1a252f, #2c3e50);
+    background: linear-gradient(135deg, #0a2a5e, #0f3570);
     color: white;
     padding: 18px 28px;
     border-radius: 12px;
@@ -320,7 +320,7 @@ body,
 
 .gt-contact-note i {
     font-size: 22px;
-    color: #ffd700;
+    color: #ffd500;
     flex-shrink: 0;
 }
 
@@ -330,21 +330,21 @@ body,
 
 /* --- Timeline item hiện tại --- */
 .tl-dot-current {
-    background: #ffd700;
-    box-shadow: 0 0 0 2px #ffd700, 0 0 12px rgba(255,215,0,0.5);
+    background: #ffd500;
+    box-shadow: 0 0 0 2px #ffd500, 0 0 12px rgba(255,213,0,0.5);
     width: 22px;
     height: 22px;
     left: -43px;
 }
 
 .tl-item-current h4 {
-    color: #c41e3a;
+    color: #1450a3;
 }
 
 .tl-badge {
     display: inline-block;
-    background: #ffd700;
-    color: #1a252f;
+    background: #ffd500;
+    color: #0a2a5e;
     font-size: 11px;
     font-weight: 700;
     padding: 2px 10px;

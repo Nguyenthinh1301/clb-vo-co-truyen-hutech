@@ -75,7 +75,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, #1a252f 0%, #2c3e50 100%);
+    background: linear-gradient(135deg, #0a2a5e 0%, #0f3570 100%);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -94,7 +94,7 @@
     width: 60px;
     height: 60px;
     border: 4px solid rgba(255, 255, 255, 0.2);
-    border-top-color: #ffd700;
+    border-top-color: #ffd500;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
     margin-bottom: 20px;
@@ -136,7 +136,7 @@
     left: 50%;
     width: 0;
     height: 2px;
-    background: #ffd700;
+    background: #ffd500;
     transform: translateX(-50%);
     transition: width 0.3s ease;
 }
@@ -175,7 +175,7 @@
     top: 0;
     width: 3px;
     height: 0;
-    background: #c41e3a;
+    background: #1450a3;
     transition: height 0.3s ease;
 }
 
@@ -197,8 +197,8 @@
     right: 0;
     bottom: 0;
     background: 
-        radial-gradient(circle at 20% 50%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 80% 80%, rgba(52, 152, 219, 0.1) 0%, transparent 50%);
+        radial-gradient(circle at 20% 50%, rgba(255,213,0, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(43,125,224, 0.1) 0%, transparent 50%);
     animation: float 6s ease-in-out infinite;
 }
 
@@ -306,7 +306,7 @@
     left: -2px;
     right: -2px;
     bottom: -2px;
-    background: linear-gradient(45deg, #3498db, #2ecc71, #3498db);
+    background: linear-gradient(45deg, #2b7de0, #2ecc71, #2b7de0);
     background-size: 300% 300%;
     border-radius: 15px;
     opacity: 0;
@@ -354,7 +354,7 @@
     width: 0;
     height: 0;
     border-radius: 50%;
-    background: rgba(231, 76, 60, 0.1);
+    background: rgba(30,99,196, 0.1);
     transform: translate(-50%, -50%);
     transition: width 0.6s, height 0.6s;
 }
@@ -433,7 +433,7 @@
 
 .value-item:hover .value-icon {
     animation: pulse 0.6s ease;
-    color: #3498db;
+    color: #2b7de0;
 }
 
 /* Staggered entrance for value items */
@@ -478,7 +478,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, rgba(52, 152, 219, 0.8), rgba(46, 204, 113, 0.8));
+    background: linear-gradient(135deg, rgba(43,125,224, 0.8), rgba(46, 204, 113, 0.8));
     opacity: 0;
     transition: opacity 0.4s ease;
     z-index: 1;
@@ -523,7 +523,7 @@
     left: 0;
     width: 5px;
     height: 0;
-    background: linear-gradient(180deg, #3498db, #2ecc71);
+    background: linear-gradient(180deg, #2b7de0, #2ecc71);
     transition: height 0.4s ease;
 }
 
@@ -557,7 +557,7 @@
 .contact-form input:focus,
 .contact-form textarea:focus {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(52, 152, 219, 0.2);
+    box-shadow: 0 8px 25px rgba(43,125,224, 0.2);
 }
 
 /* ===== SCROLL REVEAL ANIMATIONS ===== */
@@ -589,7 +589,7 @@ footer a::after {
     left: 0;
     width: 0;
     height: 2px;
-    background: #ffd700;
+    background: #ffd500;
     transition: width 0.3s ease;
 }
 
@@ -598,7 +598,7 @@ footer a:hover::after {
 }
 
 footer a:hover {
-    color: #ffd700;
+    color: #ffd500;
     transform: translateX(3px);
 }
 
@@ -609,7 +609,7 @@ footer a:hover {
     right: 30px;
     width: 50px;
     height: 50px;
-    background: linear-gradient(135deg, #3498db, #2ecc71);
+    background: linear-gradient(135deg, #2b7de0, #2ecc71);
     color: white;
     border: none;
     border-radius: 50%;
@@ -618,7 +618,7 @@ footer a:hover {
     opacity: 0;
     visibility: hidden;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 8px 25px rgba(52, 152, 219, 0.4);
+    box-shadow: 0 8px 25px rgba(43,125,224, 0.4);
     z-index: 999;
 }
 
@@ -629,7 +629,7 @@ footer a:hover {
 
 .back-to-top:hover {
     transform: translateY(-5px);
-    box-shadow: 0 12px 35px rgba(52, 152, 219, 0.5);
+    box-shadow: 0 12px 35px rgba(43,125,224, 0.5);
 }
 
 .back-to-top:active {
@@ -675,7 +675,7 @@ footer a:hover {
 
 /* Focus visible for keyboard navigation */
 *:focus-visible {
-    outline: 3px solid #ffd700;
+    outline: 3px solid #ffd500;
     outline-offset: 3px;
 }
 
@@ -689,12 +689,12 @@ footer a:hover {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, #3498db, #2ecc71);
+    background: linear-gradient(180deg, #2b7de0, #2ecc71);
     border-radius: 6px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(180deg, #2980b9, #27ae60);
+    background: linear-gradient(180deg, #1a5fb8, #27ae60);
 }
 
 
@@ -706,7 +706,7 @@ footer a:hover {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #1a252f 0%, #2c3e50 50%, #1a252f 100%);
+    background: linear-gradient(135deg, #0a2a5e 0%, #0f3570 50%, #0a2a5e 100%);
     color: white;
     padding: 120px 20px 80px;
     overflow: hidden;
@@ -723,7 +723,7 @@ footer a:hover {
 .hero-shape-1 {
     width: 500px;
     height: 500px;
-    background: radial-gradient(circle, #ffd700, transparent);
+    background: radial-gradient(circle, #ffd500, transparent);
     top: -150px;
     right: -150px;
     animation: float 8s ease-in-out infinite;
@@ -732,7 +732,7 @@ footer a:hover {
 .hero-shape-2 {
     width: 350px;
     height: 350px;
-    background: radial-gradient(circle, #e74c3c, transparent);
+    background: radial-gradient(circle, #1e63c4, transparent);
     bottom: -100px;
     left: -100px;
     animation: float 10s ease-in-out infinite reverse;
@@ -741,7 +741,7 @@ footer a:hover {
 .hero-shape-3 {
     width: 250px;
     height: 250px;
-    background: radial-gradient(circle, #3498db, transparent);
+    background: radial-gradient(circle, #2b7de0, transparent);
     top: 50%;
     left: 10%;
     animation: float 12s ease-in-out infinite;
@@ -758,10 +758,10 @@ footer a:hover {
 .hero-badge {
     display: inline-block;
     padding: 10px 25px;
-    background: rgba(255, 215, 0, 0.15);
-    border: 2px solid rgba(255, 215, 0, 0.3);
+    background: rgba(255,213,0, 0.15);
+    border: 2px solid rgba(255,213,0, 0.3);
     border-radius: 50px;
-    color: #ffd700;
+    color: #ffd500;
     font-size: 0.9rem;
     font-weight: 600;
     letter-spacing: 1px;
@@ -772,8 +772,8 @@ footer a:hover {
 }
 
 .hero-badge:hover {
-    background: rgba(255, 215, 0, 0.25);
-    border-color: rgba(255, 215, 0, 0.5);
+    background: rgba(255,213,0, 0.25);
+    border-color: rgba(255,213,0, 0.5);
     transform: scale(1.05);
 }
 
@@ -782,12 +782,12 @@ footer a:hover {
     font-weight: 900;
     line-height: 1.1;
     margin-bottom: 20px;
-    background: linear-gradient(135deg, #fff 0%, #ffd700 50%, #fff 100%);
+    background: linear-gradient(135deg, #fff 0%, #ffd500 50%, #fff 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     animation: fadeInUp 0.8s ease 0.2s both;
-    text-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
+    text-shadow: 0 4px 20px rgba(255,213,0, 0.3);
 }
 
 .hero-subtitle {
@@ -817,14 +817,14 @@ footer a:hover {
 }
 
 .hero-buttons .btn-primary {
-    background: linear-gradient(135deg, #ffd700 0%, #f39c12 100%);
-    color: #1a252f;
-    box-shadow: 0 8px 30px rgba(255, 215, 0, 0.4);
+    background: linear-gradient(135deg, #ffd500 0%, #f39c12 100%);
+    color: #0a2a5e;
+    box-shadow: 0 8px 30px rgba(255,213,0, 0.4);
 }
 
 .hero-buttons .btn-primary:hover {
     transform: translateY(-3px);
-    box-shadow: 0 12px 40px rgba(255, 215, 0, 0.6);
+    box-shadow: 0 12px 40px rgba(255,213,0, 0.6);
 }
 
 .hero-buttons .btn-secondary {
@@ -868,7 +868,7 @@ footer a:hover {
 .hero-stat-number {
     font-size: 2.5rem;
     font-weight: 900;
-    color: #ffd700;
+    color: #ffd500;
     line-height: 1;
     margin-bottom: 8px;
     animation: pulse 2s ease-in-out infinite;
@@ -930,7 +930,7 @@ footer a:hover {
     transform: translateX(-50%);
     width: 60px;
     height: 4px;
-    background: linear-gradient(90deg, transparent, #e74c3c, transparent);
+    background: linear-gradient(90deg, transparent, #1e63c4, transparent);
     border-radius: 2px;
 }
 
@@ -947,7 +947,7 @@ footer a:hover {
 
 .scroll-indicator i {
     font-size: 2rem;
-    color: #ffd700;
+    color: #ffd500;
     opacity: 0.8;
 }
 
@@ -989,14 +989,14 @@ footer a:hover {
 
 /* ===== TEXT GRADIENT UTILITY ===== */
 .text-gradient {
-    background: linear-gradient(135deg, #e74c3c, #ffd700);
+    background: linear-gradient(135deg, #1e63c4, #ffd500);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
 }
 
 .text-gradient-blue {
-    background: linear-gradient(135deg, #3498db, #2ecc71);
+    background: linear-gradient(135deg, #2b7de0, #2ecc71);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -1034,7 +1034,7 @@ footer a:hover {
 
 .progress-bar-animated .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, #e74c3c, #ffd700);
+    background: linear-gradient(90deg, #1e63c4, #ffd500);
     border-radius: 10px;
     transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1);
     position: relative;
@@ -1061,7 +1061,7 @@ footer a:hover {
     position: absolute;
     top: -5px;
     right: -5px;
-    background: #e74c3c;
+    background: #1e63c4;
     color: white;
     font-size: 0.7rem;
     font-weight: 700;
