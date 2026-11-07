@@ -186,14 +186,18 @@
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     const img = entry.target;
+                    imageObserver.unobserve(img);
+
+                    // Ảnh đã tải xong (trình duyệt tải sẵn ảnh lazy trước khi cuộn tới, hoặc lấy từ cache):
+                    // sự kiện 'load' sẽ KHÔNG xảy ra nữa → nếu đặt opacity 0 thì ảnh bị ẩn vĩnh viễn.
+                    if (img.complete) return;
+
                     img.style.opacity = '0';
                     img.style.transition = 'opacity 0.5s ease';
-                    
-                    img.addEventListener('load', () => {
-                        img.style.opacity = '1';
-                    });
-                    
-                    imageObserver.unobserve(img);
+                    const show = () => { img.style.opacity = '1'; };
+                    img.addEventListener('load', show, { once: true });
+                    // Ảnh lỗi cũng phải hiện lại để onerror của trang hiển thị ô báo lỗi
+                    img.addEventListener('error', show, { once: true });
                 }
             });
         });
