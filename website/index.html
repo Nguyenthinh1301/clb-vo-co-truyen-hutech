@@ -35,6 +35,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles-enhanced.css">
     <script src="assets/js/config.js"></script>
     <script src="assets/js/dropdown.js"></script>
 </head>
@@ -63,6 +64,7 @@
     <div id="footer-placeholder"></div>
 
     <script src="script.js"></script>
+    <script src="script-enhanced.js"></script>
     <script>
         // ===== BỘ ĐẾM SỰ KIỆN =====
         function initEventCountdowns() {
@@ -152,6 +154,9 @@
                 loadComponent('footer-placeholder',   'components/footer.html')
             ]).then(function() {
                 initializeComponents();
+                // Báo cho các script khác (script-enhanced.js) biết toàn bộ section đã có trong DOM
+                window.__componentsLoaded = true;
+                document.dispatchEvent(new Event('components:loaded'));
             });
 
             // Ẩn loading overlay sớm hơn — nội dung chính đã sẵn sàng

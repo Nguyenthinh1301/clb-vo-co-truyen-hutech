@@ -8,12 +8,8 @@
   # Base directory (optional)
   base = ""
 
-# Redirect rules
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-  force = false
+# Không dùng rule "/* → /index.html" (kiểu SPA): đây là site nhiều trang tĩnh,
+# rule đó khiến URL sai trả về trang chủ với mã 200 thay vì 404.
 
 # Headers for security
 [[headers]]

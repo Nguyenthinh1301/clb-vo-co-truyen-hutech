@@ -8,58 +8,351 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="../assets/js/config.js"></script>
     <style>
+        /* Enhanced Login Page with Advanced UI/UX */
+        
+        /* Animated background particles */
+        .login-page {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .particles {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            z-index: 0;
+        }
+        
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float linear infinite;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        /* Glassmorphism login box */
+        .login-box {
+            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            animation: slideInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        /* Logo with pulse animation */
+        .login-logo {
+            animation: fadeInDown 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
         .login-logo img {
-            width: 90px;
-            height: 90px;
-            border-radius: 12px;
+            width: 95px;
+            height: 95px;
+            border-radius: 24px;
             object-fit: contain;
-            border: 1.5px solid #e2e8f0;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            border: 2px solid rgba(231, 76, 60, 0.2);
+            box-shadow: 0 8px 32px rgba(231, 76, 60, 0.15), 
+                        0 0 0 8px rgba(231, 76, 60, 0.05);
             background: #fff;
-            padding: 6px;
+            padding: 8px;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            animation: logoPulse 3s ease-in-out infinite;
         }
+        
+        .login-logo img:hover {
+            transform: scale(1.05) rotate(5deg);
+            box-shadow: 0 12px 48px rgba(231, 76, 60, 0.25),
+                        0 0 0 12px rgba(231, 76, 60, 0.08);
+        }
+        
+        @keyframes logoPulse {
+            0%, 100% {
+                box-shadow: 0 8px 32px rgba(231, 76, 60, 0.15),
+                            0 0 0 8px rgba(231, 76, 60, 0.05);
+            }
+            50% {
+                box-shadow: 0 12px 48px rgba(231, 76, 60, 0.25),
+                            0 0 0 12px rgba(231, 76, 60, 0.1);
+            }
+        }
+        
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .login-logo h2 {
+            background: linear-gradient(135deg, #1a252f, #e74c3c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+        }
+        
+        .login-logo p {
+            animation: fadeInDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+        }
+        
+        /* Enhanced form inputs with micro-interactions */
+        .form-group {
+            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        
+        .form-group:nth-child(1) { animation-delay: 0.3s; }
+        .form-group:nth-child(2) { animation-delay: 0.4s; }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .login-box .form-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: #2d3748;
+            margin-bottom: 8px;
+            transition: color 0.3s;
+        }
+        
+        .login-box .form-label i {
+            transition: transform 0.3s ease;
+        }
+        
+        .login-box .form-group:focus-within .form-label {
+            color: #e74c3c;
+        }
+        
+        .login-box .form-group:focus-within .form-label i {
+            transform: scale(1.2);
+        }
+        
         .login-box .form-control {
-            background: #f8fafc;
-            border-color: #e2e8f0;
+            background: rgba(248, 250, 252, 0.8);
+            border: 2px solid #e2e8f0;
             font-size: 0.95rem;
-            padding: 11px 14px;
+            padding: 12px 16px;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border-radius: 10px;
         }
+        
+        .login-box .form-control:hover {
+            border-color: #cbd5e0;
+            background: rgba(255, 255, 255, 0.95);
+        }
+        
         .login-box .form-control:focus {
             background: #fff;
+            border-color: #e74c3c;
+            box-shadow: 0 0 0 4px rgba(231, 76, 60, 0.1),
+                        0 8px 24px rgba(231, 76, 60, 0.15);
+            transform: translateY(-2px);
         }
+        
+        /* Animated button */
         .login-box .btn-primary {
-            background: linear-gradient(135deg, #1a252f, #2c3e50);
-            padding: 12px;
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            padding: 14px;
             font-size: 1rem;
-            letter-spacing: 0.3px;
-            box-shadow: 0 4px 15px rgba(26,37,47,0.3);
+            letter-spacing: 0.5px;
+            font-weight: 700;
+            box-shadow: 0 8px 24px rgba(231, 76, 60, 0.35);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both;
         }
+        
+        .login-box .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .login-box .btn-primary:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
         .login-box .btn-primary:hover {
-            background: linear-gradient(135deg, #2c3e50, #1a252f);
-            box-shadow: 0 6px 20px rgba(26,37,47,0.4);
+            background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
+            box-shadow: 0 12px 32px rgba(231, 76, 60, 0.45);
+            transform: translateY(-3px);
+        }
+        
+        .login-box .btn-primary:active {
             transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
         }
-        .login-divider {
-            text-align: center;
-            margin: 20px 0 16px;
-            font-size: 0.78rem;
-            color: #a0aec0;
+        
+        .login-box .btn-primary span {
+            position: relative;
+            z-index: 1;
         }
+        
+        /* Enhanced hint box */
         .login-hint {
-            background: #f0f4f8;
-            border-radius: 8px;
-            padding: 10px 14px;
-            font-size: 0.8rem;
-            color: #718096;
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.08), rgba(231, 76, 60, 0.03));
+            border: 1px solid rgba(231, 76, 60, 0.15);
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 0.82rem;
+            color: #c0392b;
             margin-bottom: 20px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+            transition: all 0.3s;
         }
-        .login-hint i { color: #e74c3c; }
+        
+        .login-hint:hover {
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.12), rgba(231, 76, 60, 0.05));
+            transform: translateX(4px);
+        }
+        
+        .login-hint i { 
+            color: #e74c3c;
+            font-size: 1.1rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        /* Backend status enhanced */
+        #backendStatus {
+            animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .login-divider {
+            text-align: center;
+            margin: 24px 0 0;
+            font-size: 0.82rem;
+            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.6s both;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .login-divider a {
+            color: #718096;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
+        
+        .login-divider a:hover {
+            color: #e74c3c;
+            background: rgba(231, 76, 60, 0.08);
+            transform: translateX(-4px);
+        }
+        
+        .login-divider a i {
+            transition: transform 0.3s;
+        }
+        
+        .login-divider a:hover i {
+            transform: translateX(-4px);
+        }
+        
+        /* Loading spinner enhancement */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .fa-spinner {
+            animation: spin 0.8s linear infinite;
+        }
+        
+        /* Alert enhancements */
+        #msg .alert {
+            animation: slideInDown 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border-left: 4px solid;
+        }
+        
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Responsive enhancements */
+        @media (max-width: 480px) {
+            .login-box {
+                padding: 32px 24px;
+            }
+            
+            .login-logo img {
+                width: 80px;
+                height: 80px;
+            }
+        }
     </style>
 </head>
 <body class="login-page">
+
+<!-- Animated Background Particles -->
+<div class="particles" id="particles"></div>
 
 <div class="login-box">
     <div class="login-logo">
@@ -104,7 +397,9 @@
 
         <button class="btn btn-primary" type="submit" id="btn"
             style="width:100%; justify-content:center; margin-top:8px;">
-            <i class="fas fa-sign-in-alt"></i> Đăng nhập
+            <span>
+                <i class="fas fa-sign-in-alt"></i> Đăng nhập
+            </span>
         </button>
     </form>
 
@@ -117,6 +412,34 @@
 
 <script>
 (function () {
+    // Create animated particles
+    function createParticles() {
+        var container = document.getElementById('particles');
+        if (!container) return;
+        
+        var particleCount = 15;
+        
+        for (var i = 0; i < particleCount; i++) {
+            var particle = document.createElement('div');
+            particle.className = 'particle';
+            
+            var size = Math.random() * 60 + 20;
+            particle.style.width = size + 'px';
+            particle.style.height = size + 'px';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDuration = (Math.random() * 15 + 10) + 's';
+            particle.style.animationDelay = Math.random() * 5 + 's';
+            particle.style.opacity = Math.random() * 0.3 + 0.1;
+            
+            container.appendChild(particle);
+        }
+    }
+    
+    // Initialize particles on load
+    window.addEventListener('load', function() {
+        createParticles();
+    });
+
     var API = (window.APP_CONFIG && window.APP_CONFIG.API_BASE)
         ? window.APP_CONFIG.API_BASE
         : (function() {
@@ -213,7 +536,7 @@
         if (!email || !pw) return;
 
         btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang đăng nhập...';
+        btn.innerHTML = '<span><i class="fas fa-spinner fa-spin"></i> Đang đăng nhập...</span>';
         msgEl.innerHTML = '';
 
         fetch(API + '/auth/login', {
@@ -264,7 +587,7 @@
             }
             showMsg('<i class="fas fa-exclamation-circle"></i> ' + msg, 'danger');
             btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Đăng nhập';
+            btn.innerHTML = '<span><i class="fas fa-sign-in-alt"></i> Đăng nhập</span>';
         });
     });
 }());
