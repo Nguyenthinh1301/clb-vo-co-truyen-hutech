@@ -27,19 +27,29 @@
         h.indexOf('127.0.0.1') === 0
     );
 
+    // Khi chạy local (Live Server…) có thể dùng backend THẬT thay vì phải chạy backend trên máy:
+    //   localStorage.setItem('API_TARGET', 'production')  → dùng production
+    //   localStorage.removeItem('API_TARGET')             → quay về backend local (cổng 3001)
+    // Trang đăng nhập Admin có sẵn nút bật/tắt lựa chọn này.
+    var useProdFromLocal = false;
+    try { useProdFromLocal = isLocal && localStorage.getItem('API_TARGET') === 'production'; } catch (e) {}
+
     var apiBase;
-    if (isLocal) {
+    if (isLocal && !useProdFromLocal) {
         apiBase = 'http://localhost:3001/api';
         console.log('🔧 [CONFIG] Development mode - Using local backend: ' + apiBase);
     } else if (PRODUCTION_API_BASE) {
         apiBase = PRODUCTION_API_BASE;
+        if (useProdFromLocal) console.log('🌐 [CONFIG] Local page → PRODUCTION backend: ' + apiBase);
     } else {
         apiBase = 'https://api.' + h + '/api';
     }
 
     window.APP_CONFIG = {
         API_BASE:    apiBase,
-        BACKEND_URL: apiBase.replace('/api', '')
+        BACKEND_URL: apiBase.replace('/api', ''),
+        IS_LOCAL_PAGE: isLocal,               // trang đang mở từ máy local
+        USING_PROD_FROM_LOCAL: useProdFromLocal // trang local nhưng gọi backend thật
     };
     // Log debug chỉ khi chạy local — không in thông tin cấu hình ra console của người dùng thật
 })();

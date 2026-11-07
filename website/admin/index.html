@@ -84,6 +84,16 @@
         .lg-status.waking  { background: #fff8db; border-color: #fde68a; color: #7a5b00; }
         .lg-status.offline { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
         .lg-status.online  { background: #ecfdf3; border-color: #bbf7d0; color: #166534; }
+        .lg-status.info    { background: #eef4fd; border-color: #cddcf3; color: #1450a3; }
+        .lg-link-btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            margin-top: 8px; padding: 6px 12px;
+            border: 0; border-radius: 8px; cursor: pointer;
+            background: var(--lg-blue); color: #fff;
+            font-family: inherit; font-size: 0.8rem; font-weight: 600; line-height: 1.2;
+        }
+        .lg-link-btn:hover { filter: brightness(1.1); }
+        .lg-link-btn.ghost { background: transparent; color: var(--lg-blue); padding: 0; margin: 0; text-decoration: underline; }
         .lg-status code {
             background: rgba(0,0,0,0.06); padding: 1px 6px; border-radius: 4px;
             font-size: 0.78rem;
@@ -228,8 +238,9 @@
     var HEALTH = API.replace(/\/api$/, '') + '/health';
     var TOKEN_KEY = 'adm_tk';
     var USER_KEY  = 'adm_usr';
-    var h = location.hostname;
-    var IS_LOCAL = h === 'localhost' || h === '127.0.0.1' || h === '' || location.protocol === 'file:';
+    var CFG = window.APP_CONFIG || {};
+    // IS_LOCAL = đang gọi backend trên máy (cổng 3001), không phải "trang mở từ máy"
+    var IS_LOCAL = /\/\/(localhost|127\.0\.0\.1)(:|\/)/.test(API);
 
     var form = document.getElementById('frm');
     var emailEl = document.getElementById('email');
@@ -249,7 +260,7 @@
     }
     function setStatus(kind, html) {
         if (!kind) { statusEl.className = 'lg-status'; statusEl.innerHTML = ''; return; }
-        var icon = { waking: 'fas fa-spinner fa-spin', offline: 'fas fa-exclamation-triangle', online: 'fas fa-check-circle' }[kind];
+        var icon = { waking: 'fas fa-spinner fa-spin', offline: 'fas fa-exclamation-triangle', online: 'fas fa-check-circle', info: 'fas fa-globe-asia' }[kind];
         statusEl.className = 'lg-status show ' + kind;
         statusEl.innerHTML = '<i class="' + icon + '"></i><div>' + html + '</div>';
     }
@@ -299,8 +310,9 @@
         pingHealth(IS_LOCAL ? 4000 : 20000).then(function (ok) {
             clearTimeout(slowTimer);
             if (ok) {
-                var wasWaiting = statusEl.classList.contains('show');
+                var wasWaiting = statusEl.classList.contains('show') && !statusEl.classList.contains('info');
                 backendOnline = true;
+                if (CFG.USING_PROD_FROM_LOCAL) { showProdFromLocalNote(); return; }
                 if (wasWaiting) {
                     setStatus('online', 'Máy chủ đã sẵn sàng.');
                     setTimeout(function () { setStatus(null); }, 2500);
@@ -311,7 +323,13 @@
             }
             backendOnline = false;
             if (IS_LOCAL) {
-                setStatus('offline', '<strong>Backend local chưa chạy.</strong><br>Chạy <code>cd backend &amp;&amp; npm run dev</code> rồi tải lại trang.');
+                setStatus('offline', '<strong>Backend local (cổng 3001) chưa chạy.</strong><br>' +
+                    'Chạy <code>cd backend &amp;&amp; npm run dev</code> rồi tải lại trang, hoặc:<br>' +
+                    '<button type="button" class="lg-link-btn" id="useProd"><i class="fas fa-globe-asia"></i> Dùng máy chủ thật</button>');
+                document.getElementById('useProd').addEventListener('click', function () {
+                    try { localStorage.setItem('API_TARGET', 'production'); } catch (e) {}
+                    location.reload();
+                });
                 return;
             }
             var waited = Math.round((Date.now() - wakeStart) / 1000);
@@ -323,6 +341,16 @@
             }
         });
     }
+    // Trang mở từ máy local nhưng đang dùng backend thật → luôn nhắc để tránh nhầm khi sửa dữ liệu
+    function showProdFromLocalNote() {
+        setStatus('info', '<strong>Đang dùng máy chủ thật</strong> (dữ liệu thật) từ trang chạy trên máy. ' +
+            '<button type="button" class="lg-link-btn ghost" id="useLocal">Chuyển về backend local</button>');
+        document.getElementById('useLocal').addEventListener('click', function () {
+            try { localStorage.removeItem('API_TARGET'); } catch (e) {}
+            location.reload();
+        });
+    }
+    if (CFG.USING_PROD_FROM_LOCAL) showProdFromLocalNote();
     checkBackend();
 
     // ── Đăng nhập ──
@@ -376,12 +404,14 @@
                 showMsg(esc(err.userMsg), 'danger', 'exclamation-circle');
                 if (err.field) { pwEl.select(); pwEl.focus(); }
             } else {
-                // Lỗi mạng: máy chủ chưa dậy hoặc mất kết nối
-                showMsg(IS_LOCAL
-                    ? 'Không kết nối được backend local (cổng 3001).'
-                    : 'Không kết nối được máy chủ. Nếu máy chủ đang khởi động, hãy đợi thêm chút rồi bấm Đăng nhập lại.',
-                    'danger', 'wifi');
-                if (!backendOnline) { wakeStart = 0; checkBackend(); }
+                // Lỗi mạng: máy chủ chưa dậy hoặc mất kết nối.
+                // Backend local: khung trạng thái phía trên đã giải thích + có nút chuyển → không lặp thêm thông báo.
+                if (IS_LOCAL) {
+                    msgEl.innerHTML = '';
+                } else {
+                    showMsg('Không kết nối được máy chủ. Nếu máy chủ đang khởi động, hãy đợi thêm chút rồi bấm Đăng nhập lại.', 'danger', 'wifi');
+                }
+                if (!backendOnline || IS_LOCAL) { wakeStart = 0; checkBackend(); }
             }
             resetBtn();
         });
