@@ -6,7 +6,7 @@
 const express = require('express');
 const router  = express.Router();
 const db      = require('../config/db');
-const { authenticate, authenticateJwt, requireAdmin } = require('../middleware/auth');
+const { AuthUtils, authenticateJwt, requireAdmin } = require('../middleware/auth');
 const { cacheService } = require('../services/cacheService');
 const { parsePagination } = require('../middleware/validation');
 
@@ -27,6 +27,26 @@ function invalidateCache(prefix) {
 // → tránh bị logout khi session hết hạn nhưng JWT vẫn còn hạn
 const adminOnly = [authenticateJwt, requireAdmin];
 
+// Kiểm tra (không bắt buộc) request có phải của admin không.
+// Dùng cho GET công khai: khách chỉ thấy nội dung đã xuất bản, admin thấy cả bản nháp.
+async function isAdminRequest(req) {
+    const h = req.headers.authorization;
+    if (!h || !h.startsWith('Bearer ')) return false;
+    try {
+        const decoded = AuthUtils.verifyToken(h.substring(7));
+        const u = await db.findOne('SELECT role FROM users WHERE id = ? AND is_active = true', [decoded.userId]);
+        return !!u && u.role === 'admin';
+    } catch (_) {
+        return false;
+    }
+}
+
+// Lỗi 500: ghi chi tiết vào log server, chỉ trả thông báo chung cho client
+function serverError(res, e) {
+    console.error('[CMS]', e);
+    return res.status(500).json({ success: false, message: 'Lỗi server, vui lòng thử lại sau' });
+}
+
 // ══════════════════════════════════════════════════════════════
 //  NEWS
 // ══════════════════════════════════════════════════════════════
@@ -35,7 +55,10 @@ const adminOnly = [authenticateJwt, requireAdmin];
 router.get('/news', async (req, res) => {
     try {
         const { page, limit, offset } = parsePagination(req.query, 20, 100);
-        const { status, q, category } = req.query;
+        const { q, category } = req.query;
+        const isAdmin = await isAdminRequest(req);
+        // Khách chỉ được xem tin đã xuất bản, bất kể truyền ?status= gì
+        const status = isAdmin ? req.query.status : 'published';
         const params = [];
         let where = '1=1';
 
@@ -63,11 +86,11 @@ router.get('/news', async (req, res) => {
         const result = { success: true, data: { news: rows, total: total?.cnt || 0 } };
         cacheService.set(cacheKey, result, CACHE_TTL.news);
 
-        // HTTP cache headers cho browser
-        res.set('Cache-Control', 'public, max-age=30');
+        // HTTP cache headers cho browser — response của admin có thể chứa bản nháp, không cho CDN cache
+        res.set('Cache-Control', isAdmin ? 'private, no-store' : 'public, max-age=30');
         res.json(result);
     } catch (e) {
-        res.status(500).json({ success: false, message: e.message });
+        serverError(res, e);
     }
 });
 
@@ -75,10 +98,13 @@ router.get('/news', async (req, res) => {
 router.get('/news/:id', async (req, res) => {
     try {
         const row = await db.findOne('SELECT * FROM news WHERE id = ?', [req.params.id]);
-        if (!row) return res.status(404).json({ success: false, message: 'Không tìm thấy' });
+        // Tin chưa xuất bản: trả 404 cho khách như thể không tồn tại
+        if (!row || (row.status !== 'published' && !(await isAdminRequest(req)))) {
+            return res.status(404).json({ success: false, message: 'Không tìm thấy' });
+        }
         res.json({ success: true, data: row });
     } catch (e) {
-        res.status(500).json({ success: false, message: e.message });
+        serverError(res, e);
     }
 });
 
@@ -101,7 +127,7 @@ router.post('/news', adminOnly, async (req, res) => {
         invalidateCache('news');
         res.status(201).json({ success: true, message: 'Tạo tin tức thành công', data: { id } });
     } catch (e) {
-        res.status(500).json({ success: false, message: e.message });
+        serverError(res, e);
     }
 });
 
@@ -124,7 +150,7 @@ router.put('/news/:id', adminOnly, async (req, res) => {
         invalidateCache('news');
         res.json({ success: true, message: 'Cập nhật thành công' });
     } catch (e) {
-        res.status(500).json({ success: false, message: e.message });
+        serverError(res, e);
     }
 });
 
@@ -135,7 +161,7 @@ router.delete('/news/:id', adminOnly, async (req, res) => {
         invalidateCache('news');
         res.json({ success: true, message: 'Đã xóa tin tức' });
     } catch (e) {
-        res.status(500).json({ success: false, message: e.message });
+        serverError(res, e);
     }
 });
 
@@ -175,7 +201,7 @@ router.get('/events', async (req, res) => {
         res.set('Cache-Control', 'public, max-age=30');
         res.json(result);
     } catch (e) {
-        res.status(500).json({ success: false, message: e.message });
+        serverError(res, e);
     }
 });
 
@@ -186,7 +212,7 @@ router.get('/events/:id', async (req, res) => {
         if (!row) return res.status(404).json({ success: false, message: 'Không tìm thấy' });
         res.json({ success: true, data: row });
     } catch (e) {
-        res.status(500).json({ success: false, message: e.message });
+        serverError(res, e);
     }
 });
 
@@ -210,7 +236,7 @@ router.post('/events', adminOnly, async (req, res) => {
         invalidateCache('events');
         res.status(201).json({ success: true, message: 'Tạo sự kiện thành công', data: { id } });
     } catch (e) {
-        res.status(500).json({ success: false, message: e.message });
+        serverError(res, e);
     }
 });
 
@@ -224,7 +250,7 @@ router.put('/events/:id', adminOnly, async (req, res) => {
         invalidateCache('events');
         res.json({ success: true, message: 'Cập nhật thành công' });
     } catch (e) {
-        res.status(500).json({ success: false, message: e.message });
+        serverError(res, e);
     }
 });
 
@@ -235,7 +261,7 @@ router.delete('/events/:id', adminOnly, async (req, res) => {
         invalidateCache('events');
         res.json({ success: true, message: 'Đã xóa sự kiện' });
     } catch (e) {
-        res.status(500).json({ success: false, message: e.message });
+        serverError(res, e);
     }
 });
 
@@ -274,7 +300,7 @@ router.get('/announcements', async (req, res) => {
         res.set('Cache-Control', 'no-cache');
         res.json(result);
     } catch (e) {
-        res.status(500).json({ success: false, message: e.message });
+        serverError(res, e);
     }
 });
 
@@ -297,7 +323,7 @@ router.post('/announcements', adminOnly, async (req, res) => {
         res.set('Cache-Control', 'no-store');
         res.status(201).json({ success: true, message: 'Tạo thông báo thành công', data: { id } });
     } catch (e) {
-        res.status(500).json({ success: false, message: e.message });
+        serverError(res, e);
     }
 });
 
@@ -312,7 +338,7 @@ router.put('/announcements/:id', adminOnly, async (req, res) => {
         res.set('Cache-Control', 'no-store');
         res.json({ success: true, message: 'Cập nhật thành công' });
     } catch (e) {
-        res.status(500).json({ success: false, message: e.message });
+        serverError(res, e);
     }
 });
 
@@ -324,7 +350,7 @@ router.delete('/announcements/:id', adminOnly, async (req, res) => {
         res.set('Cache-Control', 'no-store');
         res.json({ success: true, message: 'Đã xóa thông báo' });
     } catch (e) {
-        res.status(500).json({ success: false, message: e.message });
+        serverError(res, e);
     }
 });
 
@@ -355,7 +381,7 @@ router.get('/gallery', async (req, res) => {
         res.set('Cache-Control', 'public, max-age=30');
         res.json(result);
     } catch (e) {
-        res.status(500).json({ success: false, message: e.message });
+        serverError(res, e);
     }
 });
 
@@ -381,7 +407,7 @@ router.get('/gallery/:id', async (req, res) => {
         cacheService.set(cacheKey, result, CACHE_TTL.events);
         res.json(result);
     } catch (e) {
-        res.status(500).json({ success: false, message: e.message });
+        serverError(res, e);
     }
 });
 
@@ -417,7 +443,7 @@ router.get('/reviews', async (req, res) => {
         res.set('Cache-Control', 'public, max-age=60');
         res.json(result);
     } catch (e) {
-        res.status(500).json({ success: false, message: e.message });
+        serverError(res, e);
     }
 });
 
@@ -441,7 +467,7 @@ router.post('/reviews', adminOnly, async (req, res) => {
         invalidateCache('reviews');
         res.status(201).json({ success: true, message: 'Tạo cảm nhận thành công', data: { id } });
     } catch (e) {
-        res.status(500).json({ success: false, message: e.message });
+        serverError(res, e);
     }
 });
 
@@ -455,7 +481,7 @@ router.put('/reviews/:id', adminOnly, async (req, res) => {
         invalidateCache('reviews');
         res.json({ success: true, message: 'Cập nhật thành công' });
     } catch (e) {
-        res.status(500).json({ success: false, message: e.message });
+        serverError(res, e);
     }
 });
 
@@ -468,7 +494,7 @@ router.delete('/reviews/:id', adminOnly, async (req, res) => {
         invalidateCache('reviews');
         res.json({ success: true, message: 'Đã xóa cảm nhận' });
     } catch (e) {
-        res.status(500).json({ success: false, message: e.message });
+        serverError(res, e);
     }
 });
 

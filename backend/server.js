@@ -19,6 +19,10 @@ const websocketService = require('./services/websocketService');
 // Create Express app
 const app = express();
 
+// Render/Netlify đặt server sau 1 reverse proxy → tin header X-Forwarded-For của 1 hop
+// để req.ip là IP thật của client (rate limit mới tính riêng từng người)
+app.set('trust proxy', parseInt(process.env.TRUST_PROXY_HOPS) || 1);
+
 // Security middleware
 app.use(helmet({
     crossOriginResourcePolicy: { policy: "cross-origin" }
@@ -74,7 +78,7 @@ const generalLimiter = rateLimit({
         // Bỏ qua rate limit cho localhost (development)
         if (process.env.NODE_ENV === 'development') {
             const ip = req.ip || req.connection.remoteAddress;
-            return ip === '127.0.0.1' || ip === '::1' || ip === 'localhost' || ip.includes('127.0.0.1');
+            return ip === '127.0.0.1' || ip === '::1' || ip === 'localhost' || (ip || '').includes('127.0.0.1');
         }
         return false;
     }
@@ -113,8 +117,9 @@ const passwordResetLimiter = rateLimit({
 });
 
 app.use('/api/', generalLimiter);
-app.use('/api/auth/login', loginLimiter);
-app.use('/api/auth/forgot-password', passwordResetLimiter);
+// Áp dụng cho cả route legacy lẫn /api/v1 (trước đây /api/v1/auth/login không bị giới hạn)
+app.use(['/api/auth/login', '/api/v1/auth/login'], loginLimiter);
+app.use(['/api/auth/forgot-password', '/api/v1/auth/forgot-password'], passwordResetLimiter);
 
 // Body parsing middleware
 app.use(express.json({ limit: '15mb' }));
@@ -286,8 +291,11 @@ async function ensureAdminUser() {
     try {
         const { AuthUtils } = require('./middleware/auth');
         const adminEmail    = process.env.ADMIN_EMAIL    || 'admin@vocotruyenhutech.edu.vn';
-        const adminPassword = process.env.ADMIN_PASSWORD || 'Admin@HUTECH2026';
         const adminUsername = process.env.ADMIN_USERNAME || 'admin_hutech';
+        // Không còn mật khẩu mặc định cứng trong code: nếu thiếu ADMIN_PASSWORD thì sinh ngẫu nhiên
+        const generatedPassword = !process.env.ADMIN_PASSWORD;
+        const adminPassword = process.env.ADMIN_PASSWORD
+            || require('crypto').randomBytes(12).toString('base64url') + 'Aa1';
 
         // Tìm admin (kể cả inactive)
         const existing = await db.findOne('SELECT id, email, is_active FROM users WHERE email = ?', [adminEmail]);
@@ -324,7 +332,13 @@ async function ensureAdminUser() {
             is_active:         true,
             email_verified:    true
         });
-        console.log('✅ Admin user created:', adminEmail, '/', adminPassword);
+        // Không bao giờ ghi mật khẩu ra log production
+        if (generatedPassword && process.env.NODE_ENV !== 'production') {
+            console.log('✅ Admin user created:', adminEmail, '— mật khẩu tạm (chỉ hiện ở dev):', adminPassword);
+        } else {
+            console.log('✅ Admin user created:', adminEmail,
+                generatedPassword ? '— mật khẩu ngẫu nhiên, hãy reset bằng scripts/reset-admin-production.js' : '');
+        }
     } catch (err) {
         console.error('⚠️  ensureAdminUser failed:', err.message);
     }

@@ -8,6 +8,9 @@ const router = express.Router();
 const db = require('../config/db');
 const cacheService = require('../services/cacheService');
 const os = require('os');
+const { authenticateJwt, requireAdmin } = require('../middleware/auth');
+// Các endpoint lộ thông tin hệ thống / thay đổi DB chỉ dành cho admin
+const adminOnly = [authenticateJwt, requireAdmin];
 
 /**
  * @swagger
@@ -39,7 +42,7 @@ router.get('/', (req, res) => {
  *       200:
  *         description: Detailed system health information
  */
-router.get('/detailed', async (req, res) => {
+router.get('/detailed', adminOnly, async (req, res) => {
   const healthCheck = {
     success: true,
     timestamp: new Date().toISOString(),
@@ -199,55 +202,6 @@ router.get('/live', (req, res) => {
   });
 });
 
-// SMTP connectivity test — chỉ dùng để debug, xóa sau khi fix
-router.get('/smtp-test', async (req, res) => {
-    const net = require('net');
-    const nodemailer = require('nodemailer');
-
-    function testPort(host, port) {
-        return new Promise(resolve => {
-            const s = new net.Socket();
-            s.setTimeout(5000);
-            s.on('connect', () => { s.destroy(); resolve(true); });
-            s.on('timeout', () => { s.destroy(); resolve(false); });
-            s.on('error', () => { s.destroy(); resolve(false); });
-            s.connect(port, host);
-        });
-    }
-
-    const results = {};
-    results['tcp_587'] = await testPort('smtp.gmail.com', 587);
-    results['tcp_465'] = await testPort('smtp.gmail.com', 465);
-
-    // Test actual SMTP
-    try {
-        const t = nodemailer.createTransport({
-            host: 'smtp.gmail.com', port: 465, secure: true,
-            auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
-            connectionTimeout: 8000, socketTimeout: 10000
-        });
-        await t.verify();
-        results['smtp_465_verify'] = 'OK';
-    } catch(e) {
-        results['smtp_465_verify'] = e.message;
-    }
-
-    try {
-        const t = nodemailer.createTransport({
-            host: 'smtp.gmail.com', port: 587, secure: false,
-            auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
-            connectionTimeout: 8000, socketTimeout: 10000
-        });
-        await t.verify();
-        results['smtp_587_verify'] = 'OK';
-    } catch(e) {
-        results['smtp_587_verify'] = e.message;
-    }
-
-    res.json({ success: true, smtp_user: process.env.SMTP_USER, results });
-});
-
-module.exports = router;
 /**
  * @swagger
  * /health/mssql-performance:
@@ -258,7 +212,7 @@ module.exports = router;
  *       200:
  *         description: MSSQL performance information
  */
-router.get('/mssql-performance', async (req, res) => {
+router.get('/mssql-performance', adminOnly, async (req, res) => {
   try {
     if (process.env.DB_TYPE !== 'mssql') {
       return res.status(400).json({
@@ -295,7 +249,7 @@ router.get('/mssql-performance', async (req, res) => {
  *       200:
  *         description: Database optimization completed
  */
-router.post('/mssql-optimize', async (req, res) => {
+router.post('/mssql-optimize', adminOnly, async (req, res) => {
   try {
     if (process.env.DB_TYPE !== 'mssql') {
       return res.status(400).json({
@@ -333,7 +287,7 @@ router.post('/mssql-optimize', async (req, res) => {
  *       200:
  *         description: Database statistics and information
  */
-router.get('/database-stats', async (req, res) => {
+router.get('/database-stats', adminOnly, async (req, res) => {
   try {
     const stats = {
       type: process.env.DB_TYPE || 'mysql',
@@ -378,3 +332,5 @@ router.get('/database-stats', async (req, res) => {
     });
   }
 });
+
+module.exports = router;

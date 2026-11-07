@@ -99,8 +99,8 @@ node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 
 **Cập nhật vào `.env` production:**
 ```env
-JWT_SECRET=<NEW_64_CHAR_HEX_STRING>
-JWT_REFRESH_SECRET=<NEW_64_CHAR_HEX_STRING>
+JWT_SECRET=<chuỗi ngẫu nhiên 128 ký tự — xem lệnh tạo trong backend/.env.example>
+JWT_REFRESH_SECRET=<tạo chuỗi ngẫu nhiên khác JWT_SECRET>
 ```
 
 ---
@@ -128,7 +128,7 @@ MSSQL_PASSWORD=CLB@Hutech2026!
 **Hiện tại:**
 ```env
 SMTP_USER=vctht2026@gmail.com
-SMTP_PASS=wgfuxklwpmrtxxgg  ← Đã bị expose
+SMTP_PASS=<mật khẩu ứng dụng Gmail>
 ```
 
 **Giải pháp:**

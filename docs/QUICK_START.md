@@ -28,7 +28,7 @@ http://localhost:3000/website/views/account/dang-nhap.html
 
 **Tài khoản admin mặc định:**
 - Email: `admin@hutech.edu.vn`
-- Password: `Admin@123`
+- Password: `<mật khẩu admin>`
 
 ---
 

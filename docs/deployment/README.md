@@ -65,7 +65,7 @@ Invoke-RestMethod -Uri "https://clb-vo-co-truyen-hutech.onrender.com/api/cms/gal
 ### Credentials
 ```
 Email: admin@vocotruyenhutech.edu.vn
-Password: Admin@123
+Password: <mật khẩu admin>
 ```
 
 ### Admin Panel Features
@@ -239,7 +239,7 @@ Invoke-RestMethod -Uri "https://clb-vo-co-truyen-hutech.onrender.com/api/cms/gal
 **Cause:** Session expired or wrong credentials  
 **Solution:**
 ```
-1. Verify credentials: admin@vocotruyenhutech.edu.vn / Admin@123
+1. Verify credentials: admin@vocotruyenhutech.edu.vn / <mật khẩu admin>
 2. Clear browser cookies
 3. Check browser console for errors
 4. See: ADMIN-LOGIN-GUIDE.md

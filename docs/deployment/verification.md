@@ -94,7 +94,7 @@ if ($html.Content -notmatch 'value="admin@vocotruyenhutech\.edu\.vn"') {
 
 ### Functional Check
 - [ ] Nhập email: `admin@vocotruyenhutech.edu.vn`
-- [ ] Nhập password: `Admin@123`
+- [ ] Nhập password: `<mật khẩu admin>`
 - [ ] Click "Đăng nhập"
 - [ ] Login thành công → Dashboard
 

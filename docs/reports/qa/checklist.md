@@ -154,7 +154,7 @@ None
 
 ### Admin Panel
 - [ ] Open http://localhost:5505/website/admin/index.html
-- [ ] Login with admin@vocotruyenhutech.edu.vn / Admin@123
+- [ ] Login with admin@vocotruyenhutech.edu.vn / <mật khẩu admin>
 - [ ] Verify redirect to dashboard
 - [ ] Check statistics display
 - [ ] Test navigation menu
@@ -231,7 +231,7 @@ None
 
 ### Immediate Actions
 1. ✅ Backend started locally
-2. ✅ Admin password reset to Admin@123
+2. ✅ Admin password reset to <mật khẩu admin>
 3. ✅ Test suite created and executed
 4. ✅ Documentation complete
 
@@ -280,7 +280,7 @@ None
 
 **Admin Credentials:**
 - Email: admin@vocotruyenhutech.edu.vn
-- Password: Admin@123
+- Password: <mật khẩu admin>
 
 **Support Contact:**
 - Email: vctht2026@gmail.com

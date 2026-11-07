@@ -290,7 +290,7 @@ API Docs:  https://clb-vo-co-truyen-hutech.onrender.com/api-docs
 ### Admin Credentials
 ```
 Email:    admin@vocotruyenhutech.edu.vn
-Password: Admin@123
+Password: <mật khẩu admin>
 ```
 
 ### Deployment Dashboards

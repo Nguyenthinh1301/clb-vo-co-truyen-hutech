@@ -150,7 +150,7 @@ Start-Sleep -Seconds 2
 ```
 1. POST /api/auth/login
    ✅ Email: admin@vocotruyenhutech.edu.vn
-   ✅ Password: Admin@123
+   ✅ Password: <mật khẩu admin>
    ✅ Returns JWT token
    ✅ Returns user object with role='admin'
    ✅ Token format: eyJhbGciOiJIUzI1NiIs...
@@ -398,7 +398,7 @@ Invoke-WebRequest -Uri "https://clb-vo-co-truyen-hutech.onrender.com/health" -Ti
 Invoke-RestMethod -Uri "http://localhost:3001/health"
 
 # Admin login
-$body = @{email='admin@vocotruyenhutech.edu.vn';password='Admin@123'} | ConvertTo-Json
+$body = @{email='admin@vocotruyenhutech.edu.vn';password='<mật khẩu admin>'} | ConvertTo-Json
 Invoke-RestMethod -Uri "http://localhost:3001/api/auth/login" -Method Post -Body $body -ContentType "application/json"
 
 # Contact form

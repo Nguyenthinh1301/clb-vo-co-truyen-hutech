@@ -278,7 +278,7 @@ Docs:      ✅ COMPLETE
 ### Cho Admin
 1. Đọc **README.md** để hiểu tổng quan
 2. Đăng nhập: https://vocotruyenhutech.netlify.app/admin/
-3. Credentials: admin@vocotruyenhutech.edu.vn / Admin@123
+3. Credentials: admin@vocotruyenhutech.edu.vn / <mật khẩu admin>
 4. Xem **ADMIN-LOGIN-GUIDE.md** nếu gặp vấn đề
 
 ### Cho Developers

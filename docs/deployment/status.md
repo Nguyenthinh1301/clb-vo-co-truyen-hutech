@@ -154,10 +154,10 @@ NODE_ENV=production
 DATABASE_URL=postgresql://...
 SMTP_PORT=587
 SMTP_USER=vctht2026@gmail.com
-SMTP_PASS=ipebbndjmnuvtqbw
+SMTP_PASS=<mật khẩu ứng dụng Gmail>
 ADMIN_NOTIFY_EMAIL=vctht2026@gmail.com
-JWT_SECRET=...
-JWT_REFRESH_SECRET=...
+JWT_SECRET=<chuỗi ngẫu nhiên 128 ký tự — xem lệnh tạo trong backend/.env.example>
+JWT_REFRESH_SECRET=<tạo chuỗi ngẫu nhiên khác JWT_SECRET>
 ```
 
 ---

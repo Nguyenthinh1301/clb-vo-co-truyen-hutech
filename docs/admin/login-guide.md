@@ -5,7 +5,7 @@
 ### Tài Khoản Admin
 - **Email:** `admin@vocotruyenhutech.edu.vn`
 - **Username:** `admin_vct`
-- **Password:** `Admin@123`
+- **Password:** `<mật khẩu admin>`
 - **Role:** `admin`
 
 ### URLs
@@ -83,7 +83,7 @@ npm start
 
 **Giải pháp:**
 ```powershell
-# Reset mật khẩu admin về Admin@123
+# Reset mật khẩu admin về <mật khẩu admin>
 cd backend
 node scripts/create-admin.js
 ```
@@ -128,7 +128,7 @@ Invoke-RestMethod -Uri "http://localhost:3001/health"
 ```powershell
 $body = @{
     email = 'admin@vocotruyenhutech.edu.vn'
-    password = 'Admin@123'
+    password = '<mật khẩu admin>'
 } | ConvertTo-Json
 
 Invoke-RestMethod -Uri "http://localhost:3001/api/auth/login" `
@@ -167,7 +167,7 @@ node scripts/create-admin.js
 
 Script sẽ:
 1. Tìm tài khoản admin hiện có
-2. Reset mật khẩu về `Admin@123`
+2. Reset mật khẩu về `<mật khẩu admin>`
 3. Đảm bảo role = `admin` và status = `active`
 
 **Output:**
@@ -176,7 +176,7 @@ Script sẽ:
 
 📋 Thông tin đăng nhập:
    Email: admin@vocotruyenhutech.edu.vn
-   Password: Admin@123
+   Password: <mật khẩu admin>
 ```
 
 ---
@@ -200,7 +200,7 @@ Invoke-RestMethod -Uri "https://clb-vo-co-truyen-hutech.onrender.com/health"
 ```powershell
 $body = @{
     email = 'admin@vocotruyenhutech.edu.vn'
-    password = 'Admin@123'
+    password = '<mật khẩu admin>'
 } | ConvertTo-Json
 
 Invoke-RestMethod -Uri "https://clb-vo-co-truyen-hutech.onrender.com/api/auth/login" `
@@ -238,7 +238,7 @@ node scripts/create-admin.js
 - [ ] Live Server đang chạy? (website mở được trong browser)
 - [ ] Port của Live Server có trong CORS_ORIGIN? (kiểm tra `backend/.env`)
 - [ ] Browser cache đã xóa? (Ctrl+F5 hoặc Ctrl+Shift+Delete)
-- [ ] Mật khẩu đúng? (Admin@123)
+- [ ] Mật khẩu đúng? (<mật khẩu admin>)
 - [ ] Console có lỗi gì? (F12 > Console tab)
 - [ ] Network tab có request failed? (F12 > Network tab)
 

@@ -39,15 +39,15 @@ PORT=3001
 DB_TYPE=postgres
 DATABASE_URL=<paste_connection_string_từ_Neon>
 
-JWT_SECRET=71b88d68cf149a53bf2d4e456e84f066a8c02e7d3164fb5ce80d77b4c0de8c6a05fb3dcf2533ffb03bea14e870e81da0d3e693d9946f9fe72e262859b3e2b707
+JWT_SECRET=<chuỗi ngẫu nhiên 128 ký tự — xem lệnh tạo trong backend/.env.example>
 JWT_EXPIRES_IN=7d
-JWT_REFRESH_SECRET=3a2e7ec5691224c99f29c33bd529a993565e4c0fb6ecdd7b7cfd868c6323463509ef125ab6edf26f48508801608e432a45755862d207a4c9c4a2534032fa4e83
+JWT_REFRESH_SECRET=<tạo chuỗi ngẫu nhiên khác JWT_SECRET>
 JWT_REFRESH_EXPIRES_IN=30d
 
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
 SMTP_USER=vctht2026@gmail.com
-SMTP_PASS=ipebbndjmnuvtqbw
+SMTP_PASS=<mật khẩu ứng dụng Gmail>
 FROM_EMAIL=vctht2026@gmail.com
 FROM_NAME=CLB Võ Cổ Truyền HUTECH
 
@@ -85,7 +85,7 @@ INSERT INTO users (
 );
 ```
 
-**Password mặc định:** `Admin@123` (hash trên)
+**Password mặc định:** `<mật khẩu admin>` (hash trên)
 
 ---
 
@@ -127,7 +127,7 @@ INSERT INTO users (
    - Trang chủ load
    - Tin tức, sự kiện hiển thị
    - Form liên hệ gửi được
-   - Admin login: `admin@vocotruyenhutech.edu.vn` / `Admin@123`
+   - Admin login: `admin@vocotruyenhutech.edu.vn` / `<mật khẩu admin>`
 
 ---
 

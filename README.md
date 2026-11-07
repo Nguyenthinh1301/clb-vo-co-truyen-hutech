@@ -43,7 +43,7 @@ Website chính thức và hệ thống quản lý nội dung cho Câu Lạc Bộ
 
 **URL:** https://vocotruyenhutech.netlify.app/admin/  
 **Email:** admin@vocotruyenhutech.edu.vn  
-**Password:** Admin@123
+**Password:** <mật khẩu admin>
 
 ---
 

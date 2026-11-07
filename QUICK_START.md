@@ -65,7 +65,7 @@ Frontend sẽ chạy tại: **http://localhost:5500**
 
 **Admin Credentials (Local):**
 - Email: `admin@vocotruyenhutech.edu.vn`
-- Password: `Admin@HUTECH2026`
+- Password: `<mật khẩu admin>`
 
 ---
 

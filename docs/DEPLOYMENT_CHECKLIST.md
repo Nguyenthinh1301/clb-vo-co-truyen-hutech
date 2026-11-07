@@ -302,7 +302,7 @@ curl http://localhost:5000/api/health
 # Login
 curl -X POST http://localhost:5000/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"admin@hutech.edu.vn","password":"Admin@123"}'
+  -d '{"email":"admin@hutech.edu.vn","password":"<mật khẩu admin>"}'
 ```
 
 ---

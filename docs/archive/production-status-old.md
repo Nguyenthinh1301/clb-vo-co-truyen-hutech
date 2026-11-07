@@ -180,7 +180,7 @@ node backend/scripts/create-activities-table-mssql.js
 ### Admin Credentials
 ```
 Email: admin@vocotruyenhutech.edu.vn
-Password: Admin@123
+Password: <mật khẩu admin>
 ```
 
 ### Admin Panel

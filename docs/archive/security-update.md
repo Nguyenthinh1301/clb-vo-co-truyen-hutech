@@ -134,7 +134,7 @@ Email: admin@vocotruyenhutech.edu.vn
 
 **Bước 2:** Nhập Password
 ```
-Password: Admin@123
+Password: <mật khẩu admin>
 ```
 
 **Bước 3:** Click "Đăng nhập"
@@ -225,7 +225,7 @@ git push origin main
 ```
 1. Verify credentials:
    - Email: admin@vocotruyenhutech.edu.vn
-   - Password: Admin@123
+   - Password: <mật khẩu admin>
 
 2. Check backend status:
    Invoke-RestMethod -Uri "https://clb-vo-co-truyen-hutech.onrender.com/health"

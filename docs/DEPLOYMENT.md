@@ -68,9 +68,9 @@ MSSQL_PASSWORD=your_strong_password
 MSSQL_ENCRYPT=false
 
 # JWT
-JWT_SECRET=your_64_char_random_hex_string
+JWT_SECRET=<chuỗi ngẫu nhiên 128 ký tự — xem lệnh tạo trong backend/.env.example>
 JWT_EXPIRES_IN=7d
-JWT_REFRESH_SECRET=your_other_64_char_random_hex_string
+JWT_REFRESH_SECRET=<tạo chuỗi ngẫu nhiên khác JWT_SECRET>
 JWT_REFRESH_EXPIRES_IN=30d
 
 # Email
@@ -150,7 +150,7 @@ Tạo file `.env` trong thư mục backend:
 DB_NAME=clb_vo_co_truyen_hutech
 DB_USER=clb_user
 DB_PASSWORD=your_strong_password
-JWT_SECRET=your_super_secret_jwt_key
+JWT_SECRET=<chuỗi ngẫu nhiên 128 ký tự — xem lệnh tạo trong backend/.env.example>
 JWT_EXPIRES_IN=7d
 PORT=3000
 ```
