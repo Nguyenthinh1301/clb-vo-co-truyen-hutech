@@ -3,540 +3,344 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
     <title>Đăng nhập - Admin CLB Võ Cổ Truyền HUTECH</title>
     <link rel="stylesheet" href="shared/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="../assets/js/config.js"></script>
     <style>
-        /* Enhanced Login Page with Advanced UI/UX */
-        
-        /* Animated background particles */
+        /* ===== Trang đăng nhập Admin — tông Xanh · Vàng · Trắng theo logo ===== */
+        :root {
+            --lg-navy:   #0a2a5e;
+            --lg-navy2:  #0f3570;
+            --lg-blue:   #1450a3;
+            --lg-blue2:  #1e63c4;
+            --lg-yellow: #ffd500;
+            --lg-text:   #1f2937;
+            --lg-muted:  #64748b;
+            --lg-border: #dbe3ef;
+        }
+
         .login-page {
-            position: relative;
-            overflow: hidden;
+            background:
+                radial-gradient(circle at 85% 10%, rgba(255, 213, 0, 0.10) 0, transparent 35%),
+                radial-gradient(circle at 10% 90%, rgba(43, 125, 224, 0.25) 0, transparent 40%),
+                linear-gradient(135deg, var(--lg-navy) 0%, var(--lg-navy2) 55%, var(--lg-navy) 100%);
         }
-        
-        .particles {
-            position: absolute;
-            inset: 0;
-            overflow: hidden;
-            z-index: 0;
-        }
-        
-        .particle {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            animation: float linear infinite;
-        }
-        
-        @keyframes float {
-            0% {
-                transform: translateY(100vh) rotate(0deg);
-                opacity: 0;
-            }
-            10% {
-                opacity: 1;
-            }
-            90% {
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-100px) rotate(360deg);
-                opacity: 0;
-            }
-        }
-        
-        /* Glassmorphism login box */
+        /* Bỏ 2 vòng tròn trang trí cũ (màu đỏ) của shared/style.css */
+        .login-page::before, .login-page::after { display: none; }
+
         .login-box {
-            backdrop-filter: blur(20px);
-            background: rgba(255, 255, 255, 0.95);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            animation: slideInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            max-width: 400px;
+            padding: 40px 36px 28px;
+            border-radius: 20px;
+            border-top: 5px solid var(--lg-yellow);
+            box-shadow: 0 30px 70px rgba(3, 15, 40, 0.45);
+            animation: lgIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        
-        @keyframes slideInUp {
-            from {
-                opacity: 0;
-                transform: translateY(40px) scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
+        @keyframes lgIn {
+            from { opacity: 0; transform: translateY(24px); }
+            to   { opacity: 1; transform: none; }
         }
-        
-        /* Logo with pulse animation */
-        .login-logo {
-            animation: fadeInDown 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        
+
+        .login-logo { margin-bottom: 26px; }
         .login-logo img {
-            width: 95px;
-            height: 95px;
-            border-radius: 24px;
+            width: 88px; height: 88px;
+            border-radius: 18px;
             object-fit: contain;
-            border: 2px solid rgba(231, 76, 60, 0.2);
-            box-shadow: 0 8px 32px rgba(231, 76, 60, 0.15), 
-                        0 0 0 8px rgba(231, 76, 60, 0.05);
             background: #fff;
-            padding: 8px;
-            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-            animation: logoPulse 3s ease-in-out infinite;
+            padding: 6px;
+            border: 2px solid rgba(20, 80, 163, 0.15);
+            box-shadow: 0 8px 24px rgba(20, 80, 163, 0.18);
         }
-        
-        .login-logo img:hover {
-            transform: scale(1.05) rotate(5deg);
-            box-shadow: 0 12px 48px rgba(231, 76, 60, 0.25),
-                        0 0 0 12px rgba(231, 76, 60, 0.08);
-        }
-        
-        @keyframes logoPulse {
-            0%, 100% {
-                box-shadow: 0 8px 32px rgba(231, 76, 60, 0.15),
-                            0 0 0 8px rgba(231, 76, 60, 0.05);
-            }
-            50% {
-                box-shadow: 0 12px 48px rgba(231, 76, 60, 0.25),
-                            0 0 0 12px rgba(231, 76, 60, 0.1);
-            }
-        }
-        
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
         .login-logo h2 {
-            background: linear-gradient(135deg, #1a252f, #e74c3c);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: fadeInDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+            margin-top: 16px;
+            font-size: 1.45rem;
+            color: var(--lg-navy);
         }
-        
-        .login-logo p {
-            animation: fadeInDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+        .login-logo p { color: var(--lg-muted); }
+        .login-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            margin-top: 10px;
+            padding: 4px 12px;
+            border-radius: 999px;
+            background: rgba(20, 80, 163, 0.08);
+            color: var(--lg-blue);
+            font-size: 0.75rem; font-weight: 600;
         }
-        
-        /* Enhanced form inputs with micro-interactions */
-        .form-group {
-            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
-        }
-        
-        .form-group:nth-child(1) { animation-delay: 0.3s; }
-        .form-group:nth-child(2) { animation-delay: 0.4s; }
-        
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .login-box .form-label {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-weight: 600;
-            font-size: 0.875rem;
-            color: #2d3748;
-            margin-bottom: 8px;
-            transition: color 0.3s;
-        }
-        
-        .login-box .form-label i {
-            transition: transform 0.3s ease;
-        }
-        
-        .login-box .form-group:focus-within .form-label {
-            color: #e74c3c;
-        }
-        
-        .login-box .form-group:focus-within .form-label i {
-            transform: scale(1.2);
-        }
-        
-        .login-box .form-control {
-            background: rgba(248, 250, 252, 0.8);
-            border: 2px solid #e2e8f0;
-            font-size: 0.95rem;
-            padding: 12px 16px;
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+        /* Trạng thái máy chủ */
+        .lg-status {
+            display: none;
+            align-items: flex-start; gap: 10px;
+            padding: 11px 14px;
+            margin-bottom: 18px;
             border-radius: 10px;
+            font-size: 0.83rem; line-height: 1.55;
+            border: 1px solid transparent;
         }
-        
-        .login-box .form-control:hover {
-            border-color: #cbd5e0;
-            background: rgba(255, 255, 255, 0.95);
+        .lg-status.show { display: flex; }
+        .lg-status i { margin-top: 3px; flex-shrink: 0; }
+        .lg-status.waking  { background: #fff8db; border-color: #fde68a; color: #7a5b00; }
+        .lg-status.offline { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
+        .lg-status.online  { background: #ecfdf3; border-color: #bbf7d0; color: #166534; }
+        .lg-status code {
+            background: rgba(0,0,0,0.06); padding: 1px 6px; border-radius: 4px;
+            font-size: 0.78rem;
         }
-        
+
+        /* Ô nhập */
+        .login-box .form-group { margin-bottom: 16px; }
+        .login-box .form-label {
+            display: flex; align-items: center; gap: 7px;
+            margin-bottom: 7px;
+            font-size: 0.85rem; font-weight: 600;
+            color: var(--lg-text);
+        }
+        .login-box .form-label i { color: var(--lg-blue); font-size: 0.85rem; width: 14px; }
+        .lg-input { position: relative; }
+        .login-box .form-control {
+            padding: 12px 14px;
+            font-size: 0.95rem;
+            border: 1.5px solid var(--lg-border);
+            border-radius: 10px;
+            background: #f8fafd;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+        }
+        .login-box .form-control:hover { border-color: #c3d0e4; }
         .login-box .form-control:focus {
             background: #fff;
-            border-color: #e74c3c;
-            box-shadow: 0 0 0 4px rgba(231, 76, 60, 0.1),
-                        0 8px 24px rgba(231, 76, 60, 0.15);
-            transform: translateY(-2px);
+            border-color: var(--lg-blue);
+            box-shadow: 0 0 0 4px rgba(20, 80, 163, 0.12);
         }
-        
-        /* Animated button */
+        .lg-input .form-control { padding-right: 46px; }
+        .lg-eye {
+            position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+            width: 36px; height: 36px;
+            border: 0; border-radius: 8px;
+            background: transparent; color: var(--lg-muted);
+            cursor: pointer; font-size: 0.95rem;
+        }
+        .lg-eye:hover { color: var(--lg-blue); background: rgba(20, 80, 163, 0.06); }
+        .lg-eye:focus-visible { outline: 2px solid var(--lg-blue); outline-offset: 1px; }
+        .lg-caps {
+            display: none;
+            margin-top: 6px;
+            font-size: 0.76rem; color: #b45309;
+        }
+        .lg-caps.show { display: block; }
+
+        /* Nút đăng nhập */
         .login-box .btn-primary {
-            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-            padding: 14px;
-            font-size: 1rem;
-            letter-spacing: 0.5px;
-            font-weight: 700;
-            box-shadow: 0 8px 24px rgba(231, 76, 60, 0.35);
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both;
-        }
-        
-        .login-box .btn-primary::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-        
-        .login-box .btn-primary:hover::before {
-            width: 300px;
-            height: 300px;
-        }
-        
-        .login-box .btn-primary:hover {
-            background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
-            box-shadow: 0 12px 32px rgba(231, 76, 60, 0.45);
-            transform: translateY(-3px);
-        }
-        
-        .login-box .btn-primary:active {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
-        }
-        
-        .login-box .btn-primary span {
-            position: relative;
-            z-index: 1;
-        }
-        
-        /* Enhanced hint box */
-        .login-hint {
-            background: linear-gradient(135deg, rgba(231, 76, 60, 0.08), rgba(231, 76, 60, 0.03));
-            border: 1px solid rgba(231, 76, 60, 0.15);
+            width: 100%; justify-content: center;
+            margin-top: 6px;
+            padding: 13px;
             border-radius: 10px;
-            padding: 12px 16px;
-            font-size: 0.82rem;
-            color: #c0392b;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
-            transition: all 0.3s;
+            font-size: 1rem; font-weight: 700; letter-spacing: 0.2px;
+            background: linear-gradient(135deg, var(--lg-blue) 0%, var(--lg-navy2) 100%);
+            box-shadow: 0 10px 22px rgba(20, 80, 163, 0.30);
+            transition: transform 0.15s, box-shadow 0.2s, filter 0.2s;
         }
-        
-        .login-hint:hover {
-            background: linear-gradient(135deg, rgba(231, 76, 60, 0.12), rgba(231, 76, 60, 0.05));
-            transform: translateX(4px);
+        .login-box .btn-primary:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 14px 28px rgba(20, 80, 163, 0.38);
+            filter: brightness(1.08);
         }
-        
-        .login-hint i { 
-            color: #e74c3c;
-            font-size: 1.1rem;
-            animation: pulse 2s ease-in-out infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-        
-        /* Backend status enhanced */
-        #backendStatus {
-            animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        
-        .login-divider {
-            text-align: center;
-            margin: 24px 0 0;
-            font-size: 0.82rem;
-            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.6s both;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
+        .login-box .btn-primary:active:not(:disabled) { transform: none; }
+        .login-box .btn-primary:disabled { opacity: 0.75; cursor: wait; }
+
+        #msg .alert { margin-bottom: 16px; }
+
+        .login-divider { text-align: center; margin-top: 22px; }
         .login-divider a {
-            color: #718096;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 8px 12px;
-            border-radius: 8px;
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 7px 12px; border-radius: 8px;
+            color: var(--lg-muted); font-size: 0.83rem; text-decoration: none;
+            transition: color 0.2s, background 0.2s;
         }
-        
-        .login-divider a:hover {
-            color: #e74c3c;
-            background: rgba(231, 76, 60, 0.08);
-            transform: translateX(-4px);
+        .login-divider a:hover { color: var(--lg-blue); background: rgba(20, 80, 163, 0.06); }
+
+        .lg-foot {
+            margin-top: 18px; padding-top: 14px;
+            border-top: 1px solid #eef2f7;
+            text-align: center;
+            font-size: 0.72rem; color: #94a3b8;
         }
-        
-        .login-divider a i {
-            transition: transform 0.3s;
-        }
-        
-        .login-divider a:hover i {
-            transform: translateX(-4px);
-        }
-        
-        /* Loading spinner enhancement */
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        .fa-spinner {
-            animation: spin 0.8s linear infinite;
-        }
-        
-        /* Alert enhancements */
-        #msg .alert {
-            animation: slideInDown 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-            border-left: 4px solid;
-        }
-        
-        @keyframes slideInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        /* Responsive enhancements */
+
         @media (max-width: 480px) {
-            .login-box {
-                padding: 32px 24px;
-            }
-            
-            .login-logo img {
-                width: 80px;
-                height: 80px;
-            }
+            .login-box { padding: 32px 22px 22px; }
+            .login-logo img { width: 76px; height: 76px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .login-box { animation: none; }
         }
     </style>
 </head>
 <body class="login-page">
 
-<!-- Animated Background Particles -->
-<div class="particles" id="particles"></div>
-
-<div class="login-box">
+<main class="login-box">
     <div class="login-logo">
-        <!-- Logo HUTECH: thử CDN chính thức trước, fallback về logo local -->
-        <img src="../assets/images_Logo/Logo.jpg"
-             alt="Logo HUTECH"
-             style="width:90px;height:90px;border-radius:12px;object-fit:contain;border:none;box-shadow:none;background:transparent;"
-             onerror="this.onerror=null;this.src='../assets/images_Logo/Logo2.jpg';this.onerror=function(){this.style.display='none';}">
-        <h2>Admin HUTECH</h2>
-        <p>CLB Võ Cổ Truyền HUTECH</p>
+        <img src="../assets/images_Logo/Logo.jpg" alt="Logo CLB Võ Cổ Truyền HUTECH"
+             onerror="this.onerror=null;this.src='../assets/images_Logo/Logo2.jpg';">
+        <h2>Quản trị CLB</h2>
+        <p>Võ Cổ Truyền HUTECH</p>
+        <span class="login-badge"><i class="fas fa-shield-alt"></i> Chỉ dành cho tài khoản Admin</span>
     </div>
 
-    <div id="msg"></div>
+    <!-- Trạng thái máy chủ: chỉ hiện khi đang khởi động / lỗi / vừa kết nối lại -->
+    <div id="status" class="lg-status" role="status" aria-live="polite"></div>
 
-    <div class="login-hint">
-        <i class="fas fa-info-circle"></i>
-        Chỉ tài khoản Admin mới có thể truy cập
-    </div>
+    <div id="msg" aria-live="assertive"></div>
 
-    <!-- Backend Status Check -->
-    <div id="backendStatus" style="display:none; margin-bottom:15px;"></div>
-
-    <form id="frm" autocomplete="off">
+    <form id="frm" novalidate>
         <div class="form-group">
-            <label class="form-label">
-                <i class="fas fa-envelope" style="color:#e74c3c;margin-right:6px;font-size:0.85rem;"></i>
-                Email
-            </label>
-            <input class="form-control" type="email" id="email"
-                placeholder="Nhập email admin"
-                required autocomplete="off" value="">
+            <label class="form-label" for="email"><i class="fas fa-envelope"></i> Email</label>
+            <input class="form-control" type="email" id="email" name="username"
+                   placeholder="Nhập email quản trị"
+                   autocomplete="username" required autofocus>
         </div>
         <div class="form-group">
-            <label class="form-label">
-                <i class="fas fa-lock" style="color:#e74c3c;margin-right:6px;font-size:0.85rem;"></i>
-                Mật khẩu
-            </label>
-            <input class="form-control" type="password" id="pw"
-                placeholder="Nhập mật khẩu"
-                required autocomplete="off" value="">
+            <label class="form-label" for="pw"><i class="fas fa-lock"></i> Mật khẩu</label>
+            <div class="lg-input">
+                <input class="form-control" type="password" id="pw" name="password"
+                       placeholder="Nhập mật khẩu" autocomplete="current-password" required>
+                <button type="button" class="lg-eye" id="eye" aria-label="Hiện mật khẩu" title="Hiện mật khẩu">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
+            <div class="lg-caps" id="caps"><i class="fas fa-arrow-up"></i> Đang bật Caps Lock</div>
         </div>
 
-        <button class="btn btn-primary" type="submit" id="btn"
-            style="width:100%; justify-content:center; margin-top:8px;">
-            <span>
-                <i class="fas fa-sign-in-alt"></i> Đăng nhập
-            </span>
+        <button class="btn btn-primary" type="submit" id="btn">
+            <i class="fas fa-sign-in-alt"></i> Đăng nhập
         </button>
     </form>
 
     <div class="login-divider">
-        <a href="../index.html" style="color:#718096; font-size:0.82rem;">
-            <i class="fas fa-arrow-left"></i> Về trang chủ
-        </a>
+        <a href="../index.html"><i class="fas fa-arrow-left"></i> Về trang chủ</a>
     </div>
-</div>
+    <div class="lg-foot">© CLB Võ Cổ Truyền HUTECH</div>
+</main>
 
 <script>
 (function () {
-    // Create animated particles
-    function createParticles() {
-        var container = document.getElementById('particles');
-        if (!container) return;
-        
-        var particleCount = 15;
-        
-        for (var i = 0; i < particleCount; i++) {
-            var particle = document.createElement('div');
-            particle.className = 'particle';
-            
-            var size = Math.random() * 60 + 20;
-            particle.style.width = size + 'px';
-            particle.style.height = size + 'px';
-            particle.style.left = Math.random() * 100 + '%';
-            particle.style.animationDuration = (Math.random() * 15 + 10) + 's';
-            particle.style.animationDelay = Math.random() * 5 + 's';
-            particle.style.opacity = Math.random() * 0.3 + 0.1;
-            
-            container.appendChild(particle);
-        }
-    }
-    
-    // Initialize particles on load
-    window.addEventListener('load', function() {
-        createParticles();
-    });
-
-    var API = (window.APP_CONFIG && window.APP_CONFIG.API_BASE)
-        ? window.APP_CONFIG.API_BASE
-        : (function() {
-            var h = window.location.hostname;
-            if (h === 'localhost' || h === '127.0.0.1' || h === '') return 'http://localhost:3001/api';
-            return 'https://api.' + h + '/api';
-          })();
+    var API = (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || 'http://localhost:3001/api';
+    var HEALTH = API.replace(/\/api$/, '') + '/health';
     var TOKEN_KEY = 'adm_tk';
     var USER_KEY  = 'adm_usr';
+    var h = location.hostname;
+    var IS_LOCAL = h === 'localhost' || h === '127.0.0.1' || h === '' || location.protocol === 'file:';
 
+    var form = document.getElementById('frm');
+    var emailEl = document.getElementById('email');
+    var pwEl = document.getElementById('pw');
+    var btn = document.getElementById('btn');
     var msgEl = document.getElementById('msg');
-    var btn   = document.getElementById('btn');
-    var emailInput = document.getElementById('email');
-    var pwInput = document.getElementById('pw');
-    var backendStatusEl = document.getElementById('backendStatus');
+    var statusEl = document.getElementById('status');
+    var BTN_HTML = btn.innerHTML;
 
-    // Clear all form data on page load (prevent browser cache)
-    window.addEventListener('load', function() {
-        emailInput.value = '';
-        pwInput.value = '';
-        // Also reset form to prevent browser restore
-        document.getElementById('frm').reset();
-        
-        // Check backend status on page load
-        setTimeout(checkBackendStatus, 500);
-    });
-
-    function showMsg(html, type) {
-        // Bọc nội dung vào div để tránh flex-item issue của .alert
-        msgEl.innerHTML = '<div class="alert alert-' + type + '"><i></i><div>' + html + '</div></div>';
-    }
-
-    function showBackendStatus(isOnline) {
-        if (!isOnline) {
-            backendStatusEl.style.display = 'block';
-            // Bọc text vào <div> để flex chỉ có 2 child: icon + text block
-            backendStatusEl.innerHTML =
-                '<div class="alert alert-warning" style="margin:0;">' +
-                    '<i class="fas fa-exclamation-triangle" style="margin-top:2px;"></i>' +
-                    '<div style="font-size:0.85rem;line-height:1.6;">' +
-                        '<strong>Backend chưa chạy!</strong><br>' +
-                        'Hướng dẫn start backend:<br>' +
-                        '1. Mở terminal trong VS Code (Ctrl+`)<br>' +
-                        '2. Chạy: <code style="background:#fff3cd;padding:2px 6px;border-radius:3px;">cd backend &amp;&amp; npm run dev</code><br>' +
-                        '3. Chờ thấy "Server is running" ✅<br>' +
-                        '4. Reload lại trang này' +
-                    '</div>' +
-                '</div>';
-        } else {
-            backendStatusEl.style.display = 'block';
-            backendStatusEl.innerHTML =
-                '<div class="alert alert-success" style="margin:0;">' +
-                    '<i class="fas fa-check-circle"></i>' +
-                    '<div>Backend đang online ✅</div>' +
-                '</div>';
-            setTimeout(function() {
-                backendStatusEl.style.display = 'none';
-            }, 3000);
-        }
-    }
-
-    function checkBackendStatus() {
-        var healthUrl = API.replace('/api', '') + '/health';
-        
-        fetch(healthUrl, {
-            method: 'GET',
-            mode: 'cors',
-            cache: 'no-cache'
-        })
-        .then(function(res) {
-            if (res.ok) {
-                return res.json();
-            }
-            throw new Error('Backend unreachable');
-        })
-        .then(function(data) {
-            if (data.success) {
-                showBackendStatus(true);
-            } else {
-                showBackendStatus(false);
-            }
-        })
-        .catch(function() {
-            showBackendStatus(false);
+    function esc(s) {
+        return String(s).replace(/[&<>"']/g, function (c) {
+            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
         });
     }
+    function showMsg(text, type, icon) {
+        msgEl.innerHTML = '<div class="alert alert-' + type + '"><i class="fas fa-' + icon + '"></i><div>' + text + '</div></div>';
+    }
+    function setStatus(kind, html) {
+        if (!kind) { statusEl.className = 'lg-status'; statusEl.innerHTML = ''; return; }
+        var icon = { waking: 'fas fa-spinner fa-spin', offline: 'fas fa-exclamation-triangle', online: 'fas fa-check-circle' }[kind];
+        statusEl.className = 'lg-status show ' + kind;
+        statusEl.innerHTML = '<i class="' + icon + '"></i><div>' + html + '</div>';
+    }
 
-    document.getElementById('frm').addEventListener('submit', function (e) {
+    // ── Hiện / ẩn mật khẩu ──
+    document.getElementById('eye').addEventListener('click', function () {
+        var show = pwEl.type === 'password';
+        pwEl.type = show ? 'text' : 'password';
+        this.innerHTML = '<i class="fas fa-eye' + (show ? '-slash' : '') + '"></i>';
+        this.setAttribute('aria-label', show ? 'Ẩn mật khẩu' : 'Hiện mật khẩu');
+        this.title = this.getAttribute('aria-label');
+        pwEl.focus();
+    });
+
+    // ── Cảnh báo Caps Lock ──
+    var capsEl = document.getElementById('caps');
+    function checkCaps(e) {
+        if (e.getModifierState) capsEl.classList.toggle('show', e.getModifierState('CapsLock'));
+    }
+    pwEl.addEventListener('keyup', checkCaps);
+    pwEl.addEventListener('keydown', checkCaps);
+    pwEl.addEventListener('blur', function () { capsEl.classList.remove('show'); });
+
+    // ── Kiểm tra máy chủ ──
+    // Render gói miễn phí "ngủ" khi không có truy cập → lần đầu có thể mất ~1 phút để khởi động.
+    // Production: hiện "đang khởi động" và tự thử lại. Local: hiện hướng dẫn chạy backend.
+    var backendOnline = false;
+    var wakeStart = 0;
+
+    function pingHealth(timeoutMs) {
+        var ctrl = window.AbortController ? new AbortController() : null;
+        var timer = ctrl && setTimeout(function () { ctrl.abort(); }, timeoutMs);
+        return fetch(HEALTH, { cache: 'no-store', signal: ctrl && ctrl.signal })
+            .then(function (r) { return r.ok; })
+            .catch(function () { return false; })
+            .then(function (ok) { if (timer) clearTimeout(timer); return ok; });
+    }
+
+    function checkBackend() {
+        if (!wakeStart) wakeStart = Date.now();
+        var slowTimer = setTimeout(function () {
+            if (!backendOnline && !IS_LOCAL) {
+                setStatus('waking', '<strong>Máy chủ đang khởi động…</strong><br>Lần truy cập đầu tiên có thể mất khoảng 1 phút. Bạn vẫn có thể nhập thông tin trong lúc chờ.');
+            }
+        }, 1500);
+
+        pingHealth(IS_LOCAL ? 4000 : 20000).then(function (ok) {
+            clearTimeout(slowTimer);
+            if (ok) {
+                var wasWaiting = statusEl.classList.contains('show');
+                backendOnline = true;
+                if (wasWaiting) {
+                    setStatus('online', 'Máy chủ đã sẵn sàng.');
+                    setTimeout(function () { setStatus(null); }, 2500);
+                } else {
+                    setStatus(null);
+                }
+                return;
+            }
+            backendOnline = false;
+            if (IS_LOCAL) {
+                setStatus('offline', '<strong>Backend local chưa chạy.</strong><br>Chạy <code>cd backend &amp;&amp; npm run dev</code> rồi tải lại trang.');
+                return;
+            }
+            var waited = Math.round((Date.now() - wakeStart) / 1000);
+            if (waited < 120) {
+                setStatus('waking', '<strong>Máy chủ đang khởi động…</strong><br>Đã chờ ' + waited + ' giây, đang thử lại.');
+                setTimeout(checkBackend, 5000);
+            } else {
+                setStatus('offline', '<strong>Không kết nối được máy chủ.</strong><br>Vui lòng thử lại sau ít phút hoặc báo cho người phụ trách kỹ thuật.');
+            }
+        });
+    }
+    checkBackend();
+
+    // ── Đăng nhập ──
+    function resetBtn() { btn.disabled = false; btn.innerHTML = BTN_HTML; }
+
+    form.addEventListener('submit', function (e) {
         e.preventDefault();
+        var email = emailEl.value.trim();
+        var pw = pwEl.value;
 
-        var email = emailInput.value.trim();
-        var pw    = pwInput.value;
-
-        if (!email || !pw) return;
+        if (!email || !pw) {
+            showMsg('Vui lòng nhập đầy đủ email và mật khẩu.', 'warning', 'exclamation-triangle');
+            (email ? pwEl : emailEl).focus();
+            return;
+        }
 
         btn.disabled = true;
-        btn.innerHTML = '<span><i class="fas fa-spinner fa-spin"></i> Đang đăng nhập...</span>';
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + (backendOnline ? 'Đang đăng nhập…' : 'Đang chờ máy chủ…');
         msgEl.innerHTML = '';
 
         fetch(API + '/auth/login', {
@@ -544,50 +348,42 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email: email, password: pw })
         })
-        .then(function (res) { return res.json(); })
+        .then(function (res) {
+            return res.json().catch(function () { return {}; }).then(function (data) {
+                if (res.status === 429) throw { userMsg: data.message || 'Bạn đã thử đăng nhập quá nhiều lần. Vui lòng đợi 15 phút rồi thử lại.' };
+                if (!res.ok || !data.success) throw { userMsg: data.message || 'Email hoặc mật khẩu không chính xác.', field: true };
+                return data;
+            });
+        })
         .then(function (data) {
-            if (!data.success) {
-                throw new Error(data.message || 'Sai email hoặc mật khẩu');
-            }
-
             var user  = data.data && data.data.user;
             var token = data.data && data.data.token;
+            if (!token || !user) throw { userMsg: 'Máy chủ trả về dữ liệu không hợp lệ. Vui lòng thử lại.' };
 
-            if (!token) throw new Error('Server không trả về token');
-            if (!user)  throw new Error('Server không trả về thông tin user');
+            var role = String(user.role || '').trim().toLowerCase();
+            if (role !== 'admin') throw { userMsg: 'Tài khoản này không có quyền quản trị.' };
 
-            // Normalize role — trim whitespace phòng trường hợp DB trả về có khoảng trắng
-            var role = (user.role || '').toString().trim().toLowerCase();
-            if (role !== 'admin') {
-                throw new Error('Tài khoản không có quyền Admin (role: "' + user.role + '")');
-            }
-
-            // Lưu user với role đã normalize
             user.role = role;
             localStorage.setItem(TOKEN_KEY, token);
             localStorage.setItem(USER_KEY, JSON.stringify(user));
 
-            showMsg('<i class="fas fa-check-circle"></i> Đăng nhập thành công! Đang chuyển trang...', 'success');
-            btn.disabled = true;
-
-            // Clear form trước khi redirect
-            emailInput.value = '';
-            pwInput.value = '';
-
-            // Redirect ngay — không dùng setTimeout để tránh Live Server reload can thiệp
+            showMsg('Đăng nhập thành công! Đang chuyển trang…', 'success', 'check-circle');
+            btn.innerHTML = '<i class="fas fa-check"></i> Thành công';
             window.location.replace('dashboard.html');
         })
         .catch(function (err) {
-            var msg = err.message || 'Lỗi không xác định';
-            if (msg.indexOf('fetch') !== -1 || msg.indexOf('Failed') !== -1 || msg.indexOf('Network') !== -1) {
-                msg = '<strong>Không kết nối được backend.</strong><br>' +
-                      '<small>Backend có thể chưa chạy. Xem hướng dẫn bên trên ↑</small>';
-                // Show backend status again
-                showBackendStatus(false);
+            if (err && err.userMsg) {
+                showMsg(esc(err.userMsg), 'danger', 'exclamation-circle');
+                if (err.field) { pwEl.select(); pwEl.focus(); }
+            } else {
+                // Lỗi mạng: máy chủ chưa dậy hoặc mất kết nối
+                showMsg(IS_LOCAL
+                    ? 'Không kết nối được backend local (cổng 3001).'
+                    : 'Không kết nối được máy chủ. Nếu máy chủ đang khởi động, hãy đợi thêm chút rồi bấm Đăng nhập lại.',
+                    'danger', 'wifi');
+                if (!backendOnline) { wakeStart = 0; checkBackend(); }
             }
-            showMsg('<i class="fas fa-exclamation-circle"></i> ' + msg, 'danger');
-            btn.disabled = false;
-            btn.innerHTML = '<span><i class="fas fa-sign-in-alt"></i> Đăng nhập</span>';
+            resetBtn();
         });
     });
 }());
