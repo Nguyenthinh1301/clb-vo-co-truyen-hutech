@@ -275,6 +275,20 @@ router.put('/profile/notifications/:id/read', authenticate, async (req, res) => 
 // ADMIN — Cập nhật user theo ID
 // PUT /api/users/:id
 // ════════════════════════════════════════════════════════════
+// ── Bảo vệ quyền quản trị ───────────────────────────────────
+// Số admin còn hoạt động, không tính tài khoản excludeId
+async function countOtherActiveAdmins(excludeId) {
+    const r = await db.findOne(
+        "SELECT COUNT(*) as cnt FROM users WHERE role = 'admin' AND is_active = true AND id != ?",
+        [excludeId]
+    );
+    return parseInt(r && r.cnt) || 0;
+}
+const isActiveFlag = v => v === true || v === 1 || v === '1' || v === 't';
+// Lỗi khóa ngoại: PostgreSQL 23503, MSSQL 547, MySQL 1451
+const isForeignKeyError = e => e && (e.code === '23503' || e.number === 547 || e.errno === 1451 ||
+    /foreign key|REFERENCE constraint/i.test(e.message || ''));
+
 router.put('/:id', authenticate, authorize('admin'), async (req, res) => {
     try {
         const { id } = req.params;
@@ -283,8 +297,18 @@ router.put('/:id', authenticate, authorize('admin'), async (req, res) => {
 
         const { role, membership_status, is_active, belt_level, first_name, last_name, phone_number, notes } = req.body;
 
-        const existing = await db.findOne('SELECT id, email FROM users WHERE id = ?', [numId]);
+        const existing = await db.findOne('SELECT id, email, role, is_active, first_name, last_name FROM users WHERE id = ?', [numId]);
         if (!existing) return res.status(404).json({ success: false, message: 'Người dùng không tồn tại' });
+
+        // Hạ quyền / khóa một admin: không cho tự làm với chính mình, và phải còn ít nhất 1 admin khác
+        const demoting   = existing.role === 'admin' && role !== undefined && role !== 'admin';
+        const disabling  = existing.role === 'admin' && is_active !== undefined && !is_active && isActiveFlag(existing.is_active);
+        if ((demoting || disabling) && numId === req.user.id) {
+            return res.status(400).json({ success: false, message: 'Không thể tự hạ quyền hoặc tự khóa tài khoản của chính mình' });
+        }
+        if ((demoting || disabling) && await countOtherActiveAdmins(numId) === 0) {
+            return res.status(400).json({ success: false, message: 'Phải còn ít nhất 1 tài khoản Admin đang hoạt động' });
+        }
 
         const upd = { updated_at: new Date() };
         if (role              !== undefined) upd.role              = role;
@@ -342,11 +366,12 @@ router.delete('/:id', authenticate, authorize('admin'), async (req, res) => {
         const existing = await db.findOne('SELECT id, is_active, role FROM users WHERE id = ?', [numId]);
         if (!existing) return res.status(404).json({ success: false, message: 'Người dùng không tồn tại' });
 
-        if (existing.role === 'admin') {
-            return res.status(403).json({ success: false, message: 'Không thể khóa tài khoản Admin' });
-        }
+        const newActive = isActiveFlag(existing.is_active) ? false : true;
 
-        const newActive = existing.is_active ? false : true;
+        // Khóa một admin: phải còn ít nhất 1 admin khác đang hoạt động (mở khóa thì luôn được)
+        if (existing.role === 'admin' && !newActive && await countOtherActiveAdmins(numId) === 0) {
+            return res.status(400).json({ success: false, message: 'Phải còn ít nhất 1 tài khoản Admin đang hoạt động' });
+        }
         await db.update('users', { is_active: newActive, updated_at: new Date() }, 'id = ?', [numId]);
         invalidateUserCache();
 
@@ -395,8 +420,9 @@ router.delete('/:id/delete', authenticate, authorize('admin'), async (req, res) 
         const existing = await db.findOne('SELECT id, email, role, first_name, last_name FROM users WHERE id = ?', [numId]);
         if (!existing) return res.status(404).json({ success: false, message: 'Người dùng không tồn tại' });
 
-        if (existing.role === 'admin') {
-            return res.status(403).json({ success: false, message: 'Không thể xóa tài khoản Admin' });
+        // Xóa một admin: phải còn ít nhất 1 admin khác đang hoạt động
+        if (existing.role === 'admin' && await countOtherActiveAdmins(numId) === 0) {
+            return res.status(400).json({ success: false, message: 'Không thể xóa Admin cuối cùng đang hoạt động' });
         }
 
         // Xóa sessions trước (tránh FK constraint)
@@ -420,6 +446,13 @@ router.delete('/:id/delete', authenticate, authorize('admin'), async (req, res) 
 
         res.json({ success: true, message: 'Đã xóa tài khoản thành công' });
     } catch (error) {
+        // Tài khoản còn dữ liệu liên kết không cho xóa (vd: đã thăng cấp đai cho người khác)
+        if (isForeignKeyError(error)) {
+            return res.status(409).json({
+                success: false,
+                message: 'Tài khoản này còn dữ liệu liên quan (bài viết, lịch sử thăng đai…) nên không xóa được. Hãy dùng "Khóa" thay vì xóa.'
+            });
+        }
         logger.error('Delete user error:', { error: error.message });
         res.status(500).json({ success: false, message: 'Lỗi server khi xóa tài khoản' });
     }

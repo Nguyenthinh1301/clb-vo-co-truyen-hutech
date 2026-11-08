@@ -6,6 +6,10 @@
     <title>Thành viên - Admin CLB Võ Cổ Truyền HUTECH</title>
     <link rel="stylesheet" href="shared/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Nhãn trạng thái không xuống dòng ("Không HĐ", "Hoạt động") */
+        #tbl .badge { white-space: nowrap; }
+    </style>
 </head>
 <body>
 
@@ -36,6 +40,9 @@
             <div class="form-row">
                 <div class="form-group">
                     <label class="form-label">Vai trò</label>
+                    <div id="f-role-self-hint" style="display:none;font-size:0.75rem;color:#b45309;margin:-2px 0 6px;">
+                        <i class="fas fa-info-circle"></i> Không thể tự đổi vai trò của chính mình
+                    </div>
                     <select class="form-control" id="f-role">
                         <option value="member">Thành viên</option>
                         <option value="student">Học viên</option>
@@ -88,6 +95,11 @@
             </div>
         </div>
         <div class="modal-foot">
+            <!-- Xóa ngay trong form sửa (ẩn khi đang sửa chính mình) -->
+            <button class="btn btn-outline" id="edit-del-btn" onclick="deleteFromEdit()"
+                    style="margin-right:auto;color:#dc2626;border-color:#fecaca;">
+                <i class="fas fa-trash-alt"></i> Xóa tài khoản
+            </button>
             <button class="btn btn-outline" onclick="closeModal()">
                 <i class="fas fa-times"></i> Hủy
             </button>
@@ -190,6 +202,9 @@
                     <span style="font-size:0.875rem;color:#742a2a;">Tất cả dữ liệu của tài khoản này sẽ bị xóa vĩnh viễn.</span>
                 </div>
             </div>
+            <div id="del-admin-note" style="display:none;background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:0.84rem;color:#92400e;">
+                <i class="fas fa-user-shield"></i> Đây là tài khoản <b>Admin</b>. Người này sẽ mất toàn bộ quyền quản trị.
+            </div>
             <p style="margin-bottom:6px;font-size:0.9rem;">Bạn có chắc muốn xóa tài khoản:</p>
             <p><b id="del-name" style="color:#1a252f;font-size:1rem;"></b></p>
             <p style="color:#718096;font-size:0.82rem;" id="del-email"></p>
@@ -217,6 +232,10 @@ var currentPage = 1;
 var PAGE_SIZE   = 20;
 var lockId      = null;
 var lockActive  = null;
+
+// Tài khoản đang đăng nhập — không cho tự khóa / tự xóa / tự hạ quyền
+var ME = (typeof Auth !== 'undefined' && Auth.getUser()) || {};
+var MY_ID = String(ME.id || '');
 
 var ROLE_LBL = { admin: 'Admin', instructor: 'HLV', student: 'Học viên', member: 'Thành viên' };
 var ROLE_CLS = { admin: 'b-danger', instructor: 'b-info', student: 'b-success', member: 'b-secondary' };
@@ -319,6 +338,7 @@ async function loadList() {
             var initial  = ((u.first_name || u.full_name || u.email || '?').charAt(0)).toUpperCase();
             var fullName = [u.first_name, u.last_name].filter(Boolean).join(' ') || u.full_name || '—';
             var isLocked = !u.is_active;
+            var isMe     = String(u.id) === MY_ID;
 
             return '<tr' + (isLocked ? ' style="opacity:0.55;"' : '') + '>' +
                 '<td style="color:#718096;font-size:0.8rem;">' + idx + '</td>' +
@@ -329,6 +349,7 @@ async function loadList() {
                 '</td>' +
                 '<td>' +
                     '<b style="color:#1a252f;">' + safe(fullName, 30) + '</b>' +
+                    (isMe ? ' <span class="badge b-info" style="font-size:0.68rem;vertical-align:1px;">Bạn</span>' : '') +
                     '<br><span style="color:#718096;font-size:0.78rem;">' + escapeHtml(u.email || '—') + '</span>' +
                 '</td>' +
                 '<td style="font-size:0.82rem;color:#4a5568;">' + escapeHtml(u.username || '—') + '</td>' +
@@ -341,23 +362,18 @@ async function loadList() {
                 '</td>' +
                 '<td style="color:#718096;font-size:0.82rem;">' + fmtDate(u.created_at) + '</td>' +
                 '<td>' +
-                    '<div style="display:flex;gap:6px;">' +
+                    '<div style="display:flex;gap:6px;white-space:nowrap;">' +
                         // Chỉ lưu id vào data-attribute, data thực lấy từ userDataMap
                         '<button class="btn btn-sm btn-outline js-edit" data-id="' + u.id + '" title="Chỉnh sửa">' +
                             '<i class="fas fa-edit"></i> Sửa' +
                         '</button>' +
-                        (u.role !== 'admin' ?
+                        // Khóa / Xóa: mọi tài khoản trừ chính mình (backend chặn thêm: không xóa/khóa Admin cuối cùng)
+                        (!isMe ?
                         '<button class="btn btn-sm ' + (isLocked ? 'btn-success' : 'btn-outline') + ' js-lock" ' +
-                            'data-id="' + u.id + '" data-active="' + (u.is_active ? '1' : '0') + '" ' +
-                            'data-name="' + encodeURIComponent(fullName) + '" ' +
-                            'title="' + (isLocked ? 'Mở khóa' : 'Khóa tài khoản') + '">' +
+                            'data-id="' + u.id + '" title="' + (isLocked ? 'Mở khóa tài khoản' : 'Khóa tài khoản') + '">' +
                             '<i class="fas fa-' + (isLocked ? 'unlock' : 'lock') + '"></i>' +
                         '</button>' +
-                        '<button class="btn btn-sm btn-danger js-del" ' +
-                            'data-id="' + u.id + '" ' +
-                            'data-name="' + encodeURIComponent(fullName) + '" ' +
-                            'data-email="' + encodeURIComponent(u.email || '') + '" ' +
-                            'title="Xóa tài khoản">' +
+                        '<button class="btn btn-sm btn-danger js-del" data-id="' + u.id + '" title="Xóa tài khoản">' +
                             '<i class="fas fa-trash-alt"></i>' +
                         '</button>'
                         : '') +
@@ -377,7 +393,7 @@ async function loadList() {
                 '<th style="width:110px;">Hội viên</th>' +
                 '<th style="width:110px;">Tài khoản</th>' +
                 '<th style="width:90px;">Ngày tạo</th>' +
-                '<th style="width:120px;">Thao tác</th>' +
+                '<th style="width:170px;">Thao tác</th>' +
             '</tr></thead>' +
             '<tbody>' + rows + '</tbody>' +
             '</table></div>'
@@ -395,9 +411,11 @@ async function loadList() {
                     if (u) editItem(u);
                     else toast('Không tìm thấy dữ liệu thành viên', 'danger');
                 } else if (btn.classList.contains('js-lock')) {
-                    openLock(uid, btn.dataset.active === '1', decodeURIComponent(btn.dataset.name));
+                    var ul = userDataMap[uid];
+                    if (ul) openLock(uid, !!ul.is_active, displayName(ul), ul.role);
                 } else if (btn.classList.contains('js-del')) {
-                    openDelete(uid, decodeURIComponent(btn.dataset.name), decodeURIComponent(btn.dataset.email));
+                    var ud = userDataMap[uid];
+                    if (ud) openDelete(uid, displayName(ud), ud.email, ud.role);
                 }
             });
         }
@@ -423,8 +441,21 @@ function goPage(p) { currentPage = p; loadList(); }
 // ════════════════════════════════════════
 // MODAL SỬA
 // ════════════════════════════════════════
+function displayName(u) {
+    return [u.first_name, u.last_name].filter(Boolean).join(' ') || u.full_name || u.email || '—';
+}
+
+var editingUser = null;
+
 function editItem(u) {
     if (!u) { toast('Không tìm thấy dữ liệu thành viên', 'danger'); return; }
+    editingUser = u;
+
+    // Đang sửa chính mình: không cho đổi vai trò (tránh tự mất quyền Admin), không hiện nút xóa
+    var isMe = String(u.id) === MY_ID;
+    $('f-role').disabled = isMe;
+    $('f-role-self-hint').style.display = isMe ? 'block' : 'none';
+    $('edit-del-btn').style.display = isMe ? 'none' : '';
 
     var fullName = [u.first_name, u.last_name].filter(Boolean).join(' ') || u.full_name || '';
     var initial  = (fullName || u.email || '?').charAt(0).toUpperCase();
@@ -446,7 +477,15 @@ function editItem(u) {
     setTimeout(function() { $('f-role').focus(); }, 100);
 }
 
-function closeModal() { $('modal').classList.remove('open'); }
+function closeModal() { $('modal').classList.remove('open'); editingUser = null; }
+
+// Nút "Xóa tài khoản" trong form sửa → đóng form, mở hộp xác nhận xóa
+function deleteFromEdit() {
+    var u = editingUser;
+    if (!u) return;
+    closeModal();
+    openDelete(u.id, displayName(u), u.email, u.role);
+}
 
 // ════════════════════════════════════════
 // LƯU SỬA
@@ -461,7 +500,6 @@ async function save() {
     var firstName = nameParts.join(' ');
 
     var body = {
-        role:              $('f-role').value,
         membership_status: $('f-membership').value,
         first_name:        firstName || $('f-name').value.trim(),
         last_name:         lastName,
@@ -469,6 +507,8 @@ async function save() {
         belt_level:        $('f-belt').value         || null,
         notes:             $('f-notes').value.trim() || null
     };
+    // Chỉ gửi vai trò khi được phép đổi (không gửi khi đang sửa chính mình)
+    if (!$('f-role').disabled) body.role = $('f-role').value;
 
     var btn = $('save-btn');
     btn.disabled = true;
@@ -555,16 +595,18 @@ async function createUser() {
 // ════════════════════════════════════════
 // KHÓA / MỞ KHÓA
 // ════════════════════════════════════════
-function openLock(id, isActive, name) {
+function openLock(id, isActive, name, role) {
     lockId     = id;
     lockActive = isActive;
     setHTML('lock-title',
         '<i class="fas fa-' + (isActive ? 'lock' : 'unlock') + '" style="color:#e74c3c;margin-right:8px;"></i>' +
         (isActive ? 'Khóa tài khoản' : 'Mở khóa tài khoản'));
     setHTML('lock-msg', isActive
-        ? 'Bạn có chắc muốn <b>khóa</b> tài khoản của:'
+        ? 'Bạn có chắc muốn <b>khóa</b> tài khoản của:' +
+          (role === 'admin' ? '<br><small style="color:#92400e;">Đây là Admin — người này sẽ bị đăng xuất và không vào được trang quản trị.</small>' : '')
         : 'Bạn có chắc muốn <b>mở khóa</b> tài khoản của:');
-    setHTML('lock-name', name);
+    // escapeHtml: tên do người dùng tự đặt khi đăng ký — không được chèn dạng HTML (chống XSS)
+    setHTML('lock-name', escapeHtml(name));
     $('lock-btn').innerHTML = isActive
         ? '<i class="fas fa-lock"></i> Khóa tài khoản'
         : '<i class="fas fa-unlock"></i> Mở khóa';
@@ -599,10 +641,12 @@ async function confirmLock() {
 // ════════════════════════════════════════
 var deleteId = null;
 
-function openDelete(id, name, email) {
+function openDelete(id, name, email, role) {
     deleteId = id;
-    setHTML('del-name', name || '—');
-    setHTML('del-email', email || '');
+    // escapeHtml: chống XSS qua tên/email do người dùng tự đặt
+    setHTML('del-name', escapeHtml(name || '—'));
+    setHTML('del-email', escapeHtml(email || ''));
+    $('del-admin-note').style.display = role === 'admin' ? 'block' : 'none';
     $('del-modal').classList.add('open');
 }
 
