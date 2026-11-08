@@ -45,7 +45,6 @@ Test-Url "Health Check" "$BACKEND_URL/health"
 Test-Url "CMS News" "$BACKEND_URL/api/cms/news"
 Test-Url "CMS Events" "$BACKEND_URL/api/cms/events"
 Test-Url "CMS Gallery" "$BACKEND_URL/api/cms/gallery"
-Test-Url "CMS Announcements" "$BACKEND_URL/api/cms/announcements"
 Test-Url "CMS Reviews" "$BACKEND_URL/api/cms/reviews"
 
 # FRONTEND TESTS

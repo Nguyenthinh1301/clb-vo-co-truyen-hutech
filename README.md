@@ -1,226 +1,66 @@
-# 🥋 CLB Võ Cổ Truyền HUTECH - Website & Backend API
+# CLB Võ Cổ Truyền HUTECH — Website & Backend
 
-Website chính thức và hệ thống quản lý nội dung cho Câu Lạc Bộ Võ Cổ Truyền Trường Đại Học Công Nghệ TP.HCM (HUTECH).
+Website chính thức và trang quản trị (CMS) của Câu Lạc Bộ Võ Cổ Truyền, Trường Đại học Công nghệ TP.HCM (HUTECH).
 
----
+| | Địa chỉ | Chạy trên |
+|---|---|---|
+| Website | https://vocotruyenhutech.netlify.app | Netlify (tự deploy khi push `main`) |
+| Trang quản trị | https://vocotruyenhutech.netlify.app/admin/ | Netlify |
+| Backend API | https://clb-vo-co-truyen-hutech.onrender.com | Render (gói miễn phí) + PostgreSQL (Neon) |
 
-## 🌐 WEBSITE PRODUCTION
+## Cấu trúc thư mục
 
-**Frontend:** https://vocotruyenhutech.netlify.app  
-**Backend API:** https://clb-vo-co-truyen-hutech.onrender.com  
-**Admin Panel:** https://vocotruyenhutech.netlify.app/admin/
-
-**Status:** ✅ ONLINE & OPERATIONAL
-
----
-
-## 🎯 TÍNH NĂNG
-
-### Website Công Khai
-- ✅ Trang chủ với thông tin tổng quan
-- ✅ Giới thiệu về CLB
-- ✅ Đội ngũ huấn luyện viên
-- ✅ Lịch tập luyện
-- ✅ Thành tích & giải thưởng
-- ✅ Tin tức & sự kiện
-- ✅ Thư viện hình ảnh
-- ✅ Cảm nhận học viên
-- ✅ Form liên hệ
-
-### Admin Panel (CMS)
-- ✅ Dashboard với thống kê
-- ✅ Quản lý tin tức
-- ✅ Quản lý sự kiện
-- ✅ Quản lý thông báo
-- ✅ Quản lý thư viện ảnh
-- ✅ Quản lý cảm nhận
-- ✅ Quản lý thành viên
-- ✅ Quản lý liên hệ
-
----
-
-## 🔑 ADMIN ACCESS
-
-**URL:** https://vocotruyenhutech.netlify.app/admin/  
-**Email:** admin@vocotruyenhutech.edu.vn  
-**Password:** <mật khẩu admin>
-
----
-
-## 📚 TÀI LIỆU HƯỚNG DẪN
-
-### 📖 Documentation
-Tất cả tài liệu đã được tổ chức trong thư mục **[`docs/`](docs/)**:
-
-- **[📖 Documentation Index](docs/README.md)** - Danh mục tài liệu đầy đủ
-- **[⚡ Quick Start](QUICK_START.md)** - Bắt đầu nhanh trong 5 phút
-- **[🚀 Deployment Guide](docs/deployment/README.md)** - Hướng dẫn deploy production
-- **[💻 Development Guide](docs/development/local-setup.md)** - Setup môi trường dev
-- **[👨‍💼 Admin Guide](docs/admin/login-guide.md)** - Hướng dẫn quản trị
-- **[🔧 Fixes & Troubleshooting](docs/fixes/)** - Khắc phục sự cố
-- **[📊 Reports & QA](docs/reports/)** - Báo cáo và test results
-
----
-
-## ✅ KIỂM TRA NHANH
-
-### Kiểm tra backend
-```powershell
-Invoke-RestMethod -Uri "https://clb-vo-co-truyen-hutech.onrender.com/health"
+```
+├── website/                  Frontend tĩnh (HTML/CSS/JS thuần, không cần build)
+│   ├── index.html            Trang chủ — nạp các section trong components/
+│   ├── components/           Header, hero, giới thiệu, lịch tập, thư viện, liên hệ, footer…
+│   ├── views/                Các trang con (giới thiệu, tin tức, sự kiện, thư viện, liên hệ…)
+│   ├── admin/                Trang quản trị (đăng nhập, dashboard, tin tức, sự kiện, thành viên…)
+│   │   └── shared/           auth.js · api.js · ui.js · style.css dùng chung cho admin
+│   ├── assets/               CSS từng trang, js/config.js (chọn địa chỉ API), hình ảnh, video
+│   ├── styles.css            CSS chính · styles-enhanced.css: hiệu ứng / responsive bổ sung
+│   └── script.js             JS chính · script-enhanced.js: hiệu ứng cuộn, đếm số, ảnh lazy
+├── backend/                  API Node.js + Express
+│   ├── server.js             Điểm khởi động: middleware, CORS, rate limit, gắn routes
+│   ├── config/               Kết nối DB (PostgreSQL / SQL Server / MySQL, chọn bằng DB_TYPE)
+│   ├── routes/               Các API: auth, users, admin-cms, gallery, contact, events…
+│   ├── middleware/           Xác thực JWT, kiểm tra dữ liệu, xử lý lỗi
+│   ├── services/             Email, cache, log, lịch chạy định kỳ, websocket…
+│   ├── database/             Schema SQL (pg-schema.sql là bản dùng cho production) + migrations
+│   ├── scripts/              Tiện ích: đặt lại mật khẩu admin, khởi tạo DB, keep-alive
+│   └── tests/                Test API (không cần DB thật) — chạy bằng `npm test`
+├── scripts/                  Script PowerShell: khởi động local, kiểm tra production
+├── docs/                     Tài liệu
+└── netlify.toml              Cấu hình Netlify (thư mục publish, header bảo mật, chuyển hướng)
 ```
 
-### Kiểm tra toàn bộ production
-```powershell
-.\scripts\verify-production.ps1
-```
+## Bắt đầu nhanh (máy local)
 
-**Kết quả:** ✅ 14/14 tests pass (100%)
-
----
-
-## 🛠️ CÔNG NGHỆ SỬ DỤNG
-
-### Backend
-- **Runtime:** Node.js 18+
-- **Framework:** Express.js
-- **Database:** PostgreSQL (Render)
-- **Authentication:** JWT + Refresh Tokens
-- **Email:** Gmail SMTP (port 587)
-- **Caching:** Redis (optional)
-- **Security:** Helmet, CORS, Rate Limiting
-
-### Frontend
-- **HTML5** + **CSS3** + **Vanilla JavaScript**
-- **Component-based** architecture
-- **Responsive Design** (mobile-friendly)
-- **Bootstrap Icons**
-- **Lightbox** gallery
-
-### Deployment
-- **Backend:** Render.com (auto-deploy)
-- **Frontend:** Netlify (auto-deploy)
-- **Repository:** GitHub
-- **SSL:** Auto-managed
-
----
-
-## 🧪 TESTING
-
-### Test Suite
-```powershell
-# Full project test
-.\scripts\test-project.ps1
-
-# Production verification
-.\scripts\verify-production.ps1
-
-# Contact form test
-.\scripts\test-contact-flow-quick.ps1
-```
-
-**Test Results:** ✅ 32/32 tests passed (100%)
-
----
-
-## 📊 HIỆU SUẤT
-
-| Metric | Current | Target | Status |
-|--------|---------|--------|--------|
-| Backend Response | 200-500ms | <1s | ✅ |
-| Frontend Load | <2s | <3s | ✅ |
-| Database Query | <100ms | <200ms | ✅ |
-| API Uptime | 99.9% | 99% | ✅ |
-
----
-
-## 🚀 DEPLOYMENT
-
-### Auto-Deployment Workflow
-```
-Code Push (GitHub main branch)
-    ↓
-Render auto-deploys backend (2-3 min)
-    ↓
-Netlify auto-deploys frontend (1 min)
-    ↓
-✅ Production Updated
-```
-
-### Manual Deploy
 ```bash
-git add .
-git commit -m "your message"
-git push origin main
+# Backend
+cd backend
+cp .env.example .env        # điền thông tin DB + JWT_SECRET
+npm install
+npm run dev                 # http://localhost:3001  (kiểm tra: /health)
 ```
 
----
+Frontend là HTML tĩnh: mở thư mục `website/` bằng **Live Server** (VS Code) hoặc bất kỳ web server tĩnh nào.
+Khi mở từ `localhost`, trang tự gọi backend ở `http://localhost:3001`.
+Không muốn chạy backend trên máy? Ở trang đăng nhập admin bấm **"Dùng máy chủ thật"** để gọi backend production
+(xem [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)).
 
-## 🔐 BẢO MẬT
+## Tài liệu
 
-- ✅ JWT Authentication
-- ✅ Password Hashing (bcrypt)
-- ✅ Rate Limiting
-- ✅ CORS Protection
-- ✅ SQL Injection Prevention
-- ✅ XSS Protection
-- ✅ HTTPS Everywhere
+| Tài liệu | Nội dung |
+|---|---|
+| [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) | Chạy local, cấu trúc code, quy ước, test |
+| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Deploy Render + Netlify, biến môi trường, xử lý sự cố |
+| [docs/ADMIN-GUIDE.md](docs/ADMIN-GUIDE.md) | Hướng dẫn dùng trang quản trị, đặt lại mật khẩu admin |
+| [docs/MSSQL_SETUP.md](docs/MSSQL_SETUP.md) | Chạy với SQL Server thay cho PostgreSQL (tùy chọn) |
+| [docs/ROADMAP.md](docs/ROADMAP.md) | Kế hoạch tính năng |
+| [docs/CHANGELOG.md](docs/CHANGELOG.md) | Lịch sử thay đổi |
 
----
+## Bảo mật
 
-## 📞 HỖ TRỢ
-
-### Documentation
-- **Main Guide:** [README-DEPLOYMENT.md](README-DEPLOYMENT.md)
-- **Troubleshooting:** Section "TROUBLESHOOTING" in README-DEPLOYMENT.md
-- **Admin Issues:** [ADMIN-LOGIN-GUIDE.md](ADMIN-LOGIN-GUIDE.md)
-
-### Technical Support
-- **Email:** vctht2026@gmail.com
-- **GitHub:** [Issues](https://github.com/Nguyenthinh1301/clb-vo-co-truyen-hutech/issues)
-
----
-
-## 📝 GHI CHÚ
-
-### Lần Cuối Cập Nhật
-**Ngày:** 10/06/2026  
-**Commit:** e36c2ee  
-**Status:** ✅ Production Ready
-
-### Các Vấn Đề Đã Sửa
-1. ✅ Gallery images not displaying
-2. ✅ Contact form email notifications
-3. ✅ Gallery API endpoint
-4. ✅ Team page structure
-5. ✅ Production cold start
-
-### Next Steps
-1. Setup Cron-Job.org (prevent cold start) - 5 min
-2. Setup UptimeRobot (monitoring) - 10 min
-3. Add more content via admin panel
-4. Regular maintenance
-
----
-
-## 🎉 STATUS
-
-```
-✅ Development: Complete
-✅ Testing: 100% Pass (32/32)
-✅ Deployment: Successful
-✅ Documentation: Complete
-✅ Production: Operational
-```
-
-**Dự án đã sẵn sàng sử dụng!**
-
----
-
-## 📄 LICENSE
-
-© 2026 CLB Võ Cổ Truyền HUTECH. All rights reserved.
-
----
-
-**Developed by:** Kiro AI  
-**For:** CLB Võ Cổ Truyền - Trường Đại Học Công Nghệ TP.HCM (HUTECH)
+- Repo này **công khai** — không bao giờ commit `.env`, mật khẩu, API key, token. Bí mật chỉ đặt trong **Render → Environment**.
+- Không có mật khẩu admin mặc định trong code. Quên mật khẩu: xem [docs/ADMIN-GUIDE.md](docs/ADMIN-GUIDE.md#quên-mật-khẩu-admin).

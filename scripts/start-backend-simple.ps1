@@ -1,6 +1,6 @@
-# Simple Backend Starter
-$BACKEND_DIR = "d:\Code\ThongTin-VCT\backend"
-$LOG_FILE = "d:\Code\ThongTin-VCT\backend\server.log"
+﻿# Simple Backend Starter — mở backend (npm run dev) trong cửa sổ PowerShell riêng
+# Đường dẫn tính theo vị trí script → chạy được trên mọi máy clone repo
+$BACKEND_DIR = (Resolve-Path (Join-Path $PSScriptRoot "..\backend")).Path
 
 Write-Host "=====================================" -ForegroundColor Cyan
 Write-Host "  Starting Backend Server" -ForegroundColor Cyan
@@ -13,15 +13,16 @@ if (-not (Test-Path $BACKEND_DIR)) {
     exit 1
 }
 
-# Kill any existing node processes
-Write-Host "🧹 Cleaning up old processes..." -ForegroundColor Yellow
-Stop-Process -Name "node" -Force -ErrorAction SilentlyContinue
+# Chỉ dừng tiến trình đang chiếm cổng 3001 (KHÔNG tắt mọi tiến trình node trên máy —
+# việc đó sẽ tắt luôn Live Server, extension VS Code và các ứng dụng Node khác)
+Write-Host "🧹 Cleaning up old backend on port 3001..." -ForegroundColor Yellow
+Get-NetTCPConnection -LocalPort 3001 -State Listen -ErrorAction SilentlyContinue |
+    ForEach-Object { Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue }
 Start-Sleep -Seconds 1
 
 # Start backend
 Write-Host "🚀 Starting backend on port 3001..." -ForegroundColor Green
 Write-Host "📁 Directory: $BACKEND_DIR" -ForegroundColor Gray
-Write-Host "📝 Log file: $LOG_FILE" -ForegroundColor Gray
 Write-Host ""
 
 Set-Location $BACKEND_DIR

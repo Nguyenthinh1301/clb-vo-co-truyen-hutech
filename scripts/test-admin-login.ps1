@@ -1,4 +1,4 @@
-#!/usr/bin/env pwsh
+﻿#!/usr/bin/env pwsh
 # Test Admin Login System
 
 Write-Host "`nTEST ADMIN LOGIN SYSTEM`n" -ForegroundColor Cyan

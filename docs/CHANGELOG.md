@@ -2,6 +2,28 @@
 
 All notable changes to the CLB Võ Cổ Truyền HUTECH Backend API project.
 
+## [1.1.0] - 2026-11-08
+
+### Bảo mật
+- Đổi toàn bộ bí mật từng bị lộ trong repo (JWT secret, mật khẩu Gmail, mật khẩu admin); xóa bí mật khỏi tài liệu.
+- Rate limit theo IP thật của người dùng (`CF-Connecting-IP`), giới hạn cả `/api/v1/auth/login`.
+- Khóa các endpoint debug `/health/*`; khách không xem được tin nháp; lỗi 500 không lộ chi tiết DB.
+- Sửa XSS ở hộp thoại khóa/xóa thành viên; không còn mật khẩu admin mặc định trong code / script.
+
+### Website
+- Tông màu theo logo (xanh · vàng · trắng); sửa ảnh thư viện bị ẩn, lớp phủ xanh trên ảnh, hero trên điện thoại.
+- Bỏ chức năng Thông báo (trang chủ, trang công khai, trang admin) — link cũ chuyển hướng 301.
+
+### Trang quản trị
+- Trang đăng nhập mới (trạng thái máy chủ khởi động, hiện/ẩn mật khẩu, nút "Dùng máy chủ thật" khi chạy local).
+- Dashboard: sửa lỗi 500 thống kê liên hệ trên PostgreSQL, số liệu đúng trên toàn bộ dữ liệu, thêm thẻ Album ảnh & Liên hệ.
+- Thành viên: Khóa / Xóa mọi tài khoản trừ chính mình, luôn giữ ít nhất 1 Admin.
+
+### Dọn dẹp
+- Xóa ~130 file thừa: báo cáo cũ, script vá lỗi một lần, code không dùng, 9 thư viện npm không dùng.
+- Tài liệu gọn lại: `README.md`, `docs/DEVELOPMENT.md`, `docs/DEPLOYMENT.md`, `docs/ADMIN-GUIDE.md`.
+- `npm test` chạy được (22 test, không cần DB thật); script PowerShell chạy được trên Windows PowerShell 5.1.
+
 ## [1.0.0] - 2026-01-17
 
 ### 🎉 Initial Release - All 5 Phases Completed

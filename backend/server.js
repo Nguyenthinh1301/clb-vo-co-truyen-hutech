@@ -119,8 +119,11 @@ app.use(express.urlencoded({ extended: true, limit: '15mb' }));
 // Compression middleware
 app.use(compression());
 
-// Logging middleware
-if (process.env.NODE_ENV === 'development') {
+// Logging middleware (tắt khi chạy test để output gọn)
+const IS_JEST = !!process.env.JEST_WORKER_ID;
+if (IS_JEST) {
+    // không log request trong test
+} else if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'));
 } else {
     app.use(morgan('combined'));
@@ -341,6 +344,10 @@ const PORT = process.env.PORT || 3001;
 // Development: listen localhost để bảo mật hơn
 const HOST = process.env.HOST || (process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost');
 
+// Khi chạy dưới Jest: chỉ export app cho supertest, không mở cổng / không chạy cron / không tạo admin
+if (!IS_JEST) startServer();
+
+function startServer() {
 const server = app.listen(PORT, HOST, () => {
     console.log(`
 🚀 CLB Võ Cổ Truyền HUTECH API Server
@@ -369,5 +376,6 @@ const server = app.listen(PORT, HOST, () => {
     // Đảm bảo admin user tồn tại trong DB
     ensureAdminUser().catch(err => console.error('ensureAdminUser error:', err.message));
 });
+}
 
 module.exports = app;

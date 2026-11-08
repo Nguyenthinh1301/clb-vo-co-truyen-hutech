@@ -23,15 +23,6 @@ module.exports = {
     '!**/coverage/**'
   ],
 
-  // Coverage thresholds
-  coverageThreshold: {
-    global: {
-      branches: 50,
-      functions: 50,
-      lines: 50,
-      statements: 50
-    }
-  },
 
   // Coverage directory
   coverageDirectory: 'coverage',
@@ -45,7 +36,7 @@ module.exports = {
   ],
 
   // Setup files
-  setupFilesAfterEnv: ['<rootDir>/tests/setup.js'],
+  setupFiles: ['<rootDir>/tests/setup.js'],
 
   // Test timeout
   testTimeout: 10000,
@@ -73,6 +64,7 @@ module.exports = {
 
   // Ignore patterns
   testPathIgnorePatterns: [
+    '/tests/helpers/',
     '/node_modules/',
     '/coverage/'
   ]

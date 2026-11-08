@@ -2,6 +2,10 @@
  * Reset admin password trên Production (PostgreSQL/Neon)
  * Chạy: node scripts/reset-admin-production.js
  * Hoặc set env: DATABASE_URL=... node scripts/reset-admin-production.js
+ *
+ * Mật khẩu mới: lấy từ biến ADMIN_PASSWORD nếu có, nếu không thì SINH NGẪU NHIÊN
+ * (không bao giờ dùng mật khẩu viết cứng trong code — repo này công khai).
+ * Mật khẩu chỉ in ra 1 lần trên terminal: hãy lưu vào trình quản lý mật khẩu ngay.
  */
 
 require('dotenv').config({ path: require('path').join(__dirname, '../.env.production') });
@@ -14,8 +18,10 @@ const pool = new Pool({
 });
 
 async function resetAdmin() {
-    const email    = 'admin@vocotruyenhutech.edu.vn';
-    const password = 'Admin@Hutech2026!';
+    const email    = process.env.ADMIN_EMAIL || 'admin@vocotruyenhutech.edu.vn';
+    // Ngẫu nhiên, luôn có chữ hoa + chữ thường + số để qua kiểm tra độ mạnh của trang đổi mật khẩu
+    const password = process.env.ADMIN_PASSWORD
+        || require('crypto').randomBytes(12).toString('base64url') + 'Aa1';
 
     try {
         console.log('🔌 Connecting to PostgreSQL (Neon)...');
