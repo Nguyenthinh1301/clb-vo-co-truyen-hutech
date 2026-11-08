@@ -44,6 +44,8 @@ if (page) load();
 
 async function load() {
     page.innerHTML = `
+        <!-- Thông báo chung khi máy chủ giới hạn truy cập (429) -->
+        <div id="dash-notice"></div>
         <!-- Stats -->
         <div class="stats dash-stats">
             <div class="stat" onclick="location.href='tin-tuc.html'" style="cursor:pointer;" title="Quản lý tin tức">
@@ -166,6 +168,22 @@ async function load() {
         loadGalleryStats(),
         loadContactStats()
     ]);
+
+    // Bị giới hạn truy cập: hiện 1 thông báo rõ ràng + nút tải lại, thay vì để người dùng chỉ thấy chữ "Lỗi" trên các thẻ
+    if (rateLimited) {
+        setHTML('dash-notice',
+            '<div class="alert alert-warning" style="margin-bottom:16px;">' +
+                '<i class="fas fa-hourglass-half"></i>' +
+                '<div><strong>Máy chủ đang tạm giới hạn truy cập</strong> vì có quá nhiều yêu cầu trong thời gian ngắn. ' +
+                'Một số số liệu chưa tải được — vui lòng đợi vài phút rồi ' +
+                '<a href="#" onclick="location.reload();return false;" style="font-weight:700;">tải lại trang</a>.</div>' +
+            '</div>');
+    }
+}
+
+var rateLimited = false;
+function noteError(e) {
+    if (e && /quá nhiều|too many|429/i.test(e.message || '')) rateLimited = true;
 }
 
 // Nhãn danh mục tin tức — giống trang Tin tức (trước đây dashboard hiện mã thô như "competition")
@@ -176,6 +194,7 @@ var CAT_LABELS = {
 
 // Hiện lỗi trên thẻ (escape để thông báo lỗi không chèn được HTML)
 function statError(id, e) {
+    noteError(e);
     setHTML(id, '<span style="color:#e74c3c;font-size:0.9rem;" title="' + escapeHtml((e && e.message) || '') + '">Lỗi</span>');
     setHTML(id + '-sub', '');
 }
@@ -183,13 +202,14 @@ function statError(id, e) {
 // ── Tin tức ──
 async function loadNewsStats() {
     try {
-        // Gọi thêm 1 request chỉ đếm bài đã đăng → số đúng trên TOÀN BỘ tin, không chỉ 5 bài mới nhất
-        var both = await Promise.all([API.news.list(1, 5, '', ''), API.news.list(1, 1, 'published', '')]);
-        var r    = both[0];
-        var list = (r.data && r.data.news) || [];
-        var total = (r.data && r.data.total) || list.length;
-        var published = (both[1].data && both[1].data.total) || 0;
-        var drafts    = Math.max(0, total - published);
+        // 1 request lấy tối đa 100 tin → đếm đã đăng / nháp trên toàn bộ, 5 tin đầu dùng cho bảng "gần đây"
+        // (CLB có ít tin; nếu > 100 thì số đếm là trên 100 tin mới nhất)
+        var r    = await API.news.list(1, 100, '', '');
+        var all  = (r.data && r.data.news) || [];
+        var total = (r.data && r.data.total) || all.length;
+        var published = all.filter(function (n) { return n.status === 'published'; }).length;
+        var drafts    = all.filter(function (n) { return n.status === 'draft'; }).length;
+        var list = all.slice(0, 5);
 
         setHTML('s-news', total);
         setHTML('s-news-sub',
@@ -217,8 +237,8 @@ async function loadNewsStats() {
             empty('news-list', 'newspaper', 'Chưa có tin tức nào');
         }
     } catch (e) {
-        setHTML('s-news', '<span style="color:#e74c3c;font-size:0.9rem;">Lỗi</span>');
-        empty('news-list', 'exclamation-circle', 'Không thể tải: ' + e.message);
+        statError('s-news', e);
+        empty('news-list', 'exclamation-circle', 'Không thể tải: ' + escapeHtml(e.message || ''));
     }
 }
 
@@ -226,19 +246,15 @@ async function loadNewsStats() {
 async function loadEventStats() {
     try {
         // Đếm "sắp tới" / "đang diễn ra" trên toàn bộ sự kiện (trước đây chỉ đếm trong 5 sự kiện mới nhất)
-        var all3 = await Promise.all([
-            API.events.list(1, 5, '', '', ''),
-            API.events.list(1, 1, 'upcoming', '', ''),
-            API.events.list(1, 1, 'ongoing', '', '')
-        ]);
-        var r    = all3[0];
-        var list = (r.data && r.data.events) || [];
-        var total = (r.data && r.data.total) || list.length;
+        var r    = await API.events.list(1, 100, '', '', '');
+        var allEv = (r.data && r.data.events) || [];
+        var total = (r.data && r.data.total) || allEv.length;
+        var list = allEv.slice(0, 5);
 
         setHTML('s-ev', total);
 
-        var upcoming = (all3[1].data && all3[1].data.total) || 0;
-        var ongoing  = (all3[2].data && all3[2].data.total) || 0;
+        var upcoming = allEv.filter(function (ev) { return ev.status === 'upcoming'; }).length;
+        var ongoing  = allEv.filter(function (ev) { return ev.status === 'ongoing';  }).length;
         var subParts = [];
         if (ongoing)  subParts.push('<span style="color:#38a169;">' + ongoing  + ' đang diễn ra</span>');
         if (upcoming) subParts.push(upcoming + ' sắp tới');
@@ -266,8 +282,8 @@ async function loadEventStats() {
             empty('ev-list', 'calendar-alt', 'Chưa có sự kiện nào');
         }
     } catch (e) {
-        setHTML('s-ev', '<span style="color:#e74c3c;font-size:0.9rem;">Lỗi</span>');
-        empty('ev-list', 'exclamation-circle', 'Không thể tải: ' + e.message);
+        statError('s-ev', e);
+        empty('ev-list', 'exclamation-circle', 'Không thể tải: ' + escapeHtml(e.message || ''));
     }
 }
 
@@ -275,9 +291,11 @@ async function loadEventStats() {
 async function loadUserStats() {
     try {
         // Tổng tài khoản + số thành viên có trạng thái "active" (trước đây ghi "đang hoạt động" cho TỔNG tài khoản)
-        var both  = await Promise.all([API.users.total(), API.users.list(1, 1, '', '', 'active')]);
-        var total  = (both[0].pagination && both[0].pagination.total) || 0;
-        var active = (both[1].pagination && both[1].pagination.total) || 0;
+        var r      = await API.users.list(1, 100);
+        var users  = (r.data && (r.data.users || r.data)) || [];
+        if (!Array.isArray(users)) users = [];
+        var total  = (r.pagination && r.pagination.total) || users.length;
+        var active = users.filter(function (u) { return u.membership_status === 'active' && u.is_active !== false && u.is_active !== 0; }).length;
         setHTML('s-usr', total);
         setHTML('s-usr-sub', active + ' đang hoạt động' + (total - active > 0 ? ' · ' + (total - active) + ' khác' : ''));
     } catch (e) {
@@ -297,8 +315,7 @@ async function loadAnnouncementStats() {
             (all.length - active ? ' · ' + (all.length - active) + ' đã ẩn' : '')
         );
     } catch (e) {
-        setHTML('s-ann', '<span style="color:#e74c3c;font-size:0.9rem;">Lỗi</span>');
-        setHTML('s-ann-sub', '');
+        statError('s-ann', e);
     }
 }
 
@@ -318,8 +335,7 @@ async function loadReviewStats() {
             (avg ? ' · ⭐ ' + avg : '')
         );
     } catch (e) {
-        setHTML('s-rv', '<span style="color:#e74c3c;font-size:0.9rem;">Lỗi</span>');
-        setHTML('s-rv-sub', '');
+        statError('s-rv', e);
     }
 }
 
