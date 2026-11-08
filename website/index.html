@@ -126,7 +126,7 @@
 
         document.addEventListener('DOMContentLoaded', async function() {
             // ── Ưu tiên 1: Load header + hero song song (visible first) ──
-            // (Đã bỏ mục "Thông Báo Mới Nhất" khỏi trang chủ — thông báo vẫn xem ở views/thong-bao.html)
+            // (Đã bỏ toàn bộ chức năng Thông báo khỏi website)
             await Promise.all([
                 loadComponent('header-placeholder', 'components/header.html'),
                 loadComponent('hero-placeholder',   'components/hero-section.html')

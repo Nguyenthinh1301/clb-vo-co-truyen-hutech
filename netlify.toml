@@ -11,6 +11,17 @@
 # Không dùng rule "/* → /index.html" (kiểu SPA): đây là site nhiều trang tĩnh,
 # rule đó khiến URL sai trả về trang chủ với mã 200 thay vì 404.
 
+# Chức năng Thông báo đã bỏ — chuyển link cũ (bookmark, Google) sang trang thay thế
+[[redirects]]
+  from = "/views/thong-bao.html"
+  to = "/views/tin-tuc.html"
+  status = 301
+
+[[redirects]]
+  from = "/admin/thong-bao.html"
+  to = "/admin/dashboard.html"
+  status = 301
+
 # Headers for security
 [[headers]]
   for = "/*"

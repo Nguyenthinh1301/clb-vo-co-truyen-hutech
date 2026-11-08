@@ -114,7 +114,6 @@ function buildSidebar(user, activePage) {
     navHTML += '<div class="sb-section">Nội dung</div>';
     navHTML += `<a href="tin-tuc.html" class="sb-link${activePage==='tin-tuc.html'?' active':''}"><i class="fas fa-newspaper"></i> Tin tức</a>`;
     navHTML += `<a href="su-kien.html" class="sb-link${activePage==='su-kien.html'?' active':''}"><i class="fas fa-calendar-alt"></i> Sự kiện</a>`;
-    navHTML += `<a href="thong-bao.html" class="sb-link${activePage==='thong-bao.html'?' active':''}"><i class="fas fa-bell"></i> Thông báo</a>`;
     navHTML += `<a href="cam-nhan.html" class="sb-link${activePage==='cam-nhan.html'?' active':''}"><i class="fas fa-heart"></i> Cảm nhận SV</a>`;
     navHTML += `<a href="thu-vien.html" class="sb-link${activePage==='thu-vien.html'?' active':''}"><i class="fas fa-images"></i> Thư viện ảnh</a>`;
     navHTML += `<a href="hoat-dong.html" class="sb-link${activePage==='hoat-dong.html'?' active':''}"><i class="fas fa-trophy"></i> Hoạt động</a>`;

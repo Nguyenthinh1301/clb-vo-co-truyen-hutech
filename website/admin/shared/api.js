@@ -94,18 +94,6 @@ const API = {
         delete: id   => API.delete(`/cms/events/${id}`)
     },
 
-    announcements: {
-        list:   (status='', type='', priority='', q='') => API.get(
-            '/cms/announcements?all=1' +
-            (status   ? '&status='   + status   : '') +
-            (type     ? '&type='     + type     : '') +
-            (priority ? '&priority=' + priority : '') +
-            (q        ? '&q='        + encodeURIComponent(q) : '')
-        ),
-        create: data => API.post('/cms/announcements', data),
-        update: (id, data) => API.put(`/cms/announcements/${id}`, data),
-        delete: id   => API.delete(`/cms/announcements/${id}`)
-    },
 
     reviews: {
         list:   (status='', rating='', q='') => API.get(
