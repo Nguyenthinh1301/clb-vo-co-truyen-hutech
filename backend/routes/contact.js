@@ -496,38 +496,18 @@ router.get('/stats/overview', authenticate, authorize('admin'), async (req, res)
             params.push(end_date);
         }
 
-        const [
-            [overallRows],
-            [statusRows],
-            [dailyRows]
-        ] = await Promise.all([
-            // Overall statistics
-            db.query(
-                `SELECT
-                 COUNT(*) as total_messages,
-                 SUM(CASE WHEN status = 'new' THEN 1 ELSE 0 END) as new_messages,
-                 SUM(CASE WHEN status = 'read' THEN 1 ELSE 0 END) as read_messages,
-                 SUM(CASE WHEN status = 'replied' THEN 1 ELSE 0 END) as replied_messages,
-                 SUM(CASE WHEN status = 'archived' THEN 1 ELSE 0 END) as archived_messages,
-                 AVG(CASE WHEN replied_at IS NOT NULL
-                     THEN DATEDIFF(HOUR, created_at, replied_at)
-                     ELSE NULL END) as avg_response_time_hours
-                 FROM contact_messages WHERE ${whereClause}`,
-                params
-            ),
-
-            // By status
-            db.query(
+        // Chỉ dùng SQL chung cho MySQL / MSSQL / PostgreSQL qua db.find / db.findOne.
+        // (Bản cũ dùng DATEDIFF(HOUR, …) — cú pháp riêng của MSSQL → lỗi 500 trên production PostgreSQL;
+        //  và destructuring kết quả db.query khác nhau giữa các adapter.)
+        const [statusRows, dailyRows, repliedRows] = await Promise.all([
+            db.find(
                 `SELECT status, COUNT(*) as count
                  FROM contact_messages WHERE ${whereClause}
                  GROUP BY status`,
                 params
             ),
-
-            // Daily statistics
-            db.query(
-                `SELECT
-                 CAST(created_at AS DATE) as date,
+            db.find(
+                `SELECT CAST(created_at AS DATE) as date,
                  COUNT(*) as total_messages,
                  SUM(CASE WHEN status = 'replied' THEN 1 ELSE 0 END) as replied_messages
                  FROM contact_messages WHERE ${whereClause}
@@ -535,14 +515,36 @@ router.get('/stats/overview', authenticate, authorize('admin'), async (req, res)
                  ORDER BY date DESC
                  LIMIT 30`,
                 params
+            ),
+            // Thời gian phản hồi: lấy mốc thời gian rồi tính bằng JS (tránh hàm ngày tháng riêng của từng DB)
+            db.find(
+                `SELECT created_at, replied_at FROM contact_messages
+                 WHERE ${whereClause} AND replied_at IS NOT NULL`,
+                params
             )
         ]);
+
+        const byStatus = {};
+        (statusRows || []).forEach(r => { byStatus[r.status] = parseInt(r.count) || 0; });
+        const total = Object.values(byStatus).reduce((s, n) => s + n, 0);
+
+        const hours = (repliedRows || [])
+            .map(r => (new Date(r.replied_at) - new Date(r.created_at)) / 36e5)
+            .filter(h => Number.isFinite(h) && h >= 0);
+        const avgHours = hours.length ? Math.round(hours.reduce((s, h) => s + h, 0) / hours.length * 10) / 10 : null;
 
         res.json({
             success: true,
             data: {
-                overall: (overallRows && overallRows[0]) || {},
-                by_status: statusRows || [],
+                overall: {
+                    total_messages:    total,
+                    new_messages:      byStatus.new || 0,
+                    read_messages:     byStatus.read || 0,
+                    replied_messages:  byStatus.replied || 0,
+                    archived_messages: byStatus.archived || 0,
+                    avg_response_time_hours: avgHours
+                },
+                by_status: (statusRows || []).map(r => ({ status: r.status, count: parseInt(r.count) || 0 })),
                 daily_stats: dailyRows || []
             }
         });

@@ -18,6 +18,15 @@
         .stat:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
         .stat { transition: transform 0.2s, box-shadow 0.2s; }
         .quick-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+
+        /* 8 thẻ thống kê → 4 cột × 2 hàng (auto-fit cũ để thẻ thứ 6 nằm lẻ một mình) */
+        .dash-stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        @media (max-width: 1100px) { .dash-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+        @media (max-width: 480px)  { .dash-stats { grid-template-columns: 1fr; } }
+        .si-purple { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+        .si-teal   { background: linear-gradient(135deg, #14b8a6, #0f766e); }
+        .stat-change.alert-new { color: #dc2626; font-weight: 700; }
+        .stat.has-new { box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.35); }
     </style>
 </head>
 <body>
@@ -36,7 +45,7 @@ if (page) load();
 async function load() {
     page.innerHTML = `
         <!-- Stats -->
-        <div class="stats">
+        <div class="stats dash-stats">
             <div class="stat" onclick="location.href='tin-tuc.html'" style="cursor:pointer;" title="Quản lý tin tức">
                 <div class="stat-icon si-red"><i class="fas fa-newspaper"></i></div>
                 <div>
@@ -53,7 +62,7 @@ async function load() {
                     <div class="stat-change" id="s-ev-sub"></div>
                 </div>
             </div>
-            <div class="stat" title="Tổng thành viên đang hoạt động">
+            <div class="stat" onclick="location.href='thanh-vien.html'" style="cursor:pointer;" title="Quản lý thành viên">
                 <div class="stat-icon si-green"><i class="fas fa-users"></i></div>
                 <div>
                     <div class="stat-val" id="s-usr"><i class="fas fa-spinner fa-spin" style="font-size:1rem;color:#cbd5e0;"></i></div>
@@ -85,6 +94,22 @@ async function load() {
                     <div class="stat-change" id="s-act-sub"></div>
                 </div>
             </div>
+            <div class="stat" onclick="location.href='thu-vien.html'" style="cursor:pointer;" title="Quản lý thư viện ảnh">
+                <div class="stat-icon si-purple"><i class="fas fa-images"></i></div>
+                <div>
+                    <div class="stat-val" id="s-gal"><i class="fas fa-spinner fa-spin" style="font-size:1rem;color:#cbd5e0;"></i></div>
+                    <div class="stat-lbl">Album ảnh</div>
+                    <div class="stat-change" id="s-gal-sub"></div>
+                </div>
+            </div>
+            <div class="stat" id="stat-contact" onclick="location.href='lien-he.html'" style="cursor:pointer;" title="Xem tin nhắn liên hệ">
+                <div class="stat-icon si-teal"><i class="fas fa-envelope"></i></div>
+                <div>
+                    <div class="stat-val" id="s-ct"><i class="fas fa-spinner fa-spin" style="font-size:1rem;color:#cbd5e0;"></i></div>
+                    <div class="stat-lbl">Liên hệ</div>
+                    <div class="stat-change" id="s-ct-sub"></div>
+                </div>
+            </div>
         </div>
 
         <!-- Thao tác nhanh -->
@@ -99,6 +124,9 @@ async function load() {
                 </a>
                 <a href="thong-bao.html" class="btn btn-outline">
                     <i class="fas fa-plus"></i> Thêm thông báo
+                </a>
+                <a href="thu-vien.html" class="btn btn-outline">
+                    <i class="fas fa-images"></i> Thêm ảnh
                 </a>
                 <a href="lien-he.html" class="btn btn-outline">
                     <i class="fas fa-envelope"></i> Xem liên hệ
@@ -134,22 +162,36 @@ async function load() {
         loadUserStats(),
         loadAnnouncementStats(),
         loadReviewStats(),
-        loadActivityStats()
+        loadActivityStats(),
+        loadGalleryStats(),
+        loadContactStats()
     ]);
+}
+
+// Nhãn danh mục tin tức — giống trang Tin tức (trước đây dashboard hiện mã thô như "competition")
+var CAT_LABELS = {
+    general: 'Chung', training: 'Tập luyện', competition: 'Thi đấu',
+    event: 'Sự kiện', achievement: 'Thành tích', announcement: 'Thông báo'
+};
+
+// Hiện lỗi trên thẻ (escape để thông báo lỗi không chèn được HTML)
+function statError(id, e) {
+    setHTML(id, '<span style="color:#e74c3c;font-size:0.9rem;" title="' + escapeHtml((e && e.message) || '') + '">Lỗi</span>');
+    setHTML(id + '-sub', '');
 }
 
 // ── Tin tức ──
 async function loadNewsStats() {
     try {
-        var r    = await API.news.list(1, 5, '', '');
+        // Gọi thêm 1 request chỉ đếm bài đã đăng → số đúng trên TOÀN BỘ tin, không chỉ 5 bài mới nhất
+        var both = await Promise.all([API.news.list(1, 5, '', ''), API.news.list(1, 1, 'published', '')]);
+        var r    = both[0];
         var list = (r.data && r.data.news) || [];
         var total = (r.data && r.data.total) || list.length;
+        var published = (both[1].data && both[1].data.total) || 0;
+        var drafts    = Math.max(0, total - published);
 
         setHTML('s-news', total);
-
-        // Đếm bài đã đăng trong list
-        var published = list.filter(function (n) { return n.status === 'published'; }).length;
-        var drafts    = list.filter(function (n) { return n.status === 'draft'; }).length;
         setHTML('s-news-sub',
             published + ' đã đăng' + (drafts ? ' · ' + drafts + ' nháp' : '')
         );
@@ -164,7 +206,7 @@ async function loadNewsStats() {
                     var statusLbl = n.status === 'published' ? 'Đã đăng' : 'Nháp';
                     return '<tr>' +
                         '<td><b style="color:#1a252f;">' + safe(n.title, 40) + '</b></td>' +
-                        '<td style="font-size:0.8rem;color:#4a5568;">' + escapeHtml(n.category || '—') + '</td>' +
+                        '<td style="font-size:0.8rem;color:#4a5568;">' + escapeHtml(CAT_LABELS[n.category] || n.category || '—') + '</td>' +
                         '<td><span class="badge ' + statusCls + '">' + statusLbl + '</span></td>' +
                         '<td style="font-size:0.8rem;color:#718096;">' + fmtDate(n.created_at) + '</td>' +
                         '</tr>';
@@ -183,14 +225,20 @@ async function loadNewsStats() {
 // ── Sự kiện ──
 async function loadEventStats() {
     try {
-        var r    = await API.events.list(1, 5, '', '', '');
+        // Đếm "sắp tới" / "đang diễn ra" trên toàn bộ sự kiện (trước đây chỉ đếm trong 5 sự kiện mới nhất)
+        var all3 = await Promise.all([
+            API.events.list(1, 5, '', '', ''),
+            API.events.list(1, 1, 'upcoming', '', ''),
+            API.events.list(1, 1, 'ongoing', '', '')
+        ]);
+        var r    = all3[0];
         var list = (r.data && r.data.events) || [];
         var total = (r.data && r.data.total) || list.length;
 
         setHTML('s-ev', total);
 
-        var upcoming = list.filter(function (ev) { return ev.status === 'upcoming'; }).length;
-        var ongoing  = list.filter(function (ev) { return ev.status === 'ongoing';  }).length;
+        var upcoming = (all3[1].data && all3[1].data.total) || 0;
+        var ongoing  = (all3[2].data && all3[2].data.total) || 0;
         var subParts = [];
         if (ongoing)  subParts.push('<span style="color:#38a169;">' + ongoing  + ' đang diễn ra</span>');
         if (upcoming) subParts.push(upcoming + ' sắp tới');
@@ -226,13 +274,14 @@ async function loadEventStats() {
 // ── Thành viên ──
 async function loadUserStats() {
     try {
-        var r     = await API.users.total();
-        var total = (r.pagination && r.pagination.total) || 0;
+        // Tổng tài khoản + số thành viên có trạng thái "active" (trước đây ghi "đang hoạt động" cho TỔNG tài khoản)
+        var both  = await Promise.all([API.users.total(), API.users.list(1, 1, '', '', 'active')]);
+        var total  = (both[0].pagination && both[0].pagination.total) || 0;
+        var active = (both[1].pagination && both[1].pagination.total) || 0;
         setHTML('s-usr', total);
-        setHTML('s-usr-sub', 'đang hoạt động');
+        setHTML('s-usr-sub', active + ' đang hoạt động' + (total - active > 0 ? ' · ' + (total - active) + ' khác' : ''));
     } catch (e) {
-        setHTML('s-usr', '<span style="color:#e74c3c;font-size:0.9rem;" title="' + e.message + '">Lỗi</span>');
-        setHTML('s-usr-sub', '');
+        statError('s-usr', e);
     }
 }
 
@@ -287,8 +336,41 @@ async function loadActivityStats() {
             (gold ? ' · 🥇 ' + gold + ' HCV' : '')
         );
     } catch (e) {
-        setHTML('s-act', '<span style="color:#e74c3c;font-size:0.9rem;">Lỗi</span>');
-        setHTML('s-act-sub', '');
+        statError('s-act', e);
+    }
+}
+
+// ── Thư viện ảnh ──
+async function loadGalleryStats() {
+    try {
+        var r = await API.gallery.albums(true);
+        var albums = Array.isArray(r.data) ? r.data : ((r.data && r.data.albums) || []);
+        var photos = albums.reduce(function (s, a) { return s + (parseInt(a.photo_count) || 0); }, 0);
+        var active = albums.filter(function (a) { return a.status === 'active'; }).length;
+        setHTML('s-gal', albums.length);
+        setHTML('s-gal-sub', photos + ' ảnh · ' + active + ' đang hiển thị');
+    } catch (e) {
+        statError('s-gal', e);
+    }
+}
+
+// ── Liên hệ: nổi bật khi có tin nhắn mới chưa đọc ──
+async function loadContactStats() {
+    try {
+        var r = await API.get('/contact/stats/overview');
+        var o = (r.data && r.data.overall) || {};
+        var total = parseInt(o.total_messages) || 0;
+        var fresh = parseInt(o.new_messages) || 0;
+        setHTML('s-ct', total);
+        if (fresh > 0) {
+            setHTML('s-ct-sub', '<span class="stat-change alert-new">' + fresh + ' tin mới chưa đọc</span>');
+            var card = document.getElementById('stat-contact');
+            if (card) card.classList.add('has-new');
+        } else {
+            setHTML('s-ct-sub', 'Không có tin mới');
+        }
+    } catch (e) {
+        statError('s-ct', e);
     }
 }</script>
 </body>
