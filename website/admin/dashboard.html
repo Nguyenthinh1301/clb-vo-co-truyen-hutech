@@ -72,14 +72,6 @@ async function load() {
                     <div class="stat-change" id="s-usr-sub"></div>
                 </div>
             </div>
-            <div class="stat" onclick="location.href='thong-bao.html'" style="cursor:pointer;" title="Quản lý thông báo">
-                <div class="stat-icon si-orange"><i class="fas fa-bell"></i></div>
-                <div>
-                    <div class="stat-val" id="s-ann"><i class="fas fa-spinner fa-spin" style="font-size:1rem;color:#cbd5e0;"></i></div>
-                    <div class="stat-lbl">Thông báo</div>
-                    <div class="stat-change" id="s-ann-sub"></div>
-                </div>
-            </div>
             <div class="stat" onclick="location.href='cam-nhan.html'" style="cursor:pointer;" title="Quản lý cảm nhận sinh viên">
                 <div class="stat-icon si-green"><i class="fas fa-heart"></i></div>
                 <div>
@@ -124,9 +116,6 @@ async function load() {
                 <a href="su-kien.html" class="btn btn-success">
                     <i class="fas fa-plus"></i> Thêm sự kiện
                 </a>
-                <a href="thong-bao.html" class="btn btn-outline">
-                    <i class="fas fa-plus"></i> Thêm thông báo
-                </a>
                 <a href="thu-vien.html" class="btn btn-outline">
                     <i class="fas fa-images"></i> Thêm ảnh
                 </a>
@@ -162,7 +151,6 @@ async function load() {
         loadNewsStats(),
         loadEventStats(),
         loadUserStats(),
-        loadAnnouncementStats(),
         loadReviewStats(),
         loadActivityStats(),
         loadGalleryStats(),
@@ -300,22 +288,6 @@ async function loadUserStats() {
         setHTML('s-usr-sub', active + ' đang hoạt động' + (total - active > 0 ? ' · ' + (total - active) + ' khác' : ''));
     } catch (e) {
         statError('s-usr', e);
-    }
-}
-
-// ── Thông báo ──
-async function loadAnnouncementStats() {
-    try {
-        var r    = await API.announcements.list();
-        var all  = r.data || [];
-        var active = all.filter(function (a) { return a.status === 'active'; }).length;
-        setHTML('s-ann', all.length);
-        setHTML('s-ann-sub',
-            active + ' đang hiển thị' +
-            (all.length - active ? ' · ' + (all.length - active) + ' đã ẩn' : '')
-        );
-    } catch (e) {
-        statError('s-ann', e);
     }
 }
 
