@@ -51,7 +51,6 @@
 
     <main>
         <div id="hero-placeholder"></div>
-        <div id="announcements-placeholder"></div>
         <div id="about-placeholder"></div>
         <div id="schedule-placeholder"></div>
         <div id="coaches-placeholder"></div>
@@ -126,15 +125,14 @@
         }
 
         document.addEventListener('DOMContentLoaded', async function() {
-            // ── Ưu tiên 1: Load header + hero + announcements song song (visible first) ──
+            // ── Ưu tiên 1: Load header + hero song song (visible first) ──
+            // (Đã bỏ mục "Thông Báo Mới Nhất" khỏi trang chủ — thông báo vẫn xem ở views/thong-bao.html)
             await Promise.all([
-                loadComponent('header-placeholder',        'components/header.html'),
-                loadComponent('hero-placeholder',          'components/hero-section.html'),
-                loadComponent('announcements-placeholder', 'components/announcements-banner.html')
+                loadComponent('header-placeholder', 'components/header.html'),
+                loadComponent('hero-placeholder',   'components/hero-section.html')
             ]);
             // Init hamburger + scroll sau khi header đã inject vào DOM
             if (typeof initDropdown === 'function') initDropdown();
-            loadAnnouncementsBanner();
 
             // ── Ưu tiên 2: Load phần nội dung chính song song ──
             await Promise.all([
@@ -163,101 +161,6 @@
             document.getElementById('loading-overlay').classList.add('hidden');
             setTimeout(initEventCountdowns, 100);
         });
-
-        // ===== BANNER THÔNG BÁO (Option 3 — Inline strip) =====
-        async function loadAnnouncementsBanner() {
-            var container = document.getElementById('ann-banner-list');
-            if (!container) return;
-
-            var API_BASE = window.APP_CONFIG ? window.APP_CONFIG.API_BASE : 'http://localhost:3001/api';
-            var TYPE_ICN = { general: 'bullhorn', urgent: 'exclamation-circle', event: 'calendar-alt', training: 'dumbbell' };
-            var TYPE_LBL = { general: 'Chung', urgent: 'Khẩn cấp', event: 'Sự kiện', training: 'Tập luyện' };
-            var PRI_LBL  = { high: 'Ưu tiên cao', normal: 'Bình thường', low: 'Thấp' };
-            var PRI_DOT  = { high: '🔴', normal: '🔵', low: '⚪', urgent: '🟠' };
-
-            function fmtDate(s) {
-                if (!s) return '';
-                try { return new Date(s).toLocaleDateString('vi-VN', { day:'2-digit', month:'2-digit', year:'numeric' }); }
-                catch(e) { return ''; }
-            }
-            function trunc(s, n) {
-                if (!s) return '';
-                return s.length > n ? s.slice(0, n) + '…' : s;
-            }
-
-            function renderCard(a) {
-                var priCls  = a.type === 'urgent' ? 'urgent' : (a.priority === 'high' ? 'high' : (a.priority === 'low' ? 'low' : 'normal'));
-                var typeCls = a.type === 'urgent' ? ' urgent' : '';
-
-                var expiryHtml = a.expires_at
-                    ? '<div class="ann-card-expiry"><i class="fas fa-clock"></i> Hạn đến: ' + fmtDate(a.expires_at) + '</div>'
-                    : '';
-
-                return '<a class="ann-strip-card pri-' + priCls + '" href="views/thong-bao.html">' +
-                    '<div class="ann-card-meta">' +
-                        '<span class="ann-type-chip' + typeCls + '">' +
-                            '<i class="fas fa-' + (TYPE_ICN[a.type] || 'bell') + '"></i>' +
-                            (TYPE_LBL[a.type] || 'Chung') +
-                        '</span>' +
-                        '<span class="ann-card-date-lbl">' + fmtDate(a.created_at) + '</span>' +
-                    '</div>' +
-                    '<span class="ann-pri-pill ' + priCls + '">' +
-                        (PRI_DOT[priCls] || '🔵') + ' ' + (a.type === 'urgent' ? 'Khẩn cấp' : (PRI_LBL[a.priority] || 'Bình thường')) +
-                    '</span>' +
-                    '<h4>' + trunc(a.title, 72) + '</h4>' +
-                    '<p>' + trunc(a.content, 110) + '</p>' +
-                    expiryHtml +
-                    '<span class="ann-card-arrow"><i class="fas fa-arrow-right"></i></span>' +
-                '</a>';
-            }
-
-            try {
-                var res  = await fetch(API_BASE + '/cms/announcements?all=1', { cache: 'no-cache' });
-                var data = await res.json();
-                if (!data.success) throw new Error(data.message);
-
-                // Lọc: chỉ active, chưa hết hạn
-                var all = (data.data || []).filter(function(a) {
-                    if (a.status !== 'active') return false;
-                    if (a.expires_at && new Date(a.expires_at) < new Date()) return false;
-                    return true;
-                });
-
-                // Sắp xếp: urgent > high > normal > low, rồi mới nhất trước
-                var priOrder = { urgent: 0, high: 1, normal: 2, low: 3 };
-                all.sort(function(a, b) {
-                    var pa = a.type === 'urgent' ? 0 : (priOrder[a.priority] !== undefined ? priOrder[a.priority] : 2);
-                    var pb = b.type === 'urgent' ? 0 : (priOrder[b.priority] !== undefined ? priOrder[b.priority] : 2);
-                    if (pa !== pb) return pa - pb;
-                    return new Date(b.created_at) - new Date(a.created_at);
-                });
-
-                var list = all.slice(0, 3);
-
-                if (!list.length) {
-                    container.innerHTML =
-                        '<div class="ann-strip-grid">' +
-                            '<div class="ann-strip-empty">' +
-                                '<i class="fas fa-bell-slash"></i>' +
-                                '<p>Hiện chưa có thông báo mới.</p>' +
-                            '</div>' +
-                        '</div>';
-                    return;
-                }
-
-                container.innerHTML = '<div class="ann-strip-grid">' + list.map(renderCard).join('') + '</div>';
-
-            } catch(e) {
-                // Khi API lỗi: hiện empty state thay vì ẩn section hoàn toàn
-                container.innerHTML =
-                    '<div class="ann-strip-grid">' +
-                        '<div class="ann-strip-empty">' +
-                            '<i class="fas fa-bell-slash"></i>' +
-                            '<p>Hiện chưa có thông báo mới.</p>' +
-                        '</div>' +
-                    '</div>';
-            }
-        }
 
         // ===== TIN TỨC - SỰ KIỆN (kết nối API) =====
         (function() {
