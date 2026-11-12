@@ -6,6 +6,7 @@
 const express = require('express');
 const router  = express.Router();
 const db      = require('../config/db');
+const auditLog = require('../utils/auditLog');
 const { AuthUtils, authenticateJwt, requireAdmin } = require('../middleware/auth');
 const { cacheService } = require('../services/cacheService');
 const { parsePagination } = require('../middleware/validation');
@@ -217,13 +218,21 @@ async function syncEventStatuses(force) {
     lastEventSync = now;
     try {
         const rows = await db.find(
-            "SELECT id, date, start_time, end_time, status FROM events WHERE status IN ('upcoming', 'ongoing')", []);
+            "SELECT id, name, date, start_time, end_time, status FROM events WHERE status IN ('upcoming', 'ongoing')", []);
         let changed = 0;
         for (const ev of rows) {
             const eff = effectiveEventStatus(ev, now);
             if (STATUS_RANK[eff] > STATUS_RANK[ev.status]) {
                 await db.update('events', { status: eff, updated_at: new Date() }, 'id = ?', [ev.id]);
                 changed++;
+                auditLog({
+                    user_id: null, // hệ thống tự động
+                    action: 'event_status_auto_updated',
+                    table_name: 'events',
+                    record_id: ev.id,
+                    old_values: { name: ev.name, status: ev.status },
+                    new_values: { name: ev.name, status: eff }
+                });
             }
         }
         if (changed) {

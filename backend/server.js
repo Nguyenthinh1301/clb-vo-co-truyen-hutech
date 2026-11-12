@@ -240,11 +240,14 @@ app.use('/api/contact', require('./routes/contact'));
 app.use('/api/user', require('./routes/user-dashboard'));
 app.use('/api/user/content', require('./routes/user-content'));
 app.use('/api/public', require('./routes/public-content'));
-app.use('/api/cms', require('./routes/admin-cms'));
-app.use('/api/upload', require('./routes/upload'));
-app.use('/api/gallery', require('./routes/gallery'));
-app.use('/api/activities', require('./routes/activities'));
-app.use('/api/team', require('./routes/team'));
+// adminAudit: tự ghi Nhật ký hoạt động cho các thao tác thêm / sửa / xóa của Admin
+const adminAudit = require('./middleware/adminAudit');
+app.use('/api/cms', adminAudit('cms'), require('./routes/admin-cms'));
+app.use('/api/upload', adminAudit('upload'), require('./routes/upload'));
+app.use('/api/gallery', adminAudit('gallery'), require('./routes/gallery'));
+app.use('/api/activities', adminAudit('activities'), require('./routes/activities'));
+app.use('/api/team', adminAudit('team'), require('./routes/team'));
+app.use('/api/audit-logs', require('./routes/audit-logs'));
 
 // Serve static files (uploads) — dùng absolute path để tránh lỗi khi chạy từ thư mục khác
 // Thêm security headers để ngăn browser thực thi file HTML/SVG được upload

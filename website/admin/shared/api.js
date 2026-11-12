@@ -155,6 +155,12 @@ const API = {
         delete: id   => API.delete(`/activities/${id}`)
     },
 
+    // Nhật ký hoạt động (chỉ Admin)
+    auditLogs: {
+        list: (params) => API.get('/audit-logs?' + new URLSearchParams(params || {}).toString()),
+        filters: ()    => API.get('/audit-logs/filters')
+    },
+
     // Đội ngũ CLB (Ban chủ nhiệm / HLV / Truyền thông) — trang công khai doi-ngu.html
     team: {
         list:   ()   => API.get('/team/admin/all'),

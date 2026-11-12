@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nhật ký hoạt động - Admin CLB Võ Cổ Truyền HUTECH</title>
+    <link rel="stylesheet" href="shared/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .lg-filters { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr auto; gap: 10px; align-items: end; }
+        .lg-filters label { display: block; font-size: 0.72rem; color: #718096; margin-bottom: 4px; font-weight: 600; }
+        .lg-filters .form-control { margin: 0; }
+        @media (max-width: 1100px) { .lg-filters { grid-template-columns: 1fr 1fr 1fr; } }
+        @media (max-width: 640px)  { .lg-filters { grid-template-columns: 1fr 1fr; } }
+
+        .lg-time  { white-space: nowrap; font-size: 0.82rem; color: #1a252f; }
+        .lg-time small { display: block; color: #a0aec0; font-size: 0.72rem; }
+        .lg-user  { display: flex; align-items: center; gap: 8px; font-size: 0.84rem; }
+        .lg-user small { display: block; color: #a0aec0; font-size: 0.72rem; }
+        .lg-ava   { width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center;
+                    justify-content: center; color: #fff; font-weight: 700; font-size: 0.8rem; background: #1450a3; }
+        .lg-ava.sys { background: #6b46c1; }
+        .lg-act   { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; white-space: nowrap; }
+        .k-create { background: #d4edda; color: #155724; }
+        .k-update { background: #d1ecf1; color: #0c5460; }
+        .k-delete { background: #f8d7da; color: #721c24; }
+        .k-auth   { background: #e9ecef; color: #495057; }
+        .k-system { background: #e9d8fd; color: #553c9a; }
+        .k-other  { background: #fff3cd; color: #856404; }
+        .lg-obj   { font-size: 0.84rem; }
+        .lg-obj small { display: block; color: #a0aec0; font-size: 0.72rem; }
+        .lg-ip    { font-family: Consolas, monospace; font-size: 0.75rem; color: #718096; }
+        tr.lg-row { cursor: pointer; }
+        tr.lg-row:hover td { background: #f7fafc; }
+
+        .lg-stats { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+        .lg-stat  { background: #f7fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 8px 14px; font-size: 0.8rem; color: #4a5568; cursor: pointer; }
+        .lg-stat b { font-size: 1rem; color: #1a252f; margin-right: 4px; }
+        .lg-stat.active { border-color: #1450a3; background: #eaf2fd; }
+
+        /* Chi tiết */
+        .lg-meta { display: grid; grid-template-columns: 130px 1fr; gap: 6px 12px; font-size: 0.85rem; margin-bottom: 16px; }
+        .lg-meta dt { color: #718096; }
+        .lg-meta dd { margin: 0; color: #1a252f; word-break: break-word; }
+        .lg-diff { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+        .lg-diff th, .lg-diff td { border: 1px solid #e2e8f0; padding: 6px 8px; vertical-align: top; text-align: left; }
+        .lg-diff th { background: #f7fafc; color: #4a5568; font-weight: 600; }
+        .lg-diff td.f { color: #4a5568; font-weight: 600; white-space: nowrap; }
+        .lg-diff td.old { background: #fff5f5; color: #9b2c2c; }
+        .lg-diff td.new { background: #f0fff4; color: #22543d; }
+        .lg-diff td pre { margin: 0; white-space: pre-wrap; word-break: break-word; font-family: inherit; }
+        .lg-raw { background: #1a202c; color: #e2e8f0; border-radius: 8px; padding: 12px; font-size: 0.75rem; max-height: 260px; overflow: auto; white-space: pre-wrap; word-break: break-word; }
+    </style>
+</head>
+<body>
+
+<div class="layout" id="app"></div>
+
+<!-- ===== MODAL CHI TIẾT ===== -->
+<div class="overlay" id="detail-modal" onclick="closeDetail()">
+    <div class="modal modal-lg" onclick="event.stopPropagation()">
+        <div class="modal-head">
+            <h3 id="detail-title"><i class="fas fa-history"></i> Chi tiết</h3>
+            <button class="modal-close" onclick="closeDetail()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body" id="detail-body"></div>
+        <div class="modal-foot">
+            <button class="btn btn-outline" onclick="closeDetail()"><i class="fas fa-times"></i> Đóng</button>
+        </div>
+    </div>
+</div>
+
+<script src="../assets/js/config.js"></script>
+<script src="shared/auth.js"></script>
+<script src="shared/api.js"></script>
+<script src="shared/ui.js"></script>
+<script>
+'use strict';
+
+var page = initLayout('<i class="fas fa-history"></i> Nhật ký hoạt động', 'nhat-ky.html');
+if (!page) throw new Error('Auth failed');
+
+// ── Nhãn hiển thị ──
+var TABLE_LBL = {
+    news: 'Tin tức', events: 'Sự kiện', reviews: 'Cảm nhận SV', announcements: 'Thông báo',
+    gallery_albums: 'Album ảnh', gallery_photos: 'Ảnh thư viện', activities: 'Hoạt động',
+    team_members: 'Đội ngũ CLB', upload: 'Tải ảnh lên', users: 'Tài khoản / Thành viên',
+    classes: 'Lớp học', class_enrollments: 'Ghi danh lớp', attendance: 'Điểm danh',
+    contact_messages: 'Liên hệ', event_registrations: 'Đăng ký sự kiện'
+};
+var ACTION_LBL = {
+    user_login: 'Đăng nhập', user_logout: 'Đăng xuất', user_logout_all: 'Đăng xuất mọi thiết bị',
+    password_changed: 'Đổi mật khẩu', user_registered: 'Đăng ký tài khoản',
+    user_created_by_admin: 'Tạo tài khoản', user_updated_by_admin: 'Sửa tài khoản',
+    user_deleted_by_admin: 'Xóa tài khoản', user_locked: 'Khóa tài khoản', user_unlocked: 'Mở khóa tài khoản',
+    profile_updated: 'Cập nhật hồ sơ cá nhân', photos_added: 'Thêm ảnh vào album',
+    event_status_auto_updated: 'Tự cập nhật trạng thái',
+    contact_message_replied: 'Trả lời liên hệ', contact_message_deleted: 'Xóa liên hệ',
+    contact_message_status_updated: 'Đổi trạng thái liên hệ', contact_messages_bulk_update: 'Cập nhật hàng loạt liên hệ',
+    upload_created: 'Tải ảnh lên', upload_deleted: 'Xóa ảnh đã tải'
+};
+var RESOURCE_LBL = {
+    news: 'tin tức', event: 'sự kiện', review: 'cảm nhận', announcement: 'thông báo', album: 'album',
+    photo: 'ảnh', activity: 'hoạt động', team_member: 'thành viên đội ngũ', class: 'lớp học'
+};
+var KIND_ICON = { create: 'plus', update: 'pen', delete: 'trash', auth: 'sign-in-alt', system: 'robot', other: 'circle' };
+var EV_STATUS = { upcoming: 'Sắp diễn ra', ongoing: 'Đang diễn ra', completed: 'Đã kết thúc', cancelled: 'Đã hủy' };
+var FIELD_LBL = {
+    name: 'Tên', title: 'Tiêu đề', full_name: 'Họ tên', short_name: 'Tên trên thẻ', status: 'Trạng thái',
+    date: 'Ngày', start_time: 'Giờ bắt đầu', end_time: 'Giờ kết thúc', location: 'Địa điểm', type: 'Loại',
+    description: 'Mô tả', content: 'Nội dung', excerpt: 'Tóm tắt', image: 'Ảnh', featured_image: 'Ảnh đại diện',
+    avatar: 'Ảnh đại diện', role: 'Vai trò / Chức vụ', email: 'Email', category: 'Danh mục',
+    sort_order: 'Thứ tự', show_home: 'Hiện ở trang chủ', group_key: 'Ban', bio: 'Giới thiệu',
+    max_participants: 'Số người tối đa', medal: 'Huy chương', year: 'Năm', caption: 'Chú thích',
+    membership_status: 'Tình trạng hội viên', is_active: 'Hoạt động', belt_level: 'Cấp bậc', notes: 'Ghi chú'
+};
+var SKIP_FIELDS = ['updated_at', 'created_at', 'id'];
+
+function kindOf(log) {
+    var a = log.action || '';
+    if (!log.user_id) return 'system';
+    if (/^user_log(in|out)|password_changed/.test(a)) return 'auth';
+    if (/created|added|registered|enrolled|recorded/.test(a)) return 'create';
+    if (/deleted|removed/.test(a)) return 'delete';
+    if (/updated|changed|locked|replied/.test(a)) return 'update';
+    return 'other';
+}
+function actionLabel(log) {
+    if (ACTION_LBL[log.action]) return ACTION_LBL[log.action];
+    var m = /^(.+)_(created|updated|deleted)$/.exec(log.action || '');
+    if (m) {
+        var verb = { created: 'Thêm', updated: 'Sửa', deleted: 'Xóa' }[m[2]];
+        return verb + ' ' + (RESOURCE_LBL[m[1]] || m[1].replace(/_/g, ' '));
+    }
+    return (log.action || '—').replace(/_/g, ' ');
+}
+function objName(log) {
+    var o = (log.new_values && typeof log.new_values === 'object') ? log.new_values : {};
+    var p = (log.old_values && typeof log.old_values === 'object') ? log.old_values : {};
+    return o.name || p.name || o.title || p.title || o.full_name || p.full_name ||
+           o.caption || p.caption || o.email || p.email || o.file || '';
+}
+function userName(log) {
+    if (!log.user_id) return 'Hệ thống';
+    var n = [log.user_first_name, log.user_last_name].filter(Boolean).join(' ').trim();
+    return n || log.user_username || log.user_email || ('Tài khoản #' + log.user_id);
+}
+function pad(n) { return String(n).padStart(2, '0'); }
+function fmtTime(s) {
+    var d = new Date(s);
+    if (isNaN(d)) return { main: '—', sub: '' };
+    var main = pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear() + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+    var diff = (Date.now() - d.getTime()) / 1000, sub;
+    if (diff < 60) sub = 'vừa xong';
+    else if (diff < 3600) sub = Math.floor(diff / 60) + ' phút trước';
+    else if (diff < 86400) sub = Math.floor(diff / 3600) + ' giờ trước';
+    else if (diff < 86400 * 30) sub = Math.floor(diff / 86400) + ' ngày trước';
+    else sub = '';
+    return { main: main, sub: sub };
+}
+function shortUA(ua) {
+    if (!ua) return '';
+    var b = /Edg\//.test(ua) ? 'Edge' : /OPR\//.test(ua) ? 'Opera' : /Chrome\//.test(ua) ? 'Chrome' :
+            /Firefox\//.test(ua) ? 'Firefox' : /Safari\//.test(ua) ? 'Safari' : 'Trình duyệt khác';
+    var os = /Windows/.test(ua) ? 'Windows' : /Android/.test(ua) ? 'Android' : /iPhone|iPad/.test(ua) ? 'iOS' :
+             /Mac OS/.test(ua) ? 'macOS' : /Linux/.test(ua) ? 'Linux' : '';
+    return b + (os ? ' · ' + os : '');
+}
+function fmtVal(k, v) {
+    if (v === null || v === undefined || v === '') return '<span style="color:#a0aec0;">(trống)</span>';
+    if (k === 'status' && EV_STATUS[v]) return escapeHtml(EV_STATUS[v]);
+    if (typeof v === 'boolean') return v ? 'Có' : 'Không';
+    if (typeof v === 'object') return '<pre>' + escapeHtml(JSON.stringify(v, null, 2)) + '</pre>';
+    var s = String(v);
+    return '<pre>' + escapeHtml(s.length > 600 ? s.substring(0, 600) + '…' : s) + '</pre>';
+}
+function same(a, b) { return JSON.stringify(a === undefined ? null : a) === JSON.stringify(b === undefined ? null : b); }
+
+// ── State ──
+var state = { page: 1, limit: 30, q: '', kind: '', table: '', user_id: '', from: '', to: '' };
+var logs = [];
+
+// ── Khung trang ──
+page.innerHTML = [
+    '<div class="card">',
+    '  <div class="card-head">',
+    '    <h3><i class="fas fa-history"></i> Lịch sử thao tác</h3>',
+    '    <button class="btn btn-outline" onclick="loadList()" title="Làm mới"><i class="fas fa-sync-alt"></i> Làm mới</button>',
+    '  </div>',
+    '  <div class="card-body" style="padding-bottom:0;">',
+    '    <p style="color:#718096;font-size:0.82rem;margin:0 0 14px;">',
+    '      Ghi lại ai đã thêm / sửa / xóa nội dung trong Admin, đăng nhập và các thay đổi tự động của hệ thống.',
+    '      Với thao tác sửa / xóa, nhật ký lưu cả dữ liệu trước khi thay đổi. Nhật ký được giữ 90 ngày.',
+    '    </p>',
+    '    <div class="lg-stats" id="kind-chips">',
+    '      <span class="lg-stat active" data-kind="">Tất cả</span>',
+    '      <span class="lg-stat" data-kind="create"><i class="fas fa-plus" style="color:#38a169"></i> Thêm</span>',
+    '      <span class="lg-stat" data-kind="update"><i class="fas fa-pen" style="color:#3182ce"></i> Sửa</span>',
+    '      <span class="lg-stat" data-kind="delete"><i class="fas fa-trash" style="color:#e53e3e"></i> Xóa</span>',
+    '      <span class="lg-stat" data-kind="auth"><i class="fas fa-sign-in-alt" style="color:#718096"></i> Đăng nhập / đăng xuất</span>',
+    '      <span class="lg-stat" data-kind="system"><i class="fas fa-robot" style="color:#6b46c1"></i> Hệ thống tự động</span>',
+    '    </div>',
+    '    <div class="lg-filters" style="margin-bottom:14px;">',
+    '      <div><label for="f-q">Tìm kiếm</label>',
+    '        <input class="form-control" id="f-q" placeholder="Tên nội dung, email, IP, thao tác..."></div>',
+    '      <div><label for="f-table">Mục</label><select class="form-control" id="f-table"><option value="">Tất cả</option></select></div>',
+    '      <div><label for="f-user">Người thực hiện</label><select class="form-control" id="f-user"><option value="">Tất cả</option></select></div>',
+    '      <div><label for="f-from">Từ ngày</label><input class="form-control" type="date" id="f-from"></div>',
+    '      <div><label for="f-to">Đến ngày</label><input class="form-control" type="date" id="f-to"></div>',
+    '      <div><label for="f-limit">Mỗi trang</label><select class="form-control" id="f-limit">',
+    '        <option value="30">30</option><option value="50">50</option><option value="100">100</option></select></div>',
+    '      <div><button class="btn btn-outline" onclick="resetFilters()" title="Xóa bộ lọc"><i class="fas fa-eraser"></i> Xóa lọc</button></div>',
+    '    </div>',
+    '  </div>',
+    '  <div id="tbl"></div>',
+    '  <div class="pager" id="pager" style="display:none;">',
+    '    <span id="pager-info" style="color:#718096;font-size:0.82rem;"></span>',
+    '    <div id="pager-btns" style="display:flex;gap:4px;flex-wrap:wrap;"></div>',
+    '  </div>',
+    '</div>'
+].join('');
+
+// ── Sự kiện bộ lọc ──
+document.querySelectorAll('#kind-chips .lg-stat').forEach(function (chip) {
+    chip.addEventListener('click', function () {
+        document.querySelectorAll('#kind-chips .lg-stat').forEach(function (c) { c.classList.remove('active'); });
+        chip.classList.add('active');
+        state.kind = chip.dataset.kind; state.page = 1; loadList();
+    });
+});
+var qTimer;
+$('f-q').addEventListener('input', function () {
+    clearTimeout(qTimer);
+    qTimer = setTimeout(function () { state.q = $('f-q').value.trim(); state.page = 1; loadList(); }, 400);
+});
+[['f-table', 'table'], ['f-user', 'user_id'], ['f-from', 'from'], ['f-to', 'to'], ['f-limit', 'limit']].forEach(function (p) {
+    $(p[0]).addEventListener('change', function () { state[p[1]] = $(p[0]).value; state.page = 1; loadList(); });
+});
+
+function resetFilters() {
+    state = { page: 1, limit: parseInt($('f-limit').value, 10) || 30, q: '', kind: '', table: '', user_id: '', from: '', to: '' };
+    ['f-q', 'f-table', 'f-user', 'f-from', 'f-to'].forEach(function (id) { $(id).value = ''; });
+    document.querySelectorAll('#kind-chips .lg-stat').forEach(function (c) { c.classList.toggle('active', c.dataset.kind === ''); });
+    loadList();
+}
+
+loadFilters();
+loadList();
+
+async function loadFilters() {
+    try {
+        var r = await API.auditLogs.filters();
+        var d = r.data || {};
+        $('f-table').innerHTML = '<option value="">Tất cả</option>' + (d.tables || []).map(function (t) {
+            return '<option value="' + escapeHtml(t.table_name) + '">' + escapeHtml(TABLE_LBL[t.table_name] || t.table_name) + ' (' + t.cnt + ')</option>';
+        }).join('');
+        $('f-user').innerHTML = '<option value="">Tất cả</option>' + (d.users || []).map(function (u) {
+            var n = [u.first_name, u.last_name].filter(Boolean).join(' ').trim() || u.email;
+            return '<option value="' + u.id + '">' + escapeHtml(n) + (u.role === 'admin' ? ' (Admin)' : '') + '</option>';
+        }).join('');
+    } catch (e) { /* bộ lọc phụ — bỏ qua lỗi */ }
+}
+
+async function loadList() {
+    loading('tbl');
+    var params = {};
+    Object.keys(state).forEach(function (k) { if (state[k] !== '' && state[k] !== null) params[k] = state[k]; });
+    try {
+        var r = await API.auditLogs.list(params);
+        logs = (r.data && r.data.logs) || [];
+        var total = (r.data && r.data.total) || 0;
+        renderTable(total);
+    } catch (e) {
+        var msg = e.message || '';
+        empty('tbl', 'exclamation-circle', /404|không tìm thấy|not.?found/i.test(msg)
+            ? 'Backend chưa có chức năng Nhật ký (API <code>/api/audit-logs</code> trả về 404). Hãy deploy lại backend bản mới.'
+            : 'Lỗi tải nhật ký: ' + escapeHtml(msg));
+        $('pager').style.display = 'none';
+    }
+}
+
+function renderTable(total) {
+    if (!logs.length) {
+        empty('tbl', 'history', 'Không có nhật ký nào phù hợp.');
+        $('pager').style.display = 'none';
+        return;
+    }
+    var rows = logs.map(function (log, i) {
+        var k = kindOf(log), t = fmtTime(log.created_at), nm = objName(log);
+        var uname = userName(log);
+        var ava = log.user_id
+            ? '<div class="lg-ava">' + escapeHtml(uname.charAt(0).toUpperCase()) + '</div>'
+            : '<div class="lg-ava sys"><i class="fas fa-robot"></i></div>';
+        return '<tr class="lg-row" onclick="openDetail(' + i + ')">' +
+            '<td class="lg-time">' + t.main + (t.sub ? '<small>' + t.sub + '</small>' : '') + '</td>' +
+            '<td><div class="lg-user">' + ava + '<div>' + escapeHtml(uname) +
+                (log.user_email && uname !== log.user_email ? '<small>' + escapeHtml(log.user_email) + '</small>' : '') + '</div></div></td>' +
+            '<td><span class="lg-act k-' + k + '"><i class="fas fa-' + KIND_ICON[k] + '"></i> ' + escapeHtml(actionLabel(log)) + '</span></td>' +
+            '<td class="lg-obj">' + (nm ? '<b>' + safe(String(nm), 50) + '</b>' : '<span style="color:#a0aec0;">—</span>') +
+                '<small>' + escapeHtml(TABLE_LBL[log.table_name] || log.table_name || '') + (log.record_id ? ' #' + log.record_id : '') + '</small></td>' +
+            '<td class="lg-ip">' + escapeHtml(log.ip_address || '—') + '</td>' +
+            '<td><button class="btn btn-sm btn-outline" onclick="event.stopPropagation();openDetail(' + i + ')"><i class="fas fa-eye"></i></button></td>' +
+        '</tr>';
+    }).join('');
+    setHTML('tbl',
+        '<div class="tbl"><table><thead><tr>' +
+            '<th style="width:140px;">Thời gian</th><th style="width:210px;">Người thực hiện</th>' +
+            '<th style="width:200px;">Thao tác</th><th>Đối tượng</th>' +
+            '<th style="width:120px;">IP</th><th style="width:50px;"></th>' +
+        '</tr></thead><tbody>' + rows + '</tbody></table></div>');
+
+    // Phân trang
+    var pages = Math.max(1, Math.ceil(total / state.limit));
+    $('pager').style.display = 'flex';
+    var from = (state.page - 1) * state.limit + 1;
+    setHTML('pager-info', 'Hiển thị ' + from + '–' + (from + logs.length - 1) + ' / ' + total + ' mục');
+    var btns = '';
+    if (state.page > 1) btns += '<button class="pager-btn" onclick="goPage(' + (state.page - 1) + ')"><i class="fas fa-chevron-left"></i></button>';
+    var start = Math.max(1, state.page - 3), end = Math.min(pages, state.page + 3);
+    if (start > 1) btns += '<button class="pager-btn" onclick="goPage(1)">1</button>' + (start > 2 ? '<span style="padding:6px;">…</span>' : '');
+    for (var p = start; p <= end; p++) {
+        btns += '<button class="pager-btn' + (p === state.page ? ' active' : '') + '" onclick="goPage(' + p + ')">' + p + '</button>';
+    }
+    if (end < pages) btns += (end < pages - 1 ? '<span style="padding:6px;">…</span>' : '') + '<button class="pager-btn" onclick="goPage(' + pages + ')">' + pages + '</button>';
+    if (state.page < pages) btns += '<button class="pager-btn" onclick="goPage(' + (state.page + 1) + ')"><i class="fas fa-chevron-right"></i></button>';
+    setHTML('pager-btns', btns);
+}
+
+function goPage(p) { state.page = p; loadList(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+
+// ── Chi tiết ──
+function openDetail(i) {
+    var log = logs[i];
+    if (!log) return;
+    var k = kindOf(log), t = fmtTime(log.created_at);
+    var oldV = (log.old_values && typeof log.old_values === 'object') ? log.old_values : null;
+    var newV = (log.new_values && typeof log.new_values === 'object') ? log.new_values : null;
+
+    var html = '<dl class="lg-meta">' +
+        '<dt>Thời gian</dt><dd>' + t.main + (t.sub ? ' (' + t.sub + ')' : '') + '</dd>' +
+        '<dt>Người thực hiện</dt><dd>' + escapeHtml(userName(log)) + (log.user_email ? ' — ' + escapeHtml(log.user_email) : '') + '</dd>' +
+        '<dt>Thao tác</dt><dd><span class="lg-act k-' + k + '"><i class="fas fa-' + KIND_ICON[k] + '"></i> ' + escapeHtml(actionLabel(log)) + '</span>' +
+            ' <span style="color:#a0aec0;font-size:0.75rem;">(' + escapeHtml(log.action || '') + ')</span></dd>' +
+        '<dt>Đối tượng</dt><dd>' + escapeHtml(TABLE_LBL[log.table_name] || log.table_name || '—') + (log.record_id ? ' #' + log.record_id : '') +
+            (objName(log) ? ' — <b>' + escapeHtml(String(objName(log))) + '</b>' : '') + '</dd>' +
+        '<dt>Địa chỉ IP</dt><dd>' + escapeHtml(log.ip_address || '—') + '</dd>' +
+        '<dt>Thiết bị</dt><dd>' + escapeHtml(shortUA(log.user_agent) || '—') + '</dd>' +
+    '</dl>';
+
+    var rows = '';
+    if (oldV && newV) {
+        // Sửa: chỉ hiện các trường thay đổi
+        Object.keys(newV).forEach(function (f) {
+            if (SKIP_FIELDS.indexOf(f) !== -1) return;
+            if (same(oldV[f], newV[f])) return;
+            if (oldV[f] === undefined && (newV[f] === null || newV[f] === '')) return;
+            rows += '<tr><td class="f">' + escapeHtml(FIELD_LBL[f] || f) + '</td><td class="old">' + fmtVal(f, oldV[f]) + '</td><td class="new">' + fmtVal(f, newV[f]) + '</td></tr>';
+        });
+        html += '<h4 style="margin:0 0 8px;font-size:0.9rem;">Các thay đổi</h4>' + (rows
+            ? '<table class="lg-diff"><thead><tr><th style="width:150px;">Trường</th><th>Trước</th><th>Sau</th></tr></thead><tbody>' + rows + '</tbody></table>'
+            : '<p style="color:#a0aec0;font-size:0.85rem;">Không có trường nào thay đổi.</p>');
+    } else if (oldV || newV) {
+        var obj = oldV || newV;
+        Object.keys(obj).forEach(function (f) {
+            if (SKIP_FIELDS.indexOf(f) !== -1) return;
+            if (obj[f] === null || obj[f] === '' ) return;
+            rows += '<tr><td class="f">' + escapeHtml(FIELD_LBL[f] || f) + '</td><td class="' + (oldV ? 'old' : 'new') + '">' + fmtVal(f, obj[f]) + '</td></tr>';
+        });
+        html += '<h4 style="margin:0 0 8px;font-size:0.9rem;">' + (oldV ? 'Dữ liệu trước khi xóa / thay đổi' : 'Dữ liệu đã gửi') + '</h4>' +
+            (rows ? '<table class="lg-diff"><tbody>' + rows + '</tbody></table>' : '<p style="color:#a0aec0;font-size:0.85rem;">Không có dữ liệu.</p>');
+    } else if (log.old_values || log.new_values) {
+        html += '<div class="lg-raw">' + escapeHtml(String(log.new_values || log.old_values)) + '</div>';
+    } else {
+        html += '<p style="color:#a0aec0;font-size:0.85rem;">Không có dữ liệu chi tiết.</p>';
+    }
+
+    setHTML('detail-title', '<i class="fas fa-history" style="color:#1450a3;margin-right:8px;"></i>' + escapeHtml(actionLabel(log)));
+    setHTML('detail-body', html);
+    $('detail-modal').classList.add('open');
+}
+function closeDetail() { $('detail-modal').classList.remove('open'); }
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeDetail(); });
+</script>
+</body>
+</html>

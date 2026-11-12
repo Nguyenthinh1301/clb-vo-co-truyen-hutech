@@ -276,10 +276,9 @@ class SchedulerService {
     async cleanOldAuditLogs() {
         try {
             // Keep logs for 90 days
-            const result = await db.delete(
-                'audit_logs',
-                "created_at < NOW() - INTERVAL '90 days'"
-            );
+            // Dùng tham số ngày để chạy được trên cả MSSQL lẫn PostgreSQL
+            const cutoff = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
+            const result = await db.delete('audit_logs', 'created_at < ?', [cutoff]);
 
             console.log(`   Cleaned ${result} old audit logs`);
         } catch (error) {
