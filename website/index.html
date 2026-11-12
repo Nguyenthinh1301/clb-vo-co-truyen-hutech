@@ -502,8 +502,13 @@
 
             function gsGetPhotos(idx) {
                 if (idx === -1) {
-                    var all = [];
-                    gsAlbums.forEach(function(a) { a.photos.forEach(function(p) { all.push(p); }); });
+                    // "Tất cả": lấy xen kẽ từng ảnh của mỗi album (round-robin) để album nào cũng có mặt
+                    // trong 9 ô hiển thị — trước đây nối tuần tự nên album cuối ("Hoạt động CLB") bị cắt mất.
+                    var all = [], maxLen = 0;
+                    gsAlbums.forEach(function(a) { maxLen = Math.max(maxLen, (a.photos || []).length); });
+                    for (var i = 0; i < maxLen; i++) {
+                        gsAlbums.forEach(function(a) { if (a.photos && a.photos[i]) all.push(a.photos[i]); });
+                    }
                     return all;
                 }
                 return gsAlbums[idx] ? gsAlbums[idx].photos : [];

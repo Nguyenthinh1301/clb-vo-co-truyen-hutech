@@ -76,8 +76,28 @@ const generalLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
     keyGenerator: clientIp,
-    // Bỏ qua rate limit cho localhost (development)
-    skip: (req) => process.env.NODE_ENV === 'development' && isLocalRequest(req)
+    // Bỏ qua rate limit cho localhost (development).
+    // Request đọc công khai (GET không kèm token) dùng publicReadLimiter bên dưới —
+    // trước đây 1 lần mở trang chủ tốn ~9 request nên khách xem vài trang đã bị chặn.
+    skip: (req) => (process.env.NODE_ENV === 'development' && isLocalRequest(req)) || isPublicRead(req)
+});
+
+function isPublicRead(req) {
+    return (req.method === 'GET' || req.method === 'HEAD') && !req.headers.authorization;
+}
+
+// Giới hạn riêng cho request đọc công khai của website (trang chủ, sự kiện, thư viện, đội ngũ...)
+const publicReadLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: parseInt(process.env.PUBLIC_READ_RATE_LIMIT) || 1500,
+    message: {
+        success: false,
+        message: 'Quá nhiều yêu cầu từ IP này, vui lòng thử lại sau.'
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
+    keyGenerator: clientIp,
+    skip: (req) => !isPublicRead(req) || (process.env.NODE_ENV === 'development' && isLocalRequest(req))
 });
 
 // Strict rate limiting for login endpoint
@@ -107,6 +127,7 @@ const passwordResetLimiter = rateLimit({
     }
 });
 
+app.use('/api/', publicReadLimiter);
 app.use('/api/', generalLimiter);
 // Áp dụng cho cả route legacy lẫn /api/v1 (trước đây /api/v1/auth/login không bị giới hạn)
 app.use(['/api/auth/login', '/api/v1/auth/login'], loginLimiter);
