@@ -76,16 +76,24 @@
             <!-- Đai + Ghi chú -->
             <div class="form-row">
                 <div class="form-group">
-                    <label class="form-label">Cấp đai</label>
+                    <label class="form-label">Cấp bậc</label>
                     <select class="form-control" id="f-belt">
-                        <option value="">Chưa có đai</option>
-                        <option value="white">Đai Trắng</option>
-                        <option value="yellow">Đai Vàng</option>
-                        <option value="orange">Đai Cam</option>
-                        <option value="green">Đai Xanh lá</option>
-                        <option value="blue">Đai Xanh dương</option>
-                        <option value="brown">Đai Nâu</option>
-                        <option value="black">Đai Đen</option>
+                        <option value="">Chưa có cấp</option>
+                        <option value="cap_1">Cấp 1</option>
+                        <option value="cap_2">Cấp 2</option>
+                        <option value="cap_3">Cấp 3</option>
+                        <option value="cap_4">Cấp 4</option>
+                        <option value="cap_5">Cấp 5</option>
+                        <option value="cap_6">Cấp 6</option>
+                        <option value="cap_7">Cấp 7</option>
+                        <option value="cap_8">Cấp 8</option>
+                        <option value="cap_9">Cấp 9</option>
+                        <option value="cap_10">Cấp 10</option>
+                        <option value="cap_11">Cấp 11</option>
+                        <option value="cap_12">Cấp 12</option>
+                        <option value="cap_13">Cấp 13</option>
+                        <option value="cap_14">Cấp 14</option>
+                        <option value="cap_15">Cấp 15</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -447,6 +455,24 @@ function displayName(u) {
 
 var editingUser = null;
 
+// Cấp bậc: Cấp 1 → Cấp 15 (value "cap_N").
+// Dữ liệu cũ theo màu đai (white, yellow...) vẫn được giữ nguyên nếu chưa đổi.
+var OLD_BELT_LBL = { white: 'Đai Trắng', yellow: 'Đai Vàng', orange: 'Đai Cam', green: 'Đai Xanh lá',
+                     blue: 'Đai Xanh dương', brown: 'Đai Nâu', black: 'Đai Đen' };
+function setBeltValue(v) {
+    var sel = $('f-belt');
+    var old = sel.querySelector('option[data-legacy]');
+    if (old) old.remove();
+    if (v && !sel.querySelector('option[value="' + v.replace(/"/g, '') + '"]')) {
+        var opt = document.createElement('option');
+        opt.value = v;
+        opt.setAttribute('data-legacy', '1');
+        opt.textContent = (OLD_BELT_LBL[v] || v) + ' (cũ — hãy chọn lại cấp)';
+        sel.appendChild(opt);
+    }
+    sel.value = v;
+}
+
 function editItem(u) {
     if (!u) { toast('Không tìm thấy dữ liệu thành viên', 'danger'); return; }
     editingUser = u;
@@ -468,7 +494,7 @@ function editItem(u) {
     $('f-membership').value          = u.membership_status || 'active';
     $('f-name').value                = fullName;
     $('f-phone').value               = u.phone_number      || '';
-    $('f-belt').value                = u.belt_level        || '';
+    setBeltValue(u.belt_level || '');
     $('f-notes').value               = u.notes             || '';
 
     setHTML('modal-title',

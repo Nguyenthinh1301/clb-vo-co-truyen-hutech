@@ -177,15 +177,10 @@ var ST_LBL = {
     completed: 'Đã kết thúc', cancelled: 'Đã hủy'
 };
 
-// ── Extract HH:MM từ ISO datetime hoặc time string ──
-function extractTime(s) {
-    if (!s) return null;
-    if (s.indexOf('T') !== -1) {
-        var t = new Date(s);
-        return t.getHours().toString().padStart(2, '0') + ':' + t.getMinutes().toString().padStart(2, '0');
-    }
-    return s.substring(0, 5);
-}
+// extractTime / calcStatus / evDateStr / effectiveStatus: xem shared/ui.js
+
+// Danh sách sự kiện đang lệch trạng thái trên trang hiện tại
+var mismatched = [];
 
 // ── Render trang ──
 page.innerHTML = [
@@ -219,6 +214,13 @@ page.innerHTML = [
     '      </select>',
     '      <button class="btn btn-outline" onclick="loadList()" title="Làm mới">',
     '        <i class="fas fa-sync-alt"></i>',
+    '      </button>',
+    '    </div>',
+    '    <div id="sync-bar" style="display:none;margin:4px 0 12px;padding:10px 14px;border-radius:8px;background:#fff8e6;border:1px solid #f6d58a;color:#8a5a00;font-size:0.85rem;align-items:center;gap:10px;flex-wrap:wrap;">',
+    '      <i class="fas fa-exclamation-triangle"></i>',
+    '      <span id="sync-msg"></span>',
+    '      <button class="btn btn-sm btn-primary" id="sync-btn" onclick="syncAll()" style="margin-left:auto;">',
+    '        <i class="fas fa-sync"></i> Đồng bộ trạng thái',
     '      </button>',
     '    </div>',
     '  </div>',
@@ -267,7 +269,17 @@ async function loadList() {
             return;
         }
 
+        mismatched = [];
         var rows = list.map(function (ev, i) {
+            var eff = effectiveStatus(ev);
+            var isMismatch = eff !== ev.status;
+            if (isMismatch) mismatched.push({ id: ev.id, status: eff });
+            var statusHtml = '<span class="badge ' + (ST_CLS[eff] || 'b-secondary') + '">' + (ST_LBL[eff] || eff || '—') + '</span>' +
+                (isMismatch
+                    ? '<br><span style="color:#b7791f;font-size:0.72rem;" title="Trạng thái đang lưu trong CSDL khác với thời gian thực">' +
+                        '<i class="fas fa-exclamation-circle"></i> Đang lưu: ' + (ST_LBL[ev.status] || ev.status || '—') +
+                      '</span>'
+                    : '');
             var idx      = (currentPage - 1) * PAGE_SIZE + i + 1;
             var safeJson = encodeURIComponent(JSON.stringify(ev));
             var safeName = ev.name.replace(/"/g, '&quot;');
@@ -297,7 +309,7 @@ async function loadList() {
                 '</td>' +
                 '<td><span style="font-size:0.82rem;">' + (TYPE_LBL[ev.type] || ev.type || '—') + '</span></td>' +
                 '<td style="font-size:0.85rem;">' + fmtDate(ev.date) + timeHtml + '</td>' +
-                '<td><span class="badge ' + (ST_CLS[ev.status] || 'b-secondary') + '">' + (ST_LBL[ev.status] || ev.status || '—') + '</span></td>' +
+                '<td>' + statusHtml + '</td>' +
                 '<td>' +
                     '<div style="display:flex;gap:6px;">' +
                         '<button class="btn btn-sm btn-outline" onclick="editItem(\'' + safeJson + '\')" title="Chỉnh sửa">' +
@@ -328,6 +340,8 @@ async function loadList() {
             '</div>'
         );
 
+        renderSyncBar();
+
         // Pagination
         $('pager').style.display = 'flex';
         setHTML('pager-info', 'Hiển thị ' + list.length + ' / ' + total + ' sự kiện');
@@ -345,10 +359,50 @@ async function loadList() {
     } catch (e) {
         empty('tbl', 'exclamation-circle', 'Lỗi tải dữ liệu: ' + e.message);
         $('pager').style.display = 'none';
+        mismatched = [];
+        renderSyncBar();
     }
 }
 
 function goPage(p) { currentPage = p; loadList(); }
+
+// ════════════════════════════════════════
+// ĐỒNG BỘ TRẠNG THÁI THEO THỜI GIAN THỰC
+// ════════════════════════════════════════
+function renderSyncBar() {
+    var bar = $('sync-bar');
+    if (!bar) return;
+    if (!mismatched.length) { bar.style.display = 'none'; return; }
+    setHTML('sync-msg', '<b>' + mismatched.length + '</b> sự kiện có trạng thái đang lưu không khớp với thời gian thực (VD: đã qua giờ nhưng vẫn "Sắp diễn ra").');
+    bar.style.display = 'flex';
+}
+
+async function syncAll() {
+    if (!mismatched.length) return;
+    var btn = $('sync-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang đồng bộ...';
+    var ok = 0, fail = 0;
+    for (var i = 0; i < mismatched.length; i++) {
+        try { await API.events.update(mismatched[i].id, { status: mismatched[i].status }); ok++; }
+        catch (e) { fail++; }
+    }
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-sync"></i> Đồng bộ trạng thái';
+    toast(fail ? ('Đã đồng bộ ' + ok + ', lỗi ' + fail + ' sự kiện') : ('✅ Đã đồng bộ ' + ok + ' sự kiện'), fail ? 'danger' : undefined);
+    loadList();
+}
+
+// Khi sửa ngày/giờ trong form → tự gợi ý trạng thái đúng (trừ khi đã chọn "Đã hủy")
+function autoStatusFromForm() {
+    if ($('f-status').value === 'cancelled') return;
+    var date = $('f-date').value;
+    if (!date) return;
+    $('f-status').value = calcStatus(date, $('f-time-start').value, $('f-time-end').value, $('f-status').value);
+}
+['f-date', 'f-time-start', 'f-time-end'].forEach(function (id) {
+    $(id).addEventListener('change', autoStatusFromForm);
+});
 
 // ════════════════════════════════════════
 // MODAL THÊM / SỬA
@@ -388,7 +442,7 @@ function editItem(encodedJson) {
     $('f-name').value       = ev.name        || '';
     $('f-type').value       = ev.type        || 'other';
     $('f-status').value     = ev.status      || 'upcoming';
-    $('f-date').value       = (ev.date       || '').substring(0, 10);
+    $('f-date').value       = evDateStr(ev);
     $('f-time-start').value = extractTime(ev.start_time) || '';
     $('f-time-end').value   = extractTime(ev.end_time)   || '';
     $('f-loc').value        = ev.location    || '';

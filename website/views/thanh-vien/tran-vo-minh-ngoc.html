@@ -17,7 +17,7 @@
 
     <!-- Hero fullscreen -->
     <div class="profile-hero">
-        <div class="profile-hero-bg" style="background-image: url('assets/images_Avatar/Avatar_Anh_Ngoc.jpg');"></div>
+        <div class="profile-hero-bg"></div>
         <div class="profile-hero-overlay"></div>
         <div class="profile-hero-content">
             <div class="profile-avatar-wrap">
@@ -125,8 +125,12 @@
     </div>
 
     <div id="footer-placeholder"></div>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/team.js"></script>
     <script src="assets/js/dropdown.js"></script>
     <script>
+        // Thông tin lấy từ Admin (giữ HTML tĩnh nếu API lỗi)
+        TeamSite.renderProfile();
         async function load(id, path) {
             try { document.getElementById(id).innerHTML = await (await fetch(path)).text(); } catch(e) {}
         }

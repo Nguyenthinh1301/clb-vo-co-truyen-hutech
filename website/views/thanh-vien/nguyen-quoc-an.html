@@ -17,7 +17,7 @@
 
     <!-- Hero fullscreen -->
     <div class="profile-hero">
-        <div class="profile-hero-bg" style="background-image: url('assets/images_Avatar/Avatar_An_2.jpg'); background-position: center 35%;"></div>
+        <div class="profile-hero-bg"></div>
         <div class="profile-hero-overlay"></div>
         <div class="profile-hero-content">
             <div class="profile-avatar-wrap">
@@ -30,7 +30,7 @@
                     Nguyễn Quốc An
                 </div>
                 <h1>Nguyễn Quốc An</h1>
-                <span class="profile-role-badge"><i class="fas fa-star"></i> Phó Chủ Nhiệm CLB</span>
+                <span class="profile-role-badge"><i class="fas fa-star"></i> Phó Chủ Nhiệm CLB, HLV</span>
                 <div class="profile-stats-row">
                     <div class="profile-stat"><strong>8</strong><span>Năm KN</span></div>
                     <div class="profile-stat"><strong>10+</strong><span>Giải thưởng</span></div>
@@ -125,8 +125,12 @@
     </div>
 
     <div id="footer-placeholder"></div>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/team.js"></script>
     <script src="assets/js/dropdown.js"></script>
     <script>
+        // Thông tin lấy từ Admin (giữ HTML tĩnh nếu API lỗi)
+        TeamSite.renderProfile();
         async function load(id, path) {
             try { document.getElementById(id).innerHTML = await (await fetch(path)).text(); } catch(e) {}
         }

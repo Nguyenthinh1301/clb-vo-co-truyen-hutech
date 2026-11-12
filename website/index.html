@@ -62,16 +62,36 @@
 
     <div id="footer-placeholder"></div>
 
+    <script src="assets/js/team.js"></script>
     <script src="script.js"></script>
     <script src="script-enhanced.js"></script>
     <script>
         // ===== BỘ ĐẾM SỰ KIỆN =====
+        var __evCountdownTimer = null;
         function initEventCountdowns() {
+            // Chỉ giữ 1 interval — tránh chồng nhiều bộ đếm khi danh sách được tải lại
+            if (__evCountdownTimer) { clearInterval(__evCountdownTimer); __evCountdownTimer = null; }
             const cards = document.querySelectorAll('.event-card[data-start]');
             if (!cards.length) return;
 
+            // "YYYY-MM-DD" + "HH:MM" (tùy chọn) → Date theo giờ địa phương
+            function toDate(dateStr, timeStr, fallback) {
+                if (!dateStr) return null;
+                const p = dateStr.split('-').map(Number);
+                const t = (timeStr || fallback).split(':').map(Number);
+                return new Date(p[0], p[1] - 1, p[2], t[0] || 0, t[1] || 0, t[2] || 0);
+            }
+
+            function setBadge(card, cls, label) {
+                card.classList.remove('status-upcoming', 'status-ongoing', 'status-ended');
+                card.classList.add(cls);
+                const badge = card.querySelector('.event-badge-auto');
+                if (badge) badge.textContent = label;
+            }
+
             function renderCountdown(el, diff) {
                 el.classList.remove('hidden');
+                diff = Math.max(0, diff);
                 const days    = Math.floor(diff / 86400000);
                 const hours   = Math.floor((diff % 86400000) / 3600000);
                 const minutes = Math.floor((diff % 3600000) / 60000);
@@ -86,29 +106,44 @@
 
             function update() {
                 const now = new Date();
+                let active = 0;
                 cards.forEach(function(card) {
-                    const startDate = new Date(card.dataset.start + 'T00:00:00');
-                    const endDate   = new Date(card.dataset.end   + 'T23:59:59');
-                    const badge     = card.querySelector('.event-badge-auto');
                     const countdown = card.querySelector('.event-countdown');
-                    if (!badge || !countdown) return;
+                    if (!countdown) return;
+                    const status = card.dataset.status;
 
-                    // Chỉ cập nhật countdown, không override badge (badge đã set từ API status)
-                    if (card.classList.contains('status-upcoming') && now < startDate) {
-                        renderCountdown(countdown, startDate - now);
-                    } else if (card.classList.contains('status-ongoing') && now <= endDate) {
-                        renderCountdown(countdown, endDate - now);
-                    } else if (card.classList.contains('status-upcoming') && now >= startDate) {
-                        // Sự kiện đã bắt đầu nhưng status vẫn upcoming → hiện countdown từ endDate
-                        renderCountdown(countdown, endDate - now);
-                    } else {
+                    // Đã hủy / đã kết thúc (theo CSDL) → không đếm
+                    if (status === 'cancelled' || status === 'completed') {
                         countdown.classList.add('hidden');
+                        return;
+                    }
+
+                    const startDate = toDate(card.dataset.start, card.dataset.startTime, '00:00');
+                    let   endDate   = toDate(card.dataset.end,   card.dataset.endTime,   '23:59:59');
+                    if (!startDate || !endDate) { countdown.classList.add('hidden'); return; }
+                    if (endDate < startDate) endDate = toDate(card.dataset.end, null, '23:59:59');
+
+                    // Tính trạng thái theo thời gian thực, không tin hoàn toàn vào status trong CSDL
+                    if (now < startDate) {
+                        renderCountdown(countdown, startDate - now);
+                        active++;
+                    } else if (now <= endDate) {
+                        setBadge(card, 'status-ongoing', 'Đang diễn ra');
+                        renderCountdown(countdown, endDate - now);
+                        active++;
+                    } else {
+                        // Đã hết hạn → dừng đếm, đổi nhãn
+                        setBadge(card, 'status-ended', 'Đã kết thúc');
+                        countdown.classList.add('hidden');
+                        countdown.innerHTML = '';
                     }
                 });
+                // Không còn sự kiện nào cần đếm → dừng interval
+                if (!active && __evCountdownTimer) { clearInterval(__evCountdownTimer); __evCountdownTimer = null; }
             }
 
             update();
-            setInterval(update, 1000);
+            __evCountdownTimer = setInterval(update, 1000);
         }
 
         // ===== LOAD COMPONENTS =====
@@ -144,6 +179,7 @@
             ]);
             loadEventsSection();
             loadGallerySection();
+            if (window.TeamSite) TeamSite.renderHomeCoaches();
 
             // ── Ưu tiên 3: Load footer + contact (ít quan trọng hơn) song song ──
             Promise.all([
@@ -242,7 +278,9 @@
 
                 var hideCountdown = (ev.status === 'completed' || ev.status === 'cancelled');
 
-                return '<div class="event-card ' + stCls + '" data-start="' + dateStr + '" data-end="' + dateStr + '">' +
+                return '<div class="event-card ' + stCls + '" data-status="' + (ev.status || '') + '"' +
+                    ' data-start="' + dateStr + '" data-end="' + dateStr + '"' +
+                    ' data-start-time="' + (startTime || '') + '" data-end-time="' + (endTime || '') + '">' +
                     '<div class="event-badge-auto">' + stLbl + '</div>' +
                     '<div class="event-date">' +
                         '<span class="event-day">'   + day   + '</span>' +
@@ -438,7 +476,7 @@
                     return;
                 }
                 grid.innerHTML = gsLbPhotos.map(function(item, idx) {
-                    return '<div class="gallery-item" onclick="gsLbOpen(' + idx + ')" style="min-height:200px;">' +
+                    return '<div class="gallery-item" onclick="gsLbOpen(' + idx + ')">' +
                         '<img src="' + item.src + '" alt="' + (item.title||'') + '" class="gallery-real-img" loading="lazy" ' +
                         'onerror="this.style.display=\'none\';this.nextElementSibling.innerHTML=\'<div style=\\\'display:flex;align-items:center;justify-content:center;height:100%;background:#f0f2f5;color:#cbd5e0;font-size:2rem;\\\'><i class=\\\'fas fa-image\\\' title=\\\'Ảnh không tải được\\\'></i></div>\'">' +
                         '<div class="gallery-info"><h4>' + (item.title||'') + '</h4><p>' + (item.desc||'') + '</p></div>' +

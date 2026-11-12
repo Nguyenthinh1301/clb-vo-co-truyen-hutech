@@ -591,41 +591,55 @@ class ImageCarousel {
         this.observeCarousel();
     }
     
-    goToSlide(index) {
-        // Remove active classes
-        this.slides[this.currentSlide].classList.remove('active');
+    // dir: 1 = tiến (slide mới vào từ phải), -1 = lùi (vào từ trái).
+    // Không truyền → tự suy ra theo chỉ số.
+    goToSlide(index, dir) {
+        if (index === this.currentSlide) return;
+        if (dir === undefined) dir = index > this.currentSlide ? 1 : -1;
+
+        const oldSlide = this.slides[this.currentSlide];
+        const newSlide = this.slides[index];
+
+        // Đặt slide mới ở đúng phía xuất phát (không transition) — tránh 2 slide
+        // trượt chồng lên nhau khi quay vòng từ tấm cuối về tấm đầu
+        clearTimeout(this._cleanupTimer);
+        newSlide.style.transition = 'none';
+        newSlide.classList.remove('prev', 'next');
+        newSlide.classList.add(dir > 0 ? 'next' : 'prev');
+        void newSlide.offsetWidth; // force reflow
+        newSlide.style.transition = '';
+
+        // Slide cũ rời đi về phía ngược lại
+        oldSlide.classList.remove('active', 'prev', 'next');
+        oldSlide.classList.add(dir > 0 ? 'prev' : 'next');
         this.indicators[this.currentSlide].classList.remove('active');
-        
-        // Add transition classes
-        if (index > this.currentSlide) {
-            this.slides[this.currentSlide].classList.add('prev');
-        } else if (index < this.currentSlide) {
-            this.slides[this.currentSlide].classList.add('next');
-        }
-        
-        // Update current slide
+
+        // Slide mới vào giữa
         this.currentSlide = index;
-        
-        // Add active classes
-        this.slides[this.currentSlide].classList.add('active');
+        newSlide.classList.remove('prev', 'next');
+        newSlide.classList.add('active');
         this.indicators[this.currentSlide].classList.add('active');
-        
-        // Clean up transition classes after animation
-        setTimeout(() => {
+
+        // Dọn class chuyển tiếp của các slide không active sau khi animation xong
+        this._cleanupTimer = setTimeout(() => {
             this.slides.forEach(slide => {
+                if (slide.classList.contains('active')) return;
+                slide.style.transition = 'none';
                 slide.classList.remove('prev', 'next');
+                void slide.offsetWidth;
+                slide.style.transition = '';
             });
-        }, 800);
+        }, 850);
     }
-    
+
     nextSlide() {
         const nextIndex = (this.currentSlide + 1) % this.totalSlides;
-        this.goToSlide(nextIndex);
+        this.goToSlide(nextIndex, 1);
     }
-    
+
     prevSlide() {
         const prevIndex = (this.currentSlide - 1 + this.totalSlides) % this.totalSlides;
-        this.goToSlide(prevIndex);
+        this.goToSlide(prevIndex, -1);
     }
     
     startAutoPlay() {
@@ -656,11 +670,11 @@ class ImageCarousel {
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    // Trigger entrance animation
+                    // Trigger entrance animation (chỉ 1 lần)
                     carousel.style.opacity = '1';
                     carousel.style.transform = 'translateY(0)';
-                    
-                    // Start carousel animation
+                    observer.unobserve(carousel);
+
                     setTimeout(() => {
                         this.startEntranceAnimation();
                     }, 500);
@@ -678,14 +692,12 @@ class ImageCarousel {
     
     startEntranceAnimation() {
         // Add special entrance animation for first view
-        const activeSlide = this.slides[this.currentSlide];
-        const imageItem = activeSlide.querySelector('.image-item');
-        
-        if (imageItem) {
-            imageItem.style.animation = 'none';
-            setTimeout(() => {
-                imageItem.style.animation = 'slideInContent 0.8s ease forwards';
-            }, 100);
+        // Chỉ chạy lại hiệu ứng cho phần chữ — không đụng tới ảnh (tránh ảnh mờ lộ nền)
+        const overlay = this.slides[this.currentSlide].querySelector('.image-overlay');
+        if (overlay) {
+            overlay.style.animation = 'none';
+            void overlay.offsetWidth;
+            overlay.style.animation = '';
         }
     }
 }

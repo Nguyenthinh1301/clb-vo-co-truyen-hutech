@@ -117,6 +117,7 @@ function buildSidebar(user, activePage) {
     navHTML += `<a href="cam-nhan.html" class="sb-link${activePage==='cam-nhan.html'?' active':''}"><i class="fas fa-heart"></i> Cảm nhận SV</a>`;
     navHTML += `<a href="thu-vien.html" class="sb-link${activePage==='thu-vien.html'?' active':''}"><i class="fas fa-images"></i> Thư viện ảnh</a>`;
     navHTML += `<a href="hoat-dong.html" class="sb-link${activePage==='hoat-dong.html'?' active':''}"><i class="fas fa-trophy"></i> Hoạt động</a>`;
+    navHTML += `<a href="doi-ngu.html" class="sb-link${activePage==='doi-ngu.html'?' active':''}"><i class="fas fa-user-tie"></i> Đội ngũ CLB</a>`;
     navHTML += '<div class="sb-section">Quản lý</div>';
     navHTML += `<a href="thanh-vien.html" class="sb-link${activePage==='thanh-vien.html'?' active':''}"><i class="fas fa-users"></i> Thành viên</a>`;
     navHTML += `<a href="lien-he.html" class="sb-link${activePage==='lien-he.html'?' active':''}"><i class="fas fa-envelope"></i> Liên hệ</a>`;
@@ -420,3 +421,55 @@ function buildImageUpload()  { return ''; }
 function removeImage(hid, pid) { _removeUpload(hid, '', ''); }
 function setExistingImage(hid, pid, url) { setUploadImage(hid, url); }
 function isUploadInProgress() { return false; }
+
+/* ══════════════════════════════════════════════════════════════
+   SỰ KIỆN — tính trạng thái theo thời gian thực (ngày + giờ)
+   Dùng chung cho su-kien.html và dashboard.html, cùng logic với trang chủ.
+   ══════════════════════════════════════════════════════════════ */
+
+/** HH:MM từ ISO datetime hoặc chuỗi "HH:MM[:SS]" */
+function extractTime(s) {
+    if (!s) return null;
+    s = String(s);
+    if (s.indexOf('T') !== -1) {
+        var t = new Date(s);
+        return String(t.getHours()).padStart(2, '0') + ':' + String(t.getMinutes()).padStart(2, '0');
+    }
+    return s.substring(0, 5);
+}
+
+/** YYYY-MM-DD theo giờ địa phương (date có thể là ISO UTC) */
+function evDateStr(ev) {
+    if (!ev || !ev.date) return '';
+    var s = String(ev.date);
+    if (s.indexOf('T') !== -1) {
+        var d = new Date(s);
+        return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    }
+    return s.substring(0, 10);
+}
+
+function _evLocalDate(dateStr, timeStr, fallback) {
+    if (!dateStr) return null;
+    var p = String(dateStr).substring(0, 10).split('-').map(Number);
+    if (p.length !== 3 || isNaN(p[0])) return null;
+    var t = (timeStr || fallback).split(':').map(Number);
+    return new Date(p[0], p[1] - 1, p[2], t[0] || 0, t[1] || 0, t[2] || 0);
+}
+
+/** Trạng thái thực tế: 'upcoming' | 'ongoing' | 'completed' | 'cancelled' */
+function calcStatus(dateStr, startTime, endTime, savedStatus) {
+    if (savedStatus === 'cancelled') return 'cancelled';
+    var start = _evLocalDate(dateStr, startTime, '00:00');
+    var end   = _evLocalDate(dateStr, endTime,   '23:59:59');
+    if (!start || !end) return savedStatus || 'upcoming';
+    if (end < start) end = _evLocalDate(dateStr, null, '23:59:59');
+    var now = new Date();
+    if (now < start) return 'upcoming';
+    if (now <= end)  return 'ongoing';
+    return 'completed';
+}
+
+function effectiveStatus(ev) {
+    return calcStatus(evDateStr(ev), extractTime(ev.start_time), extractTime(ev.end_time), ev.status);
+}

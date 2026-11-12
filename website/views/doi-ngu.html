@@ -21,8 +21,9 @@
     </div>
     <div class="page-body">
         <!-- 1. Ban Chủ Nhiệm -->
+        <div id="team-board-section">
         <div class="section-title"><i class="fas fa-crown"></i> Ban Chủ Nhiệm</div>
-        <div class="member-grid">
+        <div class="member-grid" id="team-board">
             <div class="member-card">
                 <div class="member-photo member-photo--ngoc"><img src="assets/images_Avatar/Avatar_Anh_Ngoc.jpg" alt="Trần Võ Minh Ngọc"></div>
                 <div class="member-body">
@@ -38,7 +39,7 @@
                 </div>
             </div>
             <div class="member-card">
-                <div class="member-photo"><img src="assets/images_Avatar/Avatar_An.jpg" alt="Nguyễn Quốc An"></div>
+                <div class="member-photo"><img src="assets/images_Avatar/Avatar_An_3.jpg" alt="Nguyễn Quốc An"></div>
                 <div class="member-body">
                     <h4>Quốc An</h4>
                     <div class="member-badge">Phó Chủ Nhiệm CLB, HLV</div> 
@@ -52,10 +53,12 @@
                 </div>
             </div>
         </div>
+        </div>
 
         <!-- 2. Ban Huấn Luyện -->
+        <div id="team-coach-section">
         <div class="section-title"><i class="fas fa-dumbbell"></i> Ban Huấn Luyện</div>
-        <div class="member-grid">
+        <div class="member-grid" id="team-coach">
             <div class="member-card">
                 <div class="member-photo"><img src="assets/images_Avatar/huy.jpg" alt="Phạm Đắc Trường Huy"></div>
                 <div class="member-body">
@@ -85,10 +88,12 @@
                 </div>
             </div>
         </div>
+        </div>
 
         <!-- 3. Ban Truyền Thông -->
+        <div id="team-media-section">
         <div class="section-title"><i class="fas fa-bullhorn"></i> Ban Truyền Thông</div>
-        <div class="member-grid">
+        <div class="member-grid" id="team-media">
             <div class="member-card">
                 <div class="member-photo"><img src="assets/images_Avatar/giang.jpg" alt="Xuân Giang"></div>
                 <div class="member-body">
@@ -126,10 +131,21 @@
                 </div>
             </div>
         </div>
+        </div>
+
+        <!-- 4. Khác (chỉ hiện khi có thành viên thuộc nhóm "Khác" trong Admin) -->
+        <div id="team-other-section" style="display:none;">
+        <div class="section-title"><i class="fas fa-users"></i> Thành Viên Khác</div>
+        <div class="member-grid" id="team-other"></div>
+        </div>
     </div>
     <div id="footer-placeholder"></div>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/team.js"></script>
     <script src="assets/js/dropdown.js"></script>
     <script>
+        // Dữ liệu đội ngũ lấy từ Admin (giữ HTML tĩnh ở trên nếu API lỗi)
+        TeamSite.renderTeamPage();
         async function load(id, path) {
             try { document.getElementById(id).innerHTML = await (await fetch(path)).text(); } catch(e) {}
         }

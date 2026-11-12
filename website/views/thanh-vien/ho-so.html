@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="../../">
+    <title>Hồ sơ thành viên – CLB Võ Cổ Truyền HUTECH</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="assets/css/thanh-vien.css">
+    <style>
+        /* Ẩn khung trống trong lúc đang tải dữ liệu */
+        body.team-loading .profile-body { visibility: hidden; }
+    </style>
+</head>
+<!-- Trang hồ sơ chung cho thành viên thêm từ Admin: views/thanh-vien/ho-so.html?slug=<slug> -->
+<body class="team-loading" data-team-dynamic>
+    <div id="header-placeholder"></div>
+
+    <div class="profile-hero">
+        <div class="profile-hero-bg"></div>
+        <div class="profile-hero-overlay"></div>
+        <div class="profile-hero-content">
+            <div class="profile-avatar-wrap profile-avatar-placeholder">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="profile-hero-text">
+                <div class="profile-breadcrumb">
+                    <a href="index.html">Trang chủ</a> &rsaquo;
+                    <a href="views/doi-ngu.html">Đội ngũ CLB</a>
+                </div>
+                <h1>Đang tải…</h1>
+                <span class="profile-role-badge" style="display:none;"></span>
+                <div class="profile-stats-row"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="profile-body">
+        <a href="views/doi-ngu.html" class="profile-back-btn">
+            <i class="fas fa-arrow-left"></i> Quay lại Đội ngũ
+        </a>
+
+        <div class="profile-main">
+            <div class="profile-section">
+                <div class="profile-section-title"><i class="fas fa-user-circle"></i> Giới thiệu</div>
+                <div class="profile-bio"></div>
+            </div>
+            <div class="profile-section">
+                <div class="profile-section-title"><i class="fas fa-medal"></i> Thành tích nổi bật</div>
+                <div class="achievement-timeline"></div>
+            </div>
+        </div>
+
+        <div class="profile-sidebar">
+            <div class="sidebar-card">
+                <div class="sidebar-card-title"><i class="fas fa-id-card"></i> Thông tin</div>
+                <ul class="sidebar-info-list"></ul>
+            </div>
+            <div class="sidebar-card">
+                <div class="sidebar-card-title"><i class="fas fa-images"></i> Hình ảnh</div>
+                <div class="sidebar-gallery"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer-placeholder"></div>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/team.js"></script>
+    <script src="assets/js/dropdown.js"></script>
+    <script>
+        TeamSite.renderProfile();
+        async function load(id, path) {
+            try { document.getElementById(id).innerHTML = await (await fetch(path)).text(); } catch(e) {}
+        }
+        document.addEventListener('DOMContentLoaded', async () => {
+            await load('header-placeholder', 'components/header.html');
+            await load('footer-placeholder', 'components/footer.html');
+            initDropdown();
+        });
+    </script>
+</body>
+</html>

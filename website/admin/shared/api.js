@@ -153,5 +153,13 @@ const API = {
         create: data => API.post('/activities', data),
         update: (id, data) => API.put(`/activities/${id}`, data),
         delete: id   => API.delete(`/activities/${id}`)
+    },
+
+    // Đội ngũ CLB (Ban chủ nhiệm / HLV / Truyền thông) — trang công khai doi-ngu.html
+    team: {
+        list:   ()   => API.get('/team/admin/all'),
+        create: data => API.post('/team', data),
+        update: (id, data) => API.put(`/team/${id}`, data),
+        delete: id   => API.delete(`/team/${id}`)
     }
 };

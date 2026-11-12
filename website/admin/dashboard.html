@@ -241,8 +241,10 @@ async function loadEventStats() {
 
         setHTML('s-ev', total);
 
-        var upcoming = allEv.filter(function (ev) { return ev.status === 'upcoming'; }).length;
-        var ongoing  = allEv.filter(function (ev) { return ev.status === 'ongoing';  }).length;
+        // Trạng thái tính theo thời gian thực (shared/ui.js), không tin hoàn toàn vào CSDL
+        allEv.forEach(function (ev) { ev._st = effectiveStatus(ev); });
+        var upcoming = allEv.filter(function (ev) { return ev._st === 'upcoming'; }).length;
+        var ongoing  = allEv.filter(function (ev) { return ev._st === 'ongoing';  }).length;
         var subParts = [];
         if (ongoing)  subParts.push('<span style="color:#38a169;">' + ongoing  + ' đang diễn ra</span>');
         if (upcoming) subParts.push(upcoming + ' sắp tới');
@@ -261,7 +263,7 @@ async function loadEventStats() {
                             (ev.location ? '<br><span style="color:#718096;font-size:0.75rem;"><i class="fas fa-map-marker-alt"></i> ' + safe(ev.location, 28) + '</span>' : '') +
                         '</td>' +
                         '<td style="font-size:0.8rem;color:#718096;">' + fmtDate(ev.date) + '</td>' +
-                        '<td><span class="badge ' + (stCls[ev.status] || 'b-secondary') + '">' + (stLbl[ev.status] || ev.status) + '</span></td>' +
+                        '<td><span class="badge ' + (stCls[ev._st] || 'b-secondary') + '">' + (stLbl[ev._st] || ev._st) + '</span></td>' +
                         '</tr>';
                 }).join('') +
                 '</tbody></table></div>'

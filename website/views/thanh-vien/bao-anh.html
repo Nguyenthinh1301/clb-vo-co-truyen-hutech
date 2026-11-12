@@ -16,7 +16,7 @@
     <div id="header-placeholder"></div>
 
     <div class="profile-hero">
-        <div class="profile-hero-bg" style="background: linear-gradient(135deg, #0a2a5e 0%, #1450a3 100%);"></div>
+        <div class="profile-hero-bg"></div>
         <div class="profile-hero-overlay"></div>
         <div class="profile-hero-content">
             <div class="profile-avatar-wrap profile-avatar-placeholder">
@@ -94,8 +94,12 @@
     </div>
 
     <div id="footer-placeholder"></div>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/team.js"></script>
     <script src="assets/js/dropdown.js"></script>
     <script>
+        // Thông tin lấy từ Admin (giữ HTML tĩnh nếu API lỗi)
+        TeamSite.renderProfile();
         async function load(id, path) {
             try { document.getElementById(id).innerHTML = await (await fetch(path)).text(); } catch(e) {}
         }

@@ -13,17 +13,11 @@ body { font-family: "Open Sans", sans-serif; }
     overflow: hidden;
 }
 
+/* Không dùng ảnh bìa — nền gradient màu CLB cho mọi thành viên */
 .profile-hero-bg {
     position: absolute;
     inset: 0;
-    background-size: cover;
-    background-position: center top;
-    filter: brightness(0.45);
-    transition: transform 6s ease;
-}
-
-.profile-hero:hover .profile-hero-bg {
-    transform: scale(1.04);
+    background: linear-gradient(135deg, #0a2a5e 0%, #1450a3 100%);
 }
 
 .profile-hero-overlay {
