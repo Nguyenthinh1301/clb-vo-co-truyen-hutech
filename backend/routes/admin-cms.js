@@ -169,9 +169,76 @@ router.delete('/news/:id', adminOnly, async (req, res) => {
 //  EVENTS
 // ══════════════════════════════════════════════════════════════
 
+// ── Tự cập nhật trạng thái sự kiện theo ngày + giờ thực ──────────
+// Chỉ chuyển TIẾN (upcoming → ongoing → completed), không đụng 'cancelled',
+// không lùi trạng thái admin đã đặt. Giờ sự kiện hiểu theo giờ Việt Nam (UTC+7).
+const CLUB_TZ_OFFSET_MIN = parseInt(process.env.CLUB_TZ_OFFSET_MINUTES || '420', 10);
+const STATUS_RANK = { upcoming: 0, ongoing: 1, completed: 2 };
+let lastEventSync = 0;
+
+function eventDateParts(d) {
+    if (!d) return null;
+    if (d instanceof Date) {
+        // DATE từ driver thường là 00:00 UTC; nếu không thì lấy theo giờ máy chủ
+        return d.getUTCHours() === 0 && d.getUTCMinutes() === 0
+            ? [d.getUTCFullYear(), d.getUTCMonth() + 1, d.getUTCDate()]
+            : [d.getFullYear(), d.getMonth() + 1, d.getDate()];
+    }
+    const m = String(d).match(/^(\d{4})-(\d{2})-(\d{2})/);
+    return m ? [+m[1], +m[2], +m[3]] : null;
+}
+function eventTimeParts(t) {
+    if (!t) return null;
+    if (t instanceof Date) return [t.getUTCHours(), t.getUTCMinutes(), t.getUTCSeconds()]; // MSSQL TIME
+    const s = String(t);
+    const m = s.indexOf('T') !== -1 ? null : s.match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?/);
+    if (m) return [+m[1], +m[2], +(m[3] || 0)];
+    const dt = new Date(s);
+    return isNaN(dt) ? null : [dt.getUTCHours(), dt.getUTCMinutes(), dt.getUTCSeconds()];
+}
+function clubInstant(dp, tp) {
+    // dp/tp theo giờ CLB → mốc thời gian UTC (ms)
+    return Date.UTC(dp[0], dp[1] - 1, dp[2], tp[0], tp[1], tp[2]) - CLUB_TZ_OFFSET_MIN * 60000;
+}
+function effectiveEventStatus(ev, now) {
+    const dp = eventDateParts(ev.date);
+    if (!dp) return ev.status;
+    const start = clubInstant(dp, eventTimeParts(ev.start_time) || [0, 0, 0]);
+    let   end   = clubInstant(dp, eventTimeParts(ev.end_time)   || [23, 59, 59]);
+    if (end < start) end = clubInstant(dp, [23, 59, 59]);
+    if (now < start) return 'upcoming';
+    if (now <= end)  return 'ongoing';
+    return 'completed';
+}
+
+async function syncEventStatuses(force) {
+    const now = Date.now();
+    if (!force && now - lastEventSync < 60000) return; // tối đa 1 lần / phút
+    lastEventSync = now;
+    try {
+        const rows = await db.find(
+            "SELECT id, date, start_time, end_time, status FROM events WHERE status IN ('upcoming', 'ongoing')", []);
+        let changed = 0;
+        for (const ev of rows) {
+            const eff = effectiveEventStatus(ev, now);
+            if (STATUS_RANK[eff] > STATUS_RANK[ev.status]) {
+                await db.update('events', { status: eff, updated_at: new Date() }, 'id = ?', [ev.id]);
+                changed++;
+            }
+        }
+        if (changed) {
+            invalidateCache('events');
+            console.log(`[events] Tự cập nhật trạng thái cho ${changed} sự kiện`);
+        }
+    } catch (e) {
+        console.error('[events] Lỗi tự cập nhật trạng thái:', e.message);
+    }
+}
+
 // GET all events (public)
 router.get('/events', async (req, res) => {
     try {
+        await syncEventStatuses(false);
         const { page, limit, offset } = parsePagination(req.query, 20, 100);
         const { status, type, q } = req.query;
         const params = [];
@@ -208,6 +275,7 @@ router.get('/events', async (req, res) => {
 // GET single event (public)
 router.get('/events/:id', async (req, res) => {
     try {
+        await syncEventStatuses(false);
         const row = await db.findOne('SELECT * FROM events WHERE id = ?', [req.params.id]);
         if (!row) return res.status(404).json({ success: false, message: 'Không tìm thấy' });
         res.json({ success: true, data: row });
@@ -234,6 +302,7 @@ router.post('/events', adminOnly, async (req, res) => {
             status:           status || 'upcoming'
         });
         invalidateCache('events');
+        await syncEventStatuses(true);
         res.status(201).json({ success: true, message: 'Tạo sự kiện thành công', data: { id } });
     } catch (e) {
         serverError(res, e);
@@ -248,6 +317,7 @@ router.put('/events/:id', adminOnly, async (req, res) => {
         fields.forEach(f => { if (req.body[f] !== undefined) upd[f] = req.body[f]; });
         await db.update('events', upd, 'id = ?', [req.params.id]);
         invalidateCache('events');
+        await syncEventStatuses(true);
         res.json({ success: true, message: 'Cập nhật thành công' });
     } catch (e) {
         serverError(res, e);
