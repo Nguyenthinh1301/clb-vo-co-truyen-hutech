@@ -85,6 +85,7 @@ var TABLE_LBL = {
     news: 'Tin tức', events: 'Sự kiện', reviews: 'Cảm nhận SV', announcements: 'Thông báo',
     gallery_albums: 'Album ảnh', gallery_photos: 'Ảnh thư viện', activities: 'Hoạt động',
     team_members: 'Đội ngũ CLB', upload: 'Tải ảnh lên', users: 'Tài khoản / Thành viên',
+    system_jobs: 'Tác vụ tự động', system_backups: 'Sao lưu',
     classes: 'Lớp học', class_enrollments: 'Ghi danh lớp', attendance: 'Điểm danh',
     contact_messages: 'Liên hệ', event_registrations: 'Đăng ký sự kiện'
 };
@@ -97,7 +98,10 @@ var ACTION_LBL = {
     event_status_auto_updated: 'Tự cập nhật trạng thái',
     contact_message_replied: 'Trả lời liên hệ', contact_message_deleted: 'Xóa liên hệ',
     contact_message_status_updated: 'Đổi trạng thái liên hệ', contact_messages_bulk_update: 'Cập nhật hàng loạt liên hệ',
-    upload_created: 'Tải ảnh lên', upload_deleted: 'Xóa ảnh đã tải'
+    upload_created: 'Tải ảnh lên', upload_deleted: 'Xóa ảnh đã tải',
+    system_job_run: 'Tác vụ tự động', system_job_failed: 'Tác vụ tự động bị lỗi',
+    system_job_triggered: 'Chạy tay tác vụ', system_job_enabled: 'Bật tác vụ', system_job_disabled: 'Tắt tác vụ',
+    backup_downloaded: 'Tải bản sao lưu', membership_auto_expired: 'Tự chuyển hội viên hết hạn'
 };
 var RESOURCE_LBL = {
     news: 'tin tức', event: 'sự kiện', review: 'cảm nhận', announcement: 'thông báo', album: 'album',
@@ -112,13 +116,14 @@ var FIELD_LBL = {
     avatar: 'Ảnh đại diện', role: 'Vai trò / Chức vụ', email: 'Email', category: 'Danh mục',
     sort_order: 'Thứ tự', show_home: 'Hiện ở trang chủ', group_key: 'Ban', bio: 'Giới thiệu',
     max_participants: 'Số người tối đa', medal: 'Huy chương', year: 'Năm', caption: 'Chú thích',
-    membership_status: 'Tình trạng hội viên', is_active: 'Hoạt động', belt_level: 'Cấp bậc', notes: 'Ghi chú'
+    membership_status: 'Tình trạng hội viên', job: 'Mã tác vụ', label: 'Tác vụ', message: 'Kết quả',
+    trigger: 'Cách chạy', duration_ms: 'Thời gian chạy (ms)', details: 'Chi tiết', backup_id: 'Mã bản sao lưu', last_login_at: 'Đăng nhập gần nhất', is_active: 'Hoạt động', belt_level: 'Cấp bậc', notes: 'Ghi chú'
 };
 var SKIP_FIELDS = ['updated_at', 'created_at', 'id'];
 
 function kindOf(log) {
     var a = log.action || '';
-    if (!log.user_id) return 'system';
+    if (!log.user_id) return /failed/.test(a) ? 'delete' : 'system';
     if (/^user_log(in|out)|password_changed/.test(a)) return 'auth';
     if (/created|added|registered|enrolled|recorded/.test(a)) return 'create';
     if (/deleted|removed/.test(a)) return 'delete';
@@ -137,7 +142,7 @@ function actionLabel(log) {
 function objName(log) {
     var o = (log.new_values && typeof log.new_values === 'object') ? log.new_values : {};
     var p = (log.old_values && typeof log.old_values === 'object') ? log.old_values : {};
-    return o.name || p.name || o.title || p.title || o.full_name || p.full_name ||
+    return o.label || o.name || p.name || o.title || p.title || o.full_name || p.full_name ||
            o.caption || p.caption || o.email || p.email || o.file || '';
 }
 function userName(log) {

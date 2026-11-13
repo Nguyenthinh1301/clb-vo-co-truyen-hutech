@@ -155,6 +155,14 @@ const API = {
         delete: id   => API.delete(`/activities/${id}`)
     },
 
+    // Tác vụ tự động & sao lưu (chỉ Admin)
+    systemJobs: {
+        list:    ()            => API.get('/system-jobs'),
+        run:     name          => API.post(`/system-jobs/${name}/run`, {}),
+        toggle:  (name, on)    => API.put(`/system-jobs/${name}`, { enabled: !!on }),
+        backups: ()            => API.get('/system-jobs/backups')
+    },
+
     // Nhật ký hoạt động (chỉ Admin)
     auditLogs: {
         list: (params) => API.get('/audit-logs?' + new URLSearchParams(params || {}).toString()),

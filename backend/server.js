@@ -248,6 +248,7 @@ app.use('/api/gallery', adminAudit('gallery'), require('./routes/gallery'));
 app.use('/api/activities', adminAudit('activities'), require('./routes/activities'));
 app.use('/api/team', adminAudit('team'), require('./routes/team'));
 app.use('/api/audit-logs', require('./routes/audit-logs'));
+app.use('/api/system-jobs', require('./routes/system-jobs'));
 
 // Serve static files (uploads) — dùng absolute path để tránh lỗi khi chạy từ thư mục khác
 // Thêm security headers để ngăn browser thực thi file HTML/SVG được upload

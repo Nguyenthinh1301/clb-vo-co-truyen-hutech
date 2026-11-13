@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tác vụ tự động - Admin CLB Võ Cổ Truyền HUTECH</title>
+    <link rel="stylesheet" href="shared/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .job-list { display: flex; flex-direction: column; }
+        .job { display: grid; grid-template-columns: 44px 1fr auto; gap: 14px; align-items: start;
+               padding: 16px 20px; border-top: 1px solid #edf2f7; }
+        .job:first-child { border-top: none; }
+        .job.off { opacity: 0.6; }
+        .job-ico { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center;
+                   background: #eaf2fd; color: #1450a3; font-size: 1.1rem; }
+        .job h4 { margin: 0 0 2px; font-size: 0.95rem; color: #1a252f; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .job .sched { font-size: 0.75rem; color: #1450a3; background: #eaf2fd; border-radius: 20px; padding: 2px 9px; font-weight: 600; }
+        .job .desc { font-size: 0.82rem; color: #718096; margin: 4px 0 8px; }
+        .job .last { font-size: 0.8rem; color: #4a5568; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+        .job .last .msg { color: #1a252f; }
+        .job .last .meta { color: #a0aec0; font-size: 0.75rem; }
+        .job-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+        .st { display: inline-flex; align-items: center; gap: 5px; font-size: 0.72rem; font-weight: 700; padding: 2px 9px; border-radius: 20px; }
+        .st-success { background: #d4edda; color: #155724; }
+        .st-error   { background: #f8d7da; color: #721c24; }
+        .st-none    { background: #e9ecef; color: #6c757d; }
+        .st-run     { background: #fff3cd; color: #856404; }
+
+        /* Công tắc */
+        .switch { position: relative; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.78rem; color: #4a5568; user-select: none; }
+        .switch input { display: none; }
+        .switch .track { width: 38px; height: 22px; border-radius: 22px; background: #cbd5e0; position: relative; transition: background 0.2s; }
+        .switch .track::after { content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%;
+                                background: #fff; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+        .switch input:checked + .track { background: #38a169; }
+        .switch input:checked + .track::after { transform: translateX(16px); }
+
+        .bk-size { font-family: Consolas, monospace; font-size: 0.8rem; color: #4a5568; }
+        .bk-tables { font-size: 0.75rem; color: #718096; }
+        .note { background: #f7fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 14px; font-size: 0.82rem; color: #4a5568; }
+        .note i { color: #1450a3; margin-right: 6px; }
+        @media (max-width: 700px) {
+            .job { grid-template-columns: 1fr; }
+            .job-ico { display: none; }
+            .job-actions { flex-direction: row; justify-content: space-between; align-items: center; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="layout" id="app"></div>
+
+<script src="../assets/js/config.js"></script>
+<script src="shared/auth.js"></script>
+<script src="shared/api.js"></script>
+<script src="shared/ui.js"></script>
+<script>
+'use strict';
+
+var page = initLayout('<i class="fas fa-robot"></i> Tác vụ tự động', 'tac-vu.html');
+if (!page) throw new Error('Auth failed');
+
+var JOB_ICON = {
+    backupDatabase: 'database', sendEventReminders: 'calendar-check', generateDailyReports: 'chart-line',
+    updateMembershipStatus: 'user-clock', cleanExpiredSessions: 'user-lock', cleanExpiredNotifications: 'bell-slash',
+    cleanOldAuditLogs: 'broom', sendClassReminders: 'chalkboard-teacher', keepAlive: 'heartbeat'
+};
+var TRIGGER_LBL = { schedule: 'Theo lịch', manual: 'Chạy tay', catchup: 'Chạy bù' };
+var TABLE_LBL = {
+    news: 'Tin tức', events: 'Sự kiện', reviews: 'Cảm nhận', gallery_albums: 'Album', gallery_photos: 'Ảnh',
+    activities: 'Hoạt động', team_members: 'Đội ngũ', users: 'Tài khoản', contact_messages: 'Liên hệ',
+    classes: 'Lớp học', class_enrollments: 'Ghi danh', event_registrations: 'Đăng ký SK', attendance: 'Điểm danh'
+};
+var jobs = [];
+
+function pad(n) { return String(n).padStart(2, '0'); }
+function fmtDT(s) {
+    if (!s) return '';
+    var d = new Date(s);
+    return pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear() + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+}
+function ago(s) {
+    if (!s) return '';
+    var diff = (Date.now() - new Date(s).getTime()) / 1000;
+    if (diff < 60) return 'vừa xong';
+    if (diff < 3600) return Math.floor(diff / 60) + ' phút trước';
+    if (diff < 86400) return Math.floor(diff / 3600) + ' giờ trước';
+    return Math.floor(diff / 86400) + ' ngày trước';
+}
+function fmtSize(b) {
+    if (!b) return '—';
+    return b < 1024 ? b + ' B' : b < 1048576 ? (b / 1024).toFixed(1) + ' KB' : (b / 1048576).toFixed(2) + ' MB';
+}
+
+page.innerHTML = [
+    '<div class="note" style="margin-bottom:18px;"><i class="fas fa-info-circle"></i>',
+    'Các tác vụ chạy theo <b>giờ Việt Nam</b>. Mỗi lần chạy (và mọi lỗi) được ghi vào ',
+    '<a href="nhat-ky.html">Nhật ký hoạt động</a> › mục "Hệ thống tự động". ',
+    'Nếu máy chủ bị khởi động lại và lỡ lịch, <b>sao lưu</b> và <b>nhắc sự kiện</b> sẽ tự chạy bù.</div>',
+
+    '<div class="card" style="margin-bottom:20px;">',
+    '  <div class="card-head">',
+    '    <h3><i class="fas fa-tasks"></i> Danh sách tác vụ</h3>',
+    '    <button class="btn btn-outline" onclick="loadJobs()" title="Làm mới"><i class="fas fa-sync-alt"></i> Làm mới</button>',
+    '  </div>',
+    '  <div id="jobs"></div>',
+    '</div>',
+
+    '<div class="card">',
+    '  <div class="card-head">',
+    '    <h3><i class="fas fa-database"></i> Bản sao lưu dữ liệu</h3>',
+    '    <button class="btn btn-primary" id="backup-now" onclick="runJob(\'backupDatabase\', this)"><i class="fas fa-save"></i> Sao lưu ngay</button>',
+    '  </div>',
+    '  <div class="card-body" style="padding-bottom:0;">',
+    '    <p style="color:#718096;font-size:0.82rem;margin:0 0 12px;">Mỗi bản chứa tin tức, sự kiện, cảm nhận, thư viện ảnh, hoạt động, đội ngũ, tài khoản (không có mật khẩu), liên hệ, lớp học. ',
+    '    Máy chủ giữ <b id="bk-keep">14</b> bản gần nhất — nên <b>tải về máy</b> định kỳ để có bản lưu ở nơi khác.</p>',
+    '  </div>',
+    '  <div id="backups"></div>',
+    '</div>'
+].join('');
+
+loadJobs();
+loadBackups();
+
+async function loadJobs() {
+    loading('jobs');
+    try {
+        var r = await API.systemJobs.list();
+        jobs = (r.data && r.data.jobs) || [];
+        renderJobs();
+    } catch (e) {
+        var msg = e.message || '';
+        empty('jobs', 'exclamation-circle', /404|không tìm thấy|not.?found/i.test(msg)
+            ? 'Backend chưa có chức năng này (API <code>/api/system-jobs</code> trả về 404). Hãy deploy lại backend bản mới.'
+            : 'Lỗi tải dữ liệu: ' + escapeHtml(msg));
+    }
+}
+
+function renderJobs() {
+    if (!jobs.length) { empty('jobs', 'robot', 'Chưa có tác vụ nào.'); return; }
+    setHTML('jobs', '<div class="job-list">' + jobs.map(function (j) {
+        var st = j.running ? '<span class="st st-run"><i class="fas fa-spinner fa-spin"></i> Đang chạy</span>'
+               : j.last_status === 'success' ? '<span class="st st-success"><i class="fas fa-check"></i> Thành công</span>'
+               : j.last_status === 'error' ? '<span class="st st-error"><i class="fas fa-times"></i> Lỗi</span>'
+               : '<span class="st st-none">Chưa chạy</span>';
+        var last = j.last_run_at
+            ? '<div class="last">' + st + '<span class="msg">' + escapeHtml(j.last_message || '') + '</span>' +
+              '<span class="meta">' + fmtDT(j.last_run_at) + ' · ' + ago(j.last_run_at) +
+              (j.last_duration_ms ? ' · ' + (j.last_duration_ms < 1000 ? j.last_duration_ms + ' ms' : (j.last_duration_ms / 1000).toFixed(1) + ' giây') : '') +
+              ' · đã chạy ' + j.run_count + ' lần</span></div>'
+            : '<div class="last">' + st + '</div>';
+        var notHere = !j.active_here ? ' <span class="st st-none" title="Chỉ chạy trên máy chủ production">Chỉ production</span>' : '';
+        return '<div class="job' + (j.enabled ? '' : ' off') + '">' +
+            '<div class="job-ico"><i class="fas fa-' + (JOB_ICON[j.name] || 'cog') + '"></i></div>' +
+            '<div><h4>' + escapeHtml(j.label) + ' <span class="sched">' + escapeHtml(j.schedule) + '</span>' + notHere + '</h4>' +
+                '<div class="desc">' + escapeHtml(j.description) + '</div>' + last + '</div>' +
+            '<div class="job-actions">' +
+                '<label class="switch" title="Bật / tắt chạy theo lịch"><input type="checkbox"' + (j.enabled ? ' checked' : '') +
+                    ' onchange="toggleJob(\'' + j.name + '\', this)"><span class="track"></span><span>' + (j.enabled ? 'Đang bật' : 'Đang tắt') + '</span></label>' +
+                '<button class="btn btn-sm btn-outline" onclick="runJob(\'' + j.name + '\', this)"' + (j.running ? ' disabled' : '') + '>' +
+                    '<i class="fas fa-play"></i> Chạy ngay</button>' +
+            '</div></div>';
+    }).join('') + '</div>');
+}
+
+async function toggleJob(name, el) {
+    var on = el.checked;
+    el.disabled = true;
+    try {
+        var r = await API.systemJobs.toggle(name, on);
+        toast(r.message || 'Đã lưu');
+        var j = jobs.find(function (x) { return x.name === name; });
+        if (j) j.enabled = on;
+        renderJobs();
+    } catch (e) {
+        el.checked = !on;
+        toast('Lỗi: ' + e.message, 'danger');
+    } finally { el.disabled = false; }
+}
+
+async function runJob(name, btn) {
+    var j = jobs.find(function (x) { return x.name === name; });
+    var label = j ? j.label : name;
+    if (/sendEventReminders|sendClassReminders|generateDailyReports/.test(name) &&
+        !confirm('Tác vụ "' + label + '" sẽ GỬI EMAIL thật. Bạn có chắc muốn chạy ngay?')) return;
+    if (name === 'updateMembershipStatus' &&
+        !confirm('Tác vụ này sẽ chuyển các hội viên không đăng nhập quá 6 tháng sang "Hết hạn". Chạy ngay?')) return;
+
+    var old = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang chạy...';
+    try {
+        var r = await API.systemJobs.run(name);
+        if (r.success) toast('✅ ' + label + ': ' + (r.message || 'Hoàn tất'));
+        else toast('❌ ' + label + ': ' + (r.message || 'Lỗi'), 'danger');
+    } catch (e) {
+        toast('Lỗi: ' + e.message, 'danger');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = old;
+        loadJobs();
+        if (name === 'backupDatabase') loadBackups();
+    }
+}
+
+async function loadBackups() {
+    loading('backups');
+    try {
+        var r = await API.systemJobs.backups();
+        var list = (r.data && r.data.backups) || [];
+        if (r.data && r.data.keep) setHTML('bk-keep', r.data.keep);
+        if (!list.length) { empty('backups', 'database', 'Chưa có bản sao lưu nào. Bấm "Sao lưu ngay" để tạo bản đầu tiên.'); return; }
+        setHTML('backups', '<div class="tbl"><table><thead><tr>' +
+            '<th style="width:60px;">#</th><th style="width:170px;">Thời gian</th><th style="width:100px;">Cách tạo</th>' +
+            '<th style="width:90px;">Dung lượng</th><th>Nội dung</th><th style="width:110px;"></th></tr></thead><tbody>' +
+            list.map(function (b) {
+                var s = b.summary || {}, t = s.tables || {};
+                var parts = Object.keys(t).filter(function (k) { return t[k] > 0; })
+                    .map(function (k) { return (TABLE_LBL[k] || k) + ': ' + t[k]; });
+                return '<tr><td style="color:#718096;">' + b.id + '</td>' +
+                    '<td style="font-size:0.84rem;">' + fmtDT(b.created_at) + '<br><span style="color:#a0aec0;font-size:0.72rem;">' + ago(b.created_at) + '</span></td>' +
+                    '<td style="font-size:0.8rem;">' + escapeHtml(TRIGGER_LBL[b.trigger_by] || b.trigger_by || '') + '</td>' +
+                    '<td class="bk-size">' + fmtSize(b.size_bytes) + '</td>' +
+                    '<td><b style="font-size:0.84rem;">' + (s.total_rows || 0) + ' bản ghi</b><div class="bk-tables">' + escapeHtml(parts.join(' · ')) + '</div></td>' +
+                    '<td><button class="btn btn-sm btn-outline" onclick="downloadBackup(' + b.id + ', this)"><i class="fas fa-download"></i> Tải về</button></td></tr>';
+            }).join('') + '</tbody></table></div>');
+    } catch (e) {
+        empty('backups', 'exclamation-circle', 'Lỗi tải danh sách sao lưu: ' + escapeHtml(e.message || ''));
+    }
+}
+
+async function downloadBackup(id, btn) {
+    var old = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    try {
+        var res = await fetch(API_BASE + '/system-jobs/backups/' + id + '/download', {
+            headers: { 'Authorization': 'Bearer ' + Auth.getToken() }
+        });
+        if (!res.ok) throw new Error('Lỗi ' + res.status);
+        var blob = await res.blob();
+        var cd = res.headers.get('Content-Disposition') || '';
+        var m = /filename="([^"]+)"/.exec(cd);
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = m ? m[1] : ('clb-vct-backup-' + id + '.json');
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(function () { URL.revokeObjectURL(a.href); }, 5000);
+    } catch (e) {
+        toast('Không tải được: ' + e.message, 'danger');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = old;
+    }
+}
+</script>
+</body>
+</html>
