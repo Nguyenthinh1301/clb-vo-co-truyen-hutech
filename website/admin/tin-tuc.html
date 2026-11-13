@@ -68,8 +68,19 @@
                     <label class="form-label" for="f-status">Trạng thái</label>
                     <select class="form-control" id="f-status" aria-label="Trạng thái bài viết">
                         <option value="published">Đăng ngay</option>
+                        <option value="scheduled">⏰ Hẹn giờ đăng</option>
                         <option value="draft">Lưu nháp</option>
                     </select>
+                </div>
+            </div>
+
+            <!-- Hẹn giờ đăng (chỉ hiện khi chọn "Hẹn giờ đăng") -->
+            <div class="form-group" id="sched-group" style="display:none;">
+                <label class="form-label" for="f-sched">Thời gian đăng bài <span class="req">*</span></label>
+                <input class="form-control" type="datetime-local" id="f-sched" aria-label="Thời gian hẹn đăng bài" style="max-width:280px;">
+                <div style="color:#718096;font-size:0.78rem;margin-top:6px;">
+                    <i class="fas fa-info-circle"></i> Bài viết được ẩn với người xem và <b>tự đăng</b> lên website vào đúng thời điểm này (giờ Việt Nam).
+                    <span id="sched-hint" style="color:#1450a3;font-weight:600;"></span>
                 </div>
             </div>
 
@@ -196,6 +207,7 @@ page.innerHTML = [
     '      <select class="form-control" id="flt" style="width:150px;">',
     '        <option value="">Tất cả trạng thái</option>',
     '        <option value="published">Đã đăng</option>',
+    '        <option value="scheduled">Hẹn giờ</option>',
     '        <option value="draft">Nháp</option>',
     '      </select>',
     '      <button class="btn btn-outline" onclick="loadList()" title="Làm mới">',
@@ -272,8 +284,15 @@ async function loadList() {
         var rows = list.map(function (n, i) {
             var idx       = (currentPage - 1) * 10 + i + 1;
             var catLabel  = CAT_LABELS[n.category] || n.category || '—';
-            var statusCls = n.status === 'published' ? 'b-success' : 'b-warning';
-            var statusLbl = n.status === 'published' ? 'Đã đăng' : 'Nháp';
+            var statusCls = n.status === 'published' ? 'b-success' : n.status === 'scheduled' ? 'b-info' : 'b-warning';
+            var statusLbl = n.status === 'published' ? 'Đã đăng'
+                          : n.status === 'scheduled' ? '<i class="fas fa-clock"></i> Hẹn giờ'
+                          : 'Nháp';
+            var statusSub = n.status === 'scheduled' && n.published_at
+                ? '<div style="font-size:0.72rem;color:#1450a3;margin-top:4px;white-space:nowrap;" title="Sẽ tự đăng lúc này">' + fmtDateTime(n.published_at) + '</div>'
+                : n.status === 'published' && n.published_at
+                ? '<div style="font-size:0.72rem;color:#a0aec0;margin-top:4px;white-space:nowrap;">Đăng ' + fmtDateTime(n.published_at) + '</div>'
+                : '';
             var imgHtml   = n.featured_image
                 ? '<img src="' + resolveImgUrl(n.featured_image) + '" style="width:48px;height:36px;object-fit:cover;border-radius:4px;border:1px solid #e2e8f0;" onerror="this.style.display=\'none\'">'
                 : '<span style="color:#cbd5e0;font-size:0.75rem;">Không có ảnh</span>';
@@ -288,7 +307,7 @@ async function loadList() {
                     (n.excerpt ? '<br><span style="color:#718096;font-size:0.78rem;">' + safe(n.excerpt, 60) + '</span>' : '') +
                 '</td>' +
                 '<td><span style="font-size:0.8rem;color:#4a5568;">' + catLabel + '</span></td>' +
-                '<td><span class="badge ' + statusCls + '">' + statusLbl + '</span></td>' +
+                '<td><span class="badge ' + statusCls + '">' + statusLbl + '</span>' + statusSub + '</td>' +
                 '<td style="color:#718096;font-size:0.82rem;">' + fmtDate(n.created_at) + '</td>' +
                 '<td>' +
                     '<div style="display:flex;gap:6px;">' +
@@ -337,6 +356,40 @@ async function loadList() {
     }
 }
 
+// ── Hẹn giờ đăng bài ──
+function pad2(n) { return String(n).padStart(2, '0'); }
+function fmtDateTime(s) {
+    var d = new Date(s);
+    if (isNaN(d)) return '';
+    return pad2(d.getHours()) + ':' + pad2(d.getMinutes()) + ' ' + pad2(d.getDate()) + '/' + pad2(d.getMonth() + 1) + '/' + d.getFullYear();
+}
+function toLocalInput(s) {
+    var d = new Date(s);
+    return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()) + 'T' + pad2(d.getHours()) + ':' + pad2(d.getMinutes());
+}
+function onStatusChange() {
+    var on = $('f-status').value === 'scheduled';
+    $('sched-group').style.display = on ? '' : 'none';
+    $('f-sched').min = toLocalInput(new Date(Date.now() + 5 * 60000));
+    if (on && !$('f-sched').value) {
+        // Gợi ý mặc định: 08:00 sáng mai
+        var t = new Date(); t.setDate(t.getDate() + 1); t.setHours(8, 0, 0, 0);
+        $('f-sched').value = toLocalInput(t);
+    }
+    updateSchedHint();
+}
+function updateSchedHint() {
+    var v = $('f-sched').value, el = $('sched-hint');
+    if (!v || $('f-status').value !== 'scheduled') { el.textContent = ''; return; }
+    var diff = new Date(v).getTime() - Date.now();
+    if (diff <= 0) { el.textContent = ' (thời điểm này đã qua)'; el.style.color = '#c53030'; return; }
+    var h = Math.floor(diff / 3600000), d = Math.floor(h / 24), m = Math.floor((diff % 3600000) / 60000);
+    el.style.color = '#1450a3';
+    el.textContent = ' — còn ' + (d ? d + ' ngày ' + (h % 24) + ' giờ' : h ? h + ' giờ ' + m + ' phút' : m + ' phút') + ' nữa.';
+}
+$('f-status').addEventListener('change', onStatusChange);
+$('f-sched').addEventListener('input', updateSchedHint);
+
 function goPage(p) { currentPage = p; loadList(); }
 
 // ════════════════════════════════════════
@@ -347,6 +400,8 @@ function openModal() {
     $('f-title').value   = '';
     $('f-cat').value     = 'general';
     $('f-status').value  = 'published';
+    $('f-sched').value   = '';
+    onStatusChange();
     $('f-excerpt').value = '';
     $('f-content').value = '';
     $('f-tags').value    = '';
@@ -389,6 +444,8 @@ async function editItem(id) {
         $('f-title').value   = n.title    || '';
         $('f-cat').value     = n.category || 'general';
         $('f-status').value  = n.status   || 'published';
+        $('f-sched').value   = n.status === 'scheduled' && n.published_at ? toLocalInput(n.published_at) : '';
+        onStatusChange();
         $('f-excerpt').value = n.excerpt  || '';
         $('f-content').value = n.content  || '';
         $('f-tags').value    = n.tags     || '';
@@ -424,11 +481,22 @@ async function save() {
         return;
     }
 
+    var status = $('f-status').value;
+    var scheduledAt = null;
+    if (status === 'scheduled') {
+        var sv = $('f-sched').value;
+        var sd = sv ? new Date(sv) : null;   // datetime-local → giờ máy người dùng (VN)
+        if (!sd || isNaN(sd)) { toast('Vui lòng chọn thời gian hẹn đăng bài', 'danger'); $('f-sched').focus(); return; }
+        if (sd.getTime() <= Date.now() + 60000) { toast('Thời gian hẹn đăng phải sau thời điểm hiện tại ít nhất 1 phút', 'danger'); $('f-sched').focus(); return; }
+        scheduledAt = sd.toISOString();
+    }
+
     var body = {
         title:          title,
         content:        content,
         category:       $('f-cat').value,
-        status:         $('f-status').value,
+        status:         status,
+        scheduled_at:   scheduledAt,
         excerpt:        $('f-excerpt').value.trim() || null,
         featured_image: $('f-img').value.trim() || null,
         tags:           $('f-tags').value.trim() || null
@@ -441,10 +509,11 @@ async function save() {
     try {
         if (id) {
             await API.news.update(id, body);
-            toast('✅ Cập nhật bài viết thành công!');
+            toast(status === 'scheduled' ? '⏰ Đã hẹn giờ đăng lúc ' + fmtDateTime(scheduledAt) : '✅ Cập nhật bài viết thành công!');
         } else {
             await API.news.create(body);
-            toast('✅ Đăng tin tức thành công!');
+            toast(status === 'scheduled' ? '⏰ Đã hẹn giờ đăng lúc ' + fmtDateTime(scheduledAt)
+                : status === 'draft' ? '✅ Đã lưu nháp' : '✅ Đăng tin tức thành công!');
         }
         closeModal();
         loadList();

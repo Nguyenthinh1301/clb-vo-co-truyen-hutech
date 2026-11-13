@@ -16,6 +16,7 @@ const db           = require('../config/db');
 const emailService = require('./emailService');
 const auditLog     = require('../utils/auditLog');
 const backupService = require('./backupService');
+const newsPublisher = require('./newsPublisher');
 
 const TZ        = 'Asia/Ho_Chi_Minh';
 const TZ_OFFSET = 7 * 3600 * 1000;
@@ -204,6 +205,15 @@ async function jobBackup(trigger) {
     };
 }
 
+async function jobPublishScheduledPosts() {
+    const r = await newsPublisher.publishDue(true);
+    return {
+        count: r.count,
+        message: r.count ? `Đã tự đăng ${r.count} bài: ` + r.titles.map(t => '"' + t + '"').join(', ') : 'Không có bài nào tới giờ đăng',
+        details: r.count ? { titles: r.titles } : undefined
+    };
+}
+
 async function jobKeepAlive() {
     const url = (process.env.RENDER_EXTERNAL_URL || 'https://clb-vo-co-truyen-hutech.onrender.com') + '/health';
     const res = await fetch(url, { signal: AbortSignal.timeout(20000) });
@@ -213,6 +223,9 @@ async function jobKeepAlive() {
 
 // ═══════════════════════ DANH SÁCH TÁC VỤ ═══════════════════════
 const JOBS = [
+    { name: 'publishScheduledPosts', label: 'Đăng bài hẹn giờ', cron: '* * * * *', schedule: 'Mỗi phút',
+      description: 'Tự đăng các tin tức được đặt "Hẹn giờ đăng" khi tới giờ. Mỗi bài tự đăng được ghi vào Nhật ký.',
+      run: jobPublishScheduledPosts, logMode: 'changes', defaultEnabled: true },
     { name: 'backupDatabase', label: 'Sao lưu dữ liệu', cron: '0 3 * * *', schedule: 'Hằng ngày lúc 03:00',
       description: 'Xuất tin tức, sự kiện, đội ngũ, thư viện, thành viên, liên hệ… ra file nén. Không lưu mật khẩu. Giữ 14 bản gần nhất, tải về được.',
       run: jobBackup, logMode: 'always', defaultEnabled: true, catchUpHours: 26 },

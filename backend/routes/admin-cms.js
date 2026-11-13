@@ -7,6 +7,7 @@ const express = require('express');
 const router  = express.Router();
 const db      = require('../config/db');
 const auditLog = require('../utils/auditLog');
+const { publishDue, resolvePublishFields } = require('../services/newsPublisher');
 const { AuthUtils, authenticateJwt, requireAdmin } = require('../middleware/auth');
 const { cacheService } = require('../services/cacheService');
 const { parsePagination } = require('../middleware/validation');
@@ -55,6 +56,7 @@ function serverError(res, e) {
 // GET all news (public)
 router.get('/news', async (req, res) => {
     try {
+        await publishDue(false).catch(() => {});
         const { page, limit, offset } = parsePagination(req.query, 20, 100);
         const { q, category } = req.query;
         const isAdmin = await isAdminRequest(req);
@@ -98,6 +100,7 @@ router.get('/news', async (req, res) => {
 // GET single news (public)
 router.get('/news/:id', async (req, res) => {
     try {
+        await publishDue(false).catch(() => {});
         const row = await db.findOne('SELECT * FROM news WHERE id = ?', [req.params.id]);
         // Tin chưa xuất bản: trả 404 cho khách như thể không tồn tại
         if (!row || (row.status !== 'published' && !(await isAdminRequest(req)))) {
@@ -112,8 +115,11 @@ router.get('/news/:id', async (req, res) => {
 // POST create news (admin)
 router.post('/news', adminOnly, async (req, res) => {
     try {
-        const { title, content, excerpt, category, featured_image, status, tags } = req.body;
+        const { title, content, excerpt, category, featured_image, status, tags, scheduled_at } = req.body;
         if (!title || !content) return res.status(400).json({ success: false, message: 'Thiếu tiêu đề hoặc nội dung' });
+
+        const pub = resolvePublishFields(status || 'draft', scheduled_at, null);
+        if (pub.error) return res.status(400).json({ success: false, message: pub.error });
 
         const id = await db.insert('news', {
             title, content,
@@ -122,8 +128,8 @@ router.post('/news', adminOnly, async (req, res) => {
             featured_image: featured_image || null,
             tags:           tags || null,
             author_id:      req.user.id,
-            status:         status || 'draft',
-            published_at:   status === 'published' ? new Date() : null
+            status:         pub.status,
+            published_at:   pub.published_at || null
         });
         invalidateCache('news');
         res.status(201).json({ success: true, message: 'Tạo tin tức thành công', data: { id } });
@@ -135,7 +141,7 @@ router.post('/news', adminOnly, async (req, res) => {
 // PUT update news (admin)
 router.put('/news/:id', adminOnly, async (req, res) => {
     try {
-        const { title, content, excerpt, category, featured_image, status, tags } = req.body;
+        const { title, content, excerpt, category, featured_image, status, tags, scheduled_at } = req.body;
         const upd = { updated_at: new Date() };
         if (title)          upd.title          = title;
         if (content)        upd.content        = content;
@@ -144,8 +150,12 @@ router.put('/news/:id', adminOnly, async (req, res) => {
         if (featured_image !== undefined) upd.featured_image = featured_image;
         if (tags !== undefined) upd.tags = tags;
         if (status) {
-            upd.status = status;
-            if (status === 'published') upd.published_at = new Date();
+            const existing = await db.findOne('SELECT status, published_at FROM news WHERE id = ?', [req.params.id]);
+            if (!existing) return res.status(404).json({ success: false, message: 'Không tìm thấy' });
+            const pub = resolvePublishFields(status, scheduled_at, existing);
+            if (pub.error) return res.status(400).json({ success: false, message: pub.error });
+            upd.status = pub.status;
+            if (pub.published_at !== undefined) upd.published_at = pub.published_at;
         }
         await db.update('news', upd, 'id = ?', [req.params.id]);
         invalidateCache('news');
