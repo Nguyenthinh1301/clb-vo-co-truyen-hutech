@@ -250,6 +250,25 @@ var ROLE_CLS = { admin: 'b-danger', instructor: 'b-info', student: 'b-success', 
 var MEM_LBL  = { active: 'Hoạt động', inactive: 'Không HĐ', suspended: 'Đình chỉ', pending: 'Chờ duyệt' };
 var MEM_CLS  = { active: 'b-success', inactive: 'b-secondary', suspended: 'b-danger', pending: 'b-warning' };
 
+// Hội viên hết hạn: tác vụ tự động chuyển hội viên (không phải Admin) không đăng nhập quá 6 tháng
+// sang "Không hoạt động". Hiển thị lần đăng nhập gần nhất + cảnh báo khi sắp tới hạn.
+var EXPIRE_DAYS = 182, WARN_DAYS = 30;
+function memberExpiryHtml(u) {
+    var line = function (txt, color, title) {
+        return '<div style="font-size:0.7rem;color:' + color + ';margin-top:4px;white-space:nowrap;"' +
+               (title ? ' title="' + escapeHtml(title) + '"' : '') + '>' + txt + '</div>';
+    };
+    if (!u.last_login_at) return line('<i class="fas fa-minus-circle"></i> Chưa đăng nhập', '#a0aec0');
+    var days = Math.floor((Date.now() - new Date(u.last_login_at).getTime()) / 86400000);
+    var when = days <= 0 ? 'hôm nay' : days < 30 ? days + ' ngày trước' : days < 365 ? Math.floor(days / 30) + ' tháng trước' : Math.floor(days / 365) + ' năm trước';
+    var tip  = 'Đăng nhập gần nhất: ' + fmtDate(u.last_login_at);
+    if (u.role === 'admin' || u.membership_status !== 'active') return line('<i class="fas fa-sign-in-alt"></i> ' + when, '#a0aec0', tip);
+    var left = EXPIRE_DAYS - days;
+    if (left <= 0) return line('<i class="fas fa-exclamation-triangle"></i> Quá hạn — sẽ chuyển Không HĐ', '#c53030', tip + ' (quá 6 tháng)');
+    if (left <= WARN_DAYS) return line('<i class="fas fa-hourglass-half"></i> Sắp hết hạn — còn ' + left + ' ngày', '#b7791f', tip);
+    return line('<i class="fas fa-sign-in-alt"></i> ' + when, '#a0aec0', tip);
+}
+
 // ── Render trang ──
 page.innerHTML = [
     '<div class="card">',
@@ -362,7 +381,8 @@ async function loadList() {
                 '</td>' +
                 '<td style="font-size:0.82rem;color:#4a5568;">' + escapeHtml(u.username || '—') + '</td>' +
                 '<td><span class="badge ' + (ROLE_CLS[u.role] || 'b-secondary') + '">' + (ROLE_LBL[u.role] || u.role || '—') + '</span></td>' +
-                '<td><span class="badge ' + (MEM_CLS[u.membership_status] || 'b-secondary') + '">' + (MEM_LBL[u.membership_status] || u.membership_status || '—') + '</span></td>' +
+                '<td><span class="badge ' + (MEM_CLS[u.membership_status] || 'b-secondary') + '">' + (MEM_LBL[u.membership_status] || u.membership_status || '—') + '</span>' +
+                    memberExpiryHtml(u) + '</td>' +
                 '<td>' +
                     '<span class="badge ' + (isLocked ? 'b-danger' : 'b-success') + '">' +
                         (isLocked ? '<i class="fas fa-lock"></i> Bị khóa' : '<i class="fas fa-check"></i> Hoạt động') +

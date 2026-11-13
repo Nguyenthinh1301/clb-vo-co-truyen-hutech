@@ -108,6 +108,7 @@ var RESOURCE_LBL = {
     photo: 'ảnh', activity: 'hoạt động', team_member: 'thành viên đội ngũ', class: 'lớp học'
 };
 var KIND_ICON = { create: 'plus', update: 'pen', delete: 'trash', auth: 'sign-in-alt', system: 'robot', other: 'circle' };
+var MEM_STATUS = { active: 'Đang hoạt động', inactive: 'Không hoạt động', suspended: 'Tạm đình chỉ', pending: 'Chờ duyệt' };
 var EV_STATUS = { upcoming: 'Sắp diễn ra', ongoing: 'Đang diễn ra', completed: 'Đã kết thúc', cancelled: 'Đã hủy' };
 var FIELD_LBL = {
     name: 'Tên', title: 'Tiêu đề', full_name: 'Họ tên', short_name: 'Tên trên thẻ', status: 'Trạng thái',
@@ -116,7 +117,7 @@ var FIELD_LBL = {
     avatar: 'Ảnh đại diện', role: 'Vai trò / Chức vụ', email: 'Email', category: 'Danh mục',
     sort_order: 'Thứ tự', show_home: 'Hiện ở trang chủ', group_key: 'Ban', bio: 'Giới thiệu',
     max_participants: 'Số người tối đa', medal: 'Huy chương', year: 'Năm', caption: 'Chú thích',
-    membership_status: 'Tình trạng hội viên', job: 'Mã tác vụ', label: 'Tác vụ', message: 'Kết quả',
+    membership_status: 'Tình trạng hội viên', reason: 'Lý do', job: 'Mã tác vụ', label: 'Tác vụ', message: 'Kết quả',
     trigger: 'Cách chạy', duration_ms: 'Thời gian chạy (ms)', details: 'Chi tiết', backup_id: 'Mã bản sao lưu', last_login_at: 'Đăng nhập gần nhất', is_active: 'Hoạt động', belt_level: 'Cấp bậc', notes: 'Ghi chú'
 };
 var SKIP_FIELDS = ['updated_at', 'created_at', 'id'];
@@ -174,6 +175,7 @@ function shortUA(ua) {
 function fmtVal(k, v) {
     if (v === null || v === undefined || v === '') return '<span style="color:#a0aec0;">(trống)</span>';
     if (k === 'status' && EV_STATUS[v]) return escapeHtml(EV_STATUS[v]);
+    if (k === 'membership_status' && MEM_STATUS[v]) return escapeHtml(MEM_STATUS[v]);
     if (typeof v === 'boolean') return v ? 'Có' : 'Không';
     if (typeof v === 'object') return '<pre>' + escapeHtml(JSON.stringify(v, null, 2)) + '</pre>';
     var s = String(v);

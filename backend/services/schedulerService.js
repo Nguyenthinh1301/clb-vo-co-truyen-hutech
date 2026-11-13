@@ -174,22 +174,23 @@ async function jobCleanOldAuditLogs() {
 }
 
 async function jobMembershipStatus() {
-    // Hội viên (không phải Admin) không đăng nhập quá 6 tháng → chuyển "Hết hạn". Ghi lại từng người.
+    // Hội viên (không phải Admin) không đăng nhập quá 6 tháng → chuyển "Không hoạt động" (inactive).
+    // (CSDL chỉ cho phép active / inactive / suspended / pending — không có 'expired'.) Ghi lại từng người.
     const cutoff = new Date(Date.now() - 182 * 86400000);
     const rows = await db.find(
         `SELECT id, email, first_name, last_name, last_login_at FROM users
          WHERE membership_status = 'active' AND role <> 'admin'
            AND last_login_at IS NOT NULL AND last_login_at < ?`, [cutoff]);
     for (const u of rows.slice(0, 500)) {
-        await db.update('users', { membership_status: 'expired', updated_at: new Date() }, 'id = ?', [u.id]);
+        await db.update('users', { membership_status: 'inactive', updated_at: new Date() }, 'id = ?', [u.id]);
         await auditLog({
             user_id: null, action: 'membership_auto_expired', table_name: 'users', record_id: u.id,
             old_values: { email: u.email, membership_status: 'active', last_login_at: u.last_login_at },
-            new_values: { email: u.email, membership_status: 'expired' }
+            new_values: { email: u.email, membership_status: 'inactive', reason: 'Không đăng nhập quá 6 tháng' }
         });
     }
     const n = Math.min(rows.length, 500);
-    return { count: n, message: n ? `Chuyển ${n} hội viên sang "Hết hạn" (không đăng nhập quá 6 tháng)` : 'Không có hội viên cần chuyển trạng thái' };
+    return { count: n, message: n ? `Chuyển ${n} hội viên sang "Không hoạt động" (không đăng nhập quá 6 tháng)` : 'Không có hội viên cần chuyển trạng thái' };
 }
 
 async function jobBackup(trigger) {
@@ -221,8 +222,8 @@ const JOBS = [
     { name: 'generateDailyReports', label: 'Báo cáo ngày cho Admin', cron: '0 22 * * *', schedule: 'Hằng ngày lúc 22:00',
       description: 'Tổng hợp tài khoản mới, liên hệ, sự kiện, thao tác Admin trong ngày và gửi email cho các Admin.',
       run: jobDailyReport, logMode: 'always', defaultEnabled: true },
-    { name: 'updateMembershipStatus', label: 'Hết hạn hội viên', cron: '0 0 * * *', schedule: 'Hằng ngày lúc 00:00',
-      description: 'Hội viên không đăng nhập quá 6 tháng chuyển sang "Hết hạn" (không áp dụng Admin). Ghi lại từng người.',
+    { name: 'updateMembershipStatus', label: 'Hội viên hết hạn', cron: '0 0 * * *', schedule: 'Hằng ngày lúc 00:00',
+      description: 'Hội viên không đăng nhập quá 6 tháng tự chuyển sang "Không hoạt động" (không áp dụng Admin). Ghi lại từng người trong Nhật ký.',
       run: jobMembershipStatus, logMode: 'changes', defaultEnabled: true },
     { name: 'cleanExpiredSessions', label: 'Dọn phiên đăng nhập hết hạn', cron: '0 * * * *', schedule: 'Mỗi giờ',
       description: 'Xóa các phiên đăng nhập đã hết hạn hoặc đã đăng xuất.',
