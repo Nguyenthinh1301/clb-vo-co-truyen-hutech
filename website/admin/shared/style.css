@@ -190,6 +190,46 @@ a { text-decoration: none; }
     border-color: var(--accent);
 }
 
+/* Nút Đổi mật khẩu (sidebar) */
+.btn-logout.btn-changepw {
+    margin-bottom: 8px;
+    background: rgba(255,255,255,0.06);
+    color: rgba(255,255,255,0.85);
+    border-color: rgba(255,255,255,0.15);
+}
+.btn-logout.btn-changepw:hover {
+    background: rgba(255,255,255,0.16);
+    color: #fff;
+    border-color: rgba(255,255,255,0.3);
+}
+
+/* Hộp thoại đổi mật khẩu */
+.pw-wrap { position: relative; }
+.pw-wrap .form-control { padding-right: 42px; }
+.pw-eye {
+    position: absolute; top: 50%; right: 6px; transform: translateY(-50%);
+    width: 32px; height: 32px; border: none; background: transparent;
+    color: #718096; cursor: pointer; border-radius: 6px;
+}
+.pw-eye:hover { background: #edf2f7; color: #1a252f; }
+.pw-rules {
+    list-style: none; margin: -6px 0 14px; padding: 10px 12px;
+    background: #f7fafc; border-radius: 8px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px;
+    font-size: 0.78rem; color: #a0aec0;
+}
+.pw-rules li i { font-size: 0.6rem; margin-right: 4px; vertical-align: middle; }
+.pw-rules li.ok { color: #2f855a; }
+.pw-rules li.ok i { font-size: 0.78rem; }
+.pw-match { min-height: 18px; font-size: 0.78rem; margin: -8px 0 8px; }
+.pw-match.ok  { color: #2f855a; }
+.pw-match.bad { color: #c53030; }
+.pw-error {
+    background: #fff5f5; border: 1px solid #feb2b2; color: #c53030;
+    border-radius: 8px; padding: 9px 12px; font-size: 0.82rem;
+}
+@media (max-width: 480px) { .pw-rules { grid-template-columns: 1fr; } }
+
 /* ===================================================
    MAIN CONTENT
    =================================================== */

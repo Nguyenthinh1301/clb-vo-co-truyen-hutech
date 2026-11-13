@@ -32,7 +32,8 @@ const handleValidationErrors = (req, res, next) => {
             errors: errors.array().map(error => ({
                 field: error.path,
                 message: error.msg,
-                value: error.value
+                // Không trả lại giá trị của các trường mật khẩu
+                value: /pass/i.test(error.path || '') ? undefined : error.value
             }))
         });
     }

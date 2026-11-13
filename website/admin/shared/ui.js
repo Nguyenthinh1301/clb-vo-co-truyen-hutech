@@ -139,6 +139,9 @@ function buildSidebar(user, activePage) {
         </div>
         <nav class="sb-nav">${navHTML}</nav>
         <div class="sb-footer">
+            <button class="btn-logout btn-changepw" onclick="openChangePassword()">
+                <i class="fas fa-key"></i> Đổi mật khẩu
+            </button>
             <button class="btn-logout" onclick="logout()">
                 <i class="fas fa-sign-out-alt"></i> Đăng xuất
             </button>
@@ -473,4 +476,154 @@ function calcStatus(dateStr, startTime, endTime, savedStatus) {
 
 function effectiveStatus(ev) {
     return calcStatus(evDateStr(ev), extractTime(ev.start_time), extractTime(ev.end_time), ev.status);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ĐỔI MẬT KHẨU — dùng chung cho mọi trang Admin (nút ở cuối sidebar)
+   API: PUT /api/auth/change-password { current_password, new_password, confirm_password }
+   ══════════════════════════════════════════════════════════════ */
+var PW_RULES = [
+    { id: 'len',   text: 'Ít nhất 8 ký tự',     test: function (p) { return p.length >= 8; } },
+    { id: 'lower', text: 'Có chữ thường (a–z)', test: function (p) { return /[a-z]/.test(p); } },
+    { id: 'upper', text: 'Có chữ hoa (A–Z)',    test: function (p) { return /[A-Z]/.test(p); } },
+    { id: 'digit', text: 'Có chữ số (0–9)',     test: function (p) { return /\d/.test(p); } }
+];
+
+function _pwField(id, label, autocomplete) {
+    return '<div class="form-group">' +
+        '<label class="form-label" for="' + id + '">' + label + ' <span class="req">*</span></label>' +
+        '<div class="pw-wrap">' +
+            '<input class="form-control" type="password" id="' + id + '" autocomplete="' + autocomplete + '">' +
+            '<button type="button" class="pw-eye" tabindex="-1" title="Hiện / ẩn mật khẩu" data-target="' + id + '"><i class="fas fa-eye"></i></button>' +
+        '</div></div>';
+}
+
+function openChangePassword() {
+    var ov = document.getElementById('pw-modal');
+    if (!ov) {
+        ov = document.createElement('div');
+        ov.className = 'overlay';
+        ov.id = 'pw-modal';
+        ov.innerHTML =
+            '<div class="modal modal-sm" onclick="event.stopPropagation()">' +
+                '<div class="modal-head">' +
+                    '<h3><i class="fas fa-key" style="color:#1450a3;margin-right:8px;"></i>Đổi mật khẩu</h3>' +
+                    '<button class="modal-close" type="button" onclick="closeChangePassword()"><i class="fas fa-times"></i></button>' +
+                '</div>' +
+                '<form class="modal-body" id="pw-form" novalidate>' +
+                    '<p style="color:#718096;font-size:0.82rem;margin:0 0 14px;">Đổi mật khẩu cho tài khoản <b id="pw-email"></b>. ' +
+                        'Sau khi đổi, các thiết bị khác đang đăng nhập tài khoản này sẽ bị đăng xuất.</p>' +
+                    '<input type="text" autocomplete="username" id="pw-username" style="display:none;">' +
+                    _pwField('pw-current', 'Mật khẩu hiện tại', 'current-password') +
+                    _pwField('pw-new', 'Mật khẩu mới', 'new-password') +
+                    '<ul class="pw-rules" id="pw-rules">' + PW_RULES.map(function (r) {
+                        return '<li data-rule="' + r.id + '"><i class="fas fa-circle"></i> ' + r.text + '</li>';
+                    }).join('') + '<li data-rule="diff"><i class="fas fa-circle"></i> Khác mật khẩu hiện tại</li></ul>' +
+                    _pwField('pw-confirm', 'Nhập lại mật khẩu mới', 'new-password') +
+                    '<div class="pw-match" id="pw-match"></div>' +
+                    '<div class="pw-error" id="pw-error" style="display:none;"></div>' +
+                    '<button type="submit" style="display:none;"></button>' +
+                '</form>' +
+                '<div class="modal-foot">' +
+                    '<button class="btn btn-outline" type="button" onclick="closeChangePassword()"><i class="fas fa-times"></i> Hủy</button>' +
+                    '<button class="btn btn-primary" type="button" id="pw-save" onclick="submitChangePassword()"><i class="fas fa-save"></i> Đổi mật khẩu</button>' +
+                '</div>' +
+            '</div>';
+        document.body.appendChild(ov);
+
+        document.getElementById('pw-form').addEventListener('submit', function (e) { e.preventDefault(); submitChangePassword(); });
+        ['pw-current', 'pw-new', 'pw-confirm'].forEach(function (id) {
+            document.getElementById(id).addEventListener('input', _updatePwChecks);
+        });
+        ov.querySelectorAll('.pw-eye').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var el = document.getElementById(btn.dataset.target);
+                var show = el.type === 'password';
+                el.type = show ? 'text' : 'password';
+                btn.innerHTML = '<i class="fas fa-eye' + (show ? '-slash' : '') + '"></i>';
+            });
+        });
+        ov.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeChangePassword(); });
+    }
+
+    var user = (typeof Auth !== 'undefined' && Auth.getUser && Auth.getUser()) || {};
+    document.getElementById('pw-email').textContent = user.email || '';
+    document.getElementById('pw-username').value = user.email || '';
+    ['pw-current', 'pw-new', 'pw-confirm'].forEach(function (id) {
+        var el = document.getElementById(id); el.value = ''; el.type = 'password';
+    });
+    ov.querySelectorAll('.pw-eye').forEach(function (b) { b.innerHTML = '<i class="fas fa-eye"></i>'; });
+    document.getElementById('pw-error').style.display = 'none';
+    _updatePwChecks();
+    ov.classList.add('open');
+    setTimeout(function () { document.getElementById('pw-current').focus(); }, 80);
+}
+
+function closeChangePassword() {
+    var ov = document.getElementById('pw-modal');
+    if (ov) ov.classList.remove('open');
+}
+
+function _updatePwChecks() {
+    var cur = document.getElementById('pw-current').value;
+    var p   = document.getElementById('pw-new').value;
+    var c   = document.getElementById('pw-confirm').value;
+    PW_RULES.concat([{ id: 'diff', test: function (x) { return x.length > 0 && x !== cur; } }]).forEach(function (r) {
+        var li = document.querySelector('#pw-rules [data-rule="' + r.id + '"]');
+        var ok = r.test(p);
+        li.classList.toggle('ok', ok);
+        li.querySelector('i').className = 'fas fa-' + (ok ? 'check-circle' : 'circle');
+    });
+    var m = document.getElementById('pw-match');
+    if (!c) { m.innerHTML = ''; m.className = 'pw-match'; }
+    else if (c === p) { m.innerHTML = '<i class="fas fa-check-circle"></i> Mật khẩu nhập lại khớp'; m.className = 'pw-match ok'; }
+    else { m.innerHTML = '<i class="fas fa-times-circle"></i> Mật khẩu nhập lại chưa khớp'; m.className = 'pw-match bad'; }
+}
+
+async function submitChangePassword() {
+    var cur = document.getElementById('pw-current').value;
+    var p   = document.getElementById('pw-new').value;
+    var c   = document.getElementById('pw-confirm').value;
+    var err = document.getElementById('pw-error');
+    var showErr = function (msg, focusId) {
+        err.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + escapeHtml(msg);
+        err.style.display = 'block';
+        if (focusId) document.getElementById(focusId).focus();
+    };
+    err.style.display = 'none';
+
+    if (!cur) return showErr('Vui lòng nhập mật khẩu hiện tại.', 'pw-current');
+    var failed = PW_RULES.filter(function (r) { return !r.test(p); });
+    if (failed.length) return showErr('Mật khẩu mới chưa đạt: ' + failed.map(function (r) { return r.text.charAt(0).toLowerCase() + r.text.slice(1); }).join(', ') + '.', 'pw-new');
+    if (p === cur) return showErr('Mật khẩu mới phải khác mật khẩu hiện tại.', 'pw-new');
+    if (p !== c)   return showErr('Mật khẩu nhập lại chưa khớp.', 'pw-confirm');
+
+    var btn = document.getElementById('pw-save');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang lưu...';
+    try {
+        var r = await fetch(API_BASE + '/auth/change-password', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + Auth.getToken() },
+            body: JSON.stringify({ current_password: cur, new_password: p, confirm_password: c })
+        });
+        var d = {};
+        try { d = await r.json(); } catch (e) { /* không phải JSON */ }
+        if (r.status === 401) {
+            return showErr('Phiên đăng nhập đã hết hạn. Vui lòng đăng xuất rồi đăng nhập lại để đổi mật khẩu.');
+        }
+        if (!r.ok || !d.success) {
+            var msg = (d.errors && d.errors.length)
+                ? d.errors.map(function (x) { return x.message; }).join(' ')
+                : (d.message || ('Lỗi ' + r.status));
+            return showErr(msg, /hiện tại/i.test(msg) ? 'pw-current' : null);
+        }
+        closeChangePassword();
+        toast('✅ Đã đổi mật khẩu. Lần đăng nhập sau hãy dùng mật khẩu mới.');
+    } catch (e) {
+        showErr('Không kết nối được máy chủ. Vui lòng thử lại.');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-save"></i> Đổi mật khẩu';
+    }
 }
