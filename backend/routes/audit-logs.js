@@ -9,8 +9,9 @@ const router  = express.Router();
 const db      = require('../config/db');
 const { authenticateJwt, requireAdmin } = require('../middleware/auth');
 const { ensureAuditTable } = require('../utils/auditLog');
+const { requireOwner } = require('../middleware/adminLevel');
 
-router.use(authenticateJwt, requireAdmin);
+router.use(authenticateJwt, requireAdmin, requireOwner);
 
 const KIND_PATTERNS = {
     create: ['%created%', '%added%', '%registered%', '%enrolled%', '%recorded%'],

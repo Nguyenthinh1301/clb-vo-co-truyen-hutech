@@ -118,11 +118,12 @@ function buildSidebar(user, activePage) {
     navHTML += `<a href="thu-vien.html" class="sb-link${activePage==='thu-vien.html'?' active':''}"><i class="fas fa-images"></i> Thư viện ảnh</a>`;
     navHTML += `<a href="hoat-dong.html" class="sb-link${activePage==='hoat-dong.html'?' active':''}"><i class="fas fa-trophy"></i> Hoạt động</a>`;
     navHTML += `<a href="doi-ngu.html" class="sb-link${activePage==='doi-ngu.html'?' active':''}"><i class="fas fa-user-tie"></i> Đội ngũ CLB</a>`;
+    const owner = user.admin_level !== 'editor';   // chưa biết cấp → hiện, backend vẫn chặn
     navHTML += '<div class="sb-section">Quản lý</div>';
-    navHTML += `<a href="thanh-vien.html" class="sb-link${activePage==='thanh-vien.html'?' active':''}"><i class="fas fa-users"></i> Thành viên</a>`;
+    if (owner) navHTML += `<a href="thanh-vien.html" class="sb-link${activePage==='thanh-vien.html'?' active':''}"><i class="fas fa-users"></i> Thành viên</a>`;
     navHTML += `<a href="lien-he.html" class="sb-link${activePage==='lien-he.html'?' active':''}"><i class="fas fa-envelope"></i> Liên hệ</a>`;
-    navHTML += `<a href="nhat-ky.html" class="sb-link${activePage==='nhat-ky.html'?' active':''}"><i class="fas fa-history"></i> Nhật ký hoạt động</a>`;
-    navHTML += `<a href="tac-vu.html" class="sb-link${activePage==='tac-vu.html'?' active':''}"><i class="fas fa-robot"></i> Tác vụ tự động</a>`;
+    if (owner) navHTML += `<a href="nhat-ky.html" class="sb-link${activePage==='nhat-ky.html'?' active':''}"><i class="fas fa-history"></i> Nhật ký hoạt động</a>`;
+    if (owner) navHTML += `<a href="tac-vu.html" class="sb-link${activePage==='tac-vu.html'?' active':''}"><i class="fas fa-robot"></i> Tác vụ tự động</a>`;
     navHTML += '<div class="sb-section">Website</div>';
     navHTML += `<a href="../index.html" class="sb-link" target="_blank"><i class="fas fa-globe"></i> Xem trang chủ</a>`;
     navHTML += `<a href="../views/tin-tuc.html" class="sb-link" target="_blank"><i class="fas fa-newspaper"></i> Xem tin tức</a>`;
@@ -135,7 +136,7 @@ function buildSidebar(user, activePage) {
             ${avatarHtml}
             <div class="sb-brand-text">
                 <h3>${name}</h3>
-                <span>${user.role === 'admin' ? 'Quản Trị Viên' : (user.role || 'Admin')}</span>
+                <span>${user.admin_level === 'editor' ? 'Biên tập viên' : user.admin_level === 'owner' ? 'Quản trị chính' : (user.role === 'admin' ? 'Quản Trị Viên' : (user.role || 'Admin'))}</span>
             </div>
         </div>
         <nav class="sb-nav">${navHTML}</nav>
@@ -165,6 +166,30 @@ function buildTopbar(title, user) {
  * Khởi tạo layout cho trang admin
  * Tự động wake up server nếu đang sleep (Render free tier)
  */
+// Trang chỉ dành cho Quản trị chính (Biên tập viên không vào được — backend cũng chặn API)
+const OWNER_PAGES = ['thanh-vien.html', 'nhat-ky.html', 'tac-vu.html'];
+
+function isOwner() {
+    const u = Auth.getUser();
+    return !u || u.admin_level !== 'editor';
+}
+
+/** Lấy cấp quản trị mới nhất từ máy chủ; nếu khác bản đang lưu → cập nhật và tải lại trang */
+function _refreshAdminLevel(activePage) {
+    const apiBase = (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || 'http://localhost:3001/api';
+    fetch(apiBase + '/admin-roles/me', { headers: { 'Authorization': 'Bearer ' + Auth.getToken() } })
+        .then(r => r.ok ? r.json() : null)
+        .then(d => {
+            if (!d || !d.success || !d.data) return;
+            const user = Auth.getUser();
+            if (!user || user.admin_level === d.data.level) return;
+            user.admin_level = d.data.level;
+            Auth.save(Auth.getToken(), user);
+            window.location.reload();
+        })
+        .catch(() => {});
+}
+
 function initLayout(title, activePage) {
     const user = Auth.check();
     if (!user) return null;
@@ -175,6 +200,20 @@ function initLayout(title, activePage) {
             ${buildTopbar(title, user)}
             <div class="page" id="page"></div>
         </div>`;
+
+    _refreshAdminLevel(activePage);
+
+    if (user.admin_level === 'editor' && OWNER_PAGES.indexOf(activePage) !== -1) {
+        $('page').innerHTML =
+            '<div class="card"><div class="card-body" style="text-align:center;padding:48px 20px;">' +
+                '<i class="fas fa-lock" style="font-size:2.4rem;color:#cbd5e0;margin-bottom:14px;display:block;"></i>' +
+                '<h3 style="margin:0 0 8px;color:#1a252f;">Bạn không có quyền truy cập trang này</h3>' +
+                '<p style="color:#718096;margin:0 0 18px;">Trang này chỉ dành cho <b>Quản trị chính</b>. Tài khoản của bạn là <b>Biên tập viên</b> — ' +
+                'bạn có thể quản lý tin tức, sự kiện, thư viện ảnh, hoạt động, đội ngũ, cảm nhận và liên hệ.</p>' +
+                '<a href="dashboard.html" class="btn btn-primary"><i class="fas fa-home"></i> Về Dashboard</a>' +
+            '</div></div>';
+        return null;
+    }
 
     // Wake up server ngầm ngay khi trang load (không block UI)
     const apiBase = (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || 'http://localhost:3001/api';

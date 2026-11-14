@@ -12,8 +12,9 @@ const { authenticateJwt, requireAdmin } = require('../middleware/auth');
 const scheduler = require('../services/schedulerService');
 const backupService = require('../services/backupService');
 const auditLog  = require('../utils/auditLog');
+const { requireOwner } = require('../middleware/adminLevel');
 
-router.use(authenticateJwt, requireAdmin);
+router.use(authenticateJwt, requireAdmin, requireOwner);
 
 function logUser(req, action, values) {
     return auditLog({

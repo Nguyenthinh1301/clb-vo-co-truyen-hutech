@@ -49,6 +49,16 @@
                         <option value="instructor">Huấn luyện viên</option>
                         <option value="admin">Admin</option>
                     </select>
+                    <div id="f-level-group" style="display:none;margin-top:10px;">
+                        <label class="form-label" for="f-level">Cấp quản trị</label>
+                        <select class="form-control" id="f-level">
+                            <option value="owner">👑 Quản trị chính — toàn quyền</option>
+                            <option value="editor">✏️ Biên tập viên — chỉ quản lý nội dung</option>
+                        </select>
+                        <div id="f-level-hint" style="font-size:0.74rem;color:#718096;margin-top:6px;line-height:1.45;">
+                            Biên tập viên không vào được Thành viên, Nhật ký, Tác vụ tự động / sao lưu.
+                        </div>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Trạng thái hội viên</label>
@@ -336,8 +346,21 @@ var userDataMap = {};
 // ════════════════════════════════════════
 // LOAD LIST
 // ════════════════════════════════════════
+var adminLevels = {};          // user_id → 'owner' | 'editor'
+var adminLevelsLoaded = false; // false → máy chủ chưa hỗ trợ phân quyền / không tải được → không đoán cấp
+var LEVEL_LBL = { owner: '👑 Quản trị chính', editor: '✏️ Biên tập viên' };
+
+async function loadAdminLevels() {
+    try {
+        var r = await API.get('/admin-roles');
+        adminLevels = (r.data && r.data.levels) || {};
+        adminLevelsLoaded = true;
+    } catch (e) { adminLevels = {}; adminLevelsLoaded = false; }
+}
+
 async function loadList() {
     loading('tbl');
+    await loadAdminLevels();
     var q      = $('q')          ? $('q').value.trim() : '';
     var role   = $('flt-role')   ? $('flt-role').value : '';
     var status = $('flt-status') ? $('flt-status').value : '';
@@ -380,7 +403,9 @@ async function loadList() {
                     '<br><span style="color:#718096;font-size:0.78rem;">' + escapeHtml(u.email || '—') + '</span>' +
                 '</td>' +
                 '<td style="font-size:0.82rem;color:#4a5568;">' + escapeHtml(u.username || '—') + '</td>' +
-                '<td><span class="badge ' + (ROLE_CLS[u.role] || 'b-secondary') + '">' + (ROLE_LBL[u.role] || u.role || '—') + '</span></td>' +
+                '<td><span class="badge ' + (ROLE_CLS[u.role] || 'b-secondary') + '">' + (ROLE_LBL[u.role] || u.role || '—') + '</span>' +
+                    (u.role === 'admin' && adminLevelsLoaded ? '<div style="font-size:0.7rem;color:#4a5568;margin-top:4px;white-space:nowrap;">' + (LEVEL_LBL[adminLevels[u.id] || 'editor']) + '</div>' : '') +
+                '</td>' +
                 '<td><span class="badge ' + (MEM_CLS[u.membership_status] || 'b-secondary') + '">' + (MEM_LBL[u.membership_status] || u.membership_status || '—') + '</span>' +
                     memberExpiryHtml(u) + '</td>' +
                 '<td>' +
@@ -511,6 +536,14 @@ function editItem(u) {
     $('f-fullname').textContent      = fullName || u.email;
     $('f-email-display').textContent = u.email;
     $('f-role').value                = u.role              || 'member';
+    $('f-level').value               = adminLevels[u.id] || 'editor';
+    $('f-level').disabled            = isMe || !adminLevelsLoaded;
+    $('f-level-hint').innerHTML      = !adminLevelsLoaded
+        ? '<i class="fas fa-exclamation-triangle" style="color:#b7791f;"></i> Máy chủ chưa hỗ trợ phân quyền (cần deploy backend bản mới) — chưa đổi được cấp quản trị.'
+        : isMe
+        ? '<i class="fas fa-info-circle"></i> Không thể tự đổi cấp quản trị của chính mình.'
+        : 'Biên tập viên không vào được Thành viên, Nhật ký, Tác vụ tự động / sao lưu.';
+    toggleLevelGroup();
     $('f-membership').value          = u.membership_status || 'active';
     $('f-name').value                = fullName;
     $('f-phone').value               = u.phone_number      || '';
@@ -524,6 +557,15 @@ function editItem(u) {
 }
 
 function closeModal() { $('modal').classList.remove('open'); editingUser = null; }
+
+function toggleLevelGroup() {
+    $('f-level-group').style.display = $('f-role').value === 'admin' ? '' : 'none';
+}
+$('f-role').addEventListener('change', function () {
+    // Cấp quyền Admin mới → mặc định Biên tập viên
+    if ($('f-role').value === 'admin' && editingUser && editingUser.role !== 'admin') $('f-level').value = 'editor';
+    toggleLevelGroup();
+});
 
 // Nút "Xóa tài khoản" trong form sửa → đóng form, mở hộp xác nhận xóa
 function deleteFromEdit() {
@@ -562,6 +604,19 @@ async function save() {
 
     try {
         await API.users.update(id, body);
+
+        // Đổi cấp quản trị (chỉ khi tài khoản là Admin và không phải chính mình)
+        var finalRole = body.role || (editingUser && editingUser.role);
+        var newLevel  = $('f-level').value;
+        var oldLevel  = adminLevels[id] || 'editor';
+        if (finalRole === 'admin' && !$('f-level').disabled && newLevel !== oldLevel) {
+            try {
+                var lr = await API.put('/admin-roles/' + id, { level: newLevel });
+                toast('✅ ' + (lr.message || 'Đã đổi cấp quản trị'));
+            } catch (le) {
+                toast('Đã lưu thông tin nhưng chưa đổi được cấp quản trị: ' + le.message, 'danger');
+            }
+        }
         toast('✅ Cập nhật thành viên thành công!');
         closeModal();
         loadList();

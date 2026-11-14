@@ -279,6 +279,12 @@ async function loadEventStats() {
 
 // ── Thành viên ──
 async function loadUserStats() {
+    // Biên tập viên không có quyền xem danh sách thành viên
+    if (typeof isOwner === 'function' && !isOwner()) {
+        setHTML('s-usr', '—');
+        setHTML('s-usr-sub', '<span style="color:#a0aec0;">Chỉ Quản trị chính xem được</span>');
+        return;
+    }
     try {
         // Tổng tài khoản + số thành viên có trạng thái "active" (trước đây ghi "đang hoạt động" cho TỔNG tài khoản)
         var r      = await API.users.list(1, 100);

@@ -102,7 +102,7 @@ var ACTION_LBL = {
     system_job_run: 'Tác vụ tự động', system_job_failed: 'Tác vụ tự động bị lỗi',
     system_job_triggered: 'Chạy tay tác vụ', system_job_enabled: 'Bật tác vụ', system_job_disabled: 'Tắt tác vụ',
     backup_downloaded: 'Tải bản sao lưu', membership_auto_expired: 'Tự chuyển hội viên hết hạn',
-    news_auto_published: 'Tự đăng bài hẹn giờ'
+    news_auto_published: 'Tự đăng bài hẹn giờ', admin_level_changed: 'Đổi cấp quản trị'
 };
 var RESOURCE_LBL = {
     news: 'tin tức', event: 'sự kiện', review: 'cảm nhận', announcement: 'thông báo', album: 'album',
@@ -119,7 +119,7 @@ var FIELD_LBL = {
     avatar: 'Ảnh đại diện', role: 'Vai trò / Chức vụ', email: 'Email', category: 'Danh mục',
     sort_order: 'Thứ tự', show_home: 'Hiện ở trang chủ', group_key: 'Ban', bio: 'Giới thiệu',
     max_participants: 'Số người tối đa', medal: 'Huy chương', year: 'Năm', caption: 'Chú thích',
-    membership_status: 'Tình trạng hội viên', reason: 'Lý do', job: 'Mã tác vụ', label: 'Tác vụ', message: 'Kết quả',
+    membership_status: 'Tình trạng hội viên', reason: 'Lý do', admin_level: 'Cấp quản trị', job: 'Mã tác vụ', label: 'Tác vụ', message: 'Kết quả',
     trigger: 'Cách chạy', duration_ms: 'Thời gian chạy (ms)', details: 'Chi tiết', backup_id: 'Mã bản sao lưu', last_login_at: 'Đăng nhập gần nhất', is_active: 'Hoạt động', belt_level: 'Cấp bậc', notes: 'Ghi chú'
 };
 var SKIP_FIELDS = ['updated_at', 'created_at', 'id'];
@@ -178,6 +178,7 @@ function fmtVal(k, v) {
     if (v === null || v === undefined || v === '') return '<span style="color:#a0aec0;">(trống)</span>';
     if (k === 'status' && EV_STATUS[v]) return escapeHtml(EV_STATUS[v]);
     if (k === 'membership_status' && MEM_STATUS[v]) return escapeHtml(MEM_STATUS[v]);
+    if (k === 'admin_level') return v === 'owner' ? 'Quản trị chính' : v === 'editor' ? 'Biên tập viên' : escapeHtml(String(v));
     if (typeof v === 'boolean') return v ? 'Có' : 'Không';
     if (typeof v === 'object') return '<pre>' + escapeHtml(JSON.stringify(v, null, 2)) + '</pre>';
     var s = String(v);

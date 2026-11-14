@@ -2,6 +2,8 @@ const express = require('express');
 const router  = express.Router();
 const db      = require('../config/db');
 const auditLog = require('../utils/auditLog');
+const { requireOwner } = require('../middleware/adminLevel');
+const adminRoles = require('../services/adminRoles');
 const { authenticate, authorize, AuthUtils } = require('../middleware/auth');
 const { ValidationRules, handleValidationErrors, parsePagination } = require('../middleware/validation');
 const { cacheService } = require('../services/cacheService');
@@ -19,7 +21,7 @@ function invalidateUserCache() {
 // ADMIN — Danh sách thành viên
 // GET /api/users?page=&limit=&search=&role=&status=
 // ════════════════════════════════════════════════════════════
-router.get('/', authenticate, authorize('admin'), async (req, res) => {
+router.get('/', authenticate, authorize('admin'), requireOwner, async (req, res) => {
     try {
         const { page, limit, offset } = parsePagination(req.query, 20, 100);
         const { search = '', role = '', status = '' } = req.query;
@@ -72,7 +74,7 @@ router.get('/', authenticate, authorize('admin'), async (req, res) => {
 // ADMIN — Tạo user mới
 // POST /api/users
 // ════════════════════════════════════════════════════════════
-router.post('/', authenticate, authorize('admin'), ValidationRules.userRegistration, handleValidationErrors, async (req, res) => {
+router.post('/', authenticate, authorize('admin'), requireOwner, ValidationRules.userRegistration, handleValidationErrors, async (req, res) => {
     try {
         const {
             email, username, password,
@@ -289,7 +291,7 @@ const isActiveFlag = v => v === true || v === 1 || v === '1' || v === 't';
 const isForeignKeyError = e => e && (e.code === '23503' || e.number === 547 || e.errno === 1451 ||
     /foreign key|REFERENCE constraint/i.test(e.message || ''));
 
-router.put('/:id', authenticate, authorize('admin'), async (req, res) => {
+router.put('/:id', authenticate, authorize('admin'), requireOwner, async (req, res) => {
     try {
         const { id } = req.params;
         const numId = parseInt(id);
@@ -308,6 +310,9 @@ router.put('/:id', authenticate, authorize('admin'), async (req, res) => {
         }
         if ((demoting || disabling) && await countOtherActiveAdmins(numId) === 0) {
             return res.status(400).json({ success: false, message: 'Phải còn ít nhất 1 tài khoản Admin đang hoạt động' });
+        }
+        if ((demoting || disabling) && await adminRoles.isLastOwner(numId)) {
+            return res.status(400).json({ success: false, message: 'Đây là Quản trị chính cuối cùng — hãy đặt một Admin khác làm Quản trị chính trước' });
         }
 
         const upd = { updated_at: new Date() };
@@ -328,6 +333,7 @@ router.put('/:id', authenticate, authorize('admin'), async (req, res) => {
         }
 
         await db.update('users', upd, 'id = ?', [numId]);
+        if (demoting) await adminRoles.clearLevel(numId).catch(() => {});  // cấp lại Admin sau này → mặc định Biên tập viên
         invalidateUserCache();
 
         try {
@@ -353,7 +359,7 @@ router.put('/:id', authenticate, authorize('admin'), async (req, res) => {
 // ADMIN — Khóa / Mở khóa user
 // DELETE /api/users/:id  (toggle is_active)
 // ════════════════════════════════════════════════════════════
-router.delete('/:id', authenticate, authorize('admin'), async (req, res) => {
+router.delete('/:id', authenticate, authorize('admin'), requireOwner, async (req, res) => {
     try {
         const { id } = req.params;
         const numId = parseInt(id);
@@ -369,6 +375,9 @@ router.delete('/:id', authenticate, authorize('admin'), async (req, res) => {
         const newActive = isActiveFlag(existing.is_active) ? false : true;
 
         // Khóa một admin: phải còn ít nhất 1 admin khác đang hoạt động (mở khóa thì luôn được)
+        if (existing.role === 'admin' && !newActive && await adminRoles.isLastOwner(numId)) {
+            return res.status(400).json({ success: false, message: 'Không thể khóa Quản trị chính cuối cùng' });
+        }
         if (existing.role === 'admin' && !newActive && await countOtherActiveAdmins(numId) === 0) {
             return res.status(400).json({ success: false, message: 'Phải còn ít nhất 1 tài khoản Admin đang hoạt động' });
         }
@@ -407,7 +416,7 @@ router.delete('/:id', authenticate, authorize('admin'), async (req, res) => {
 // ADMIN — Xóa hẳn user
 // DELETE /api/users/:id/delete
 // ════════════════════════════════════════════════════════════
-router.delete('/:id/delete', authenticate, authorize('admin'), async (req, res) => {
+router.delete('/:id/delete', authenticate, authorize('admin'), requireOwner, async (req, res) => {
     try {
         const { id } = req.params;
         const numId = parseInt(id);
@@ -421,6 +430,9 @@ router.delete('/:id/delete', authenticate, authorize('admin'), async (req, res) 
         if (!existing) return res.status(404).json({ success: false, message: 'Người dùng không tồn tại' });
 
         // Xóa một admin: phải còn ít nhất 1 admin khác đang hoạt động
+        if (existing.role === 'admin' && await adminRoles.isLastOwner(numId)) {
+            return res.status(400).json({ success: false, message: 'Không thể xóa Quản trị chính cuối cùng' });
+        }
         if (existing.role === 'admin' && await countOtherActiveAdmins(numId) === 0) {
             return res.status(400).json({ success: false, message: 'Không thể xóa Admin cuối cùng đang hoạt động' });
         }
@@ -430,6 +442,7 @@ router.delete('/:id/delete', authenticate, authorize('admin'), async (req, res) 
 
         // Xóa user
         await db.delete('users', 'id = ?', [numId]);
+        if (existing.role === 'admin') await adminRoles.clearLevel(numId).catch(() => {});
         invalidateUserCache();
 
         try {
